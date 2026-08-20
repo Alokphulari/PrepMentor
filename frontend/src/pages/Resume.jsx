@@ -98,15 +98,15 @@ function Resume() {
 
       {/* Header */}
       <section>
-        <p className="text-sm font-medium text-blue-600">
+        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
           Resume
         </p>
 
-        <h1 className="mt-1 text-3xl font-bold text-gray-900">
+        <h1 className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
           Resume Analysis
         </h1>
 
-        <p className="mt-2 text-gray-500">
+        <p className="mt-2 text-gray-500 dark:text-gray-400">
           Upload your resume to get personalized insights and interview
           preparation recommendations.
         </p>
@@ -128,10 +128,10 @@ function Resume() {
             setDragActive(false);
           }}
           onDrop={handleDrop}
-          className={`bg-white border-2 border-dashed rounded-2xl p-10 md:p-14 text-center transition ${
+          className={`bg-white dark:bg-gray-900 border-2 border-dashed rounded-2xl p-10 md:p-14 text-center transition ${
             dragActive
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-300"
+              ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+              : "border-gray-300 dark:border-gray-700"
           }`}
         >
 
@@ -182,7 +182,7 @@ function Resume() {
         </section>
       ) : (
         /* Uploaded File */
-        <section className="bg-white border border-gray-200 rounded-2xl p-6">
+        <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 transition-colors">
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
 
@@ -192,11 +192,11 @@ function Resume() {
 
             <div className="flex-1 min-w-0">
 
-              <h2 className="font-semibold text-gray-900 truncate">
+              <h2 className="font-semibold text-gray-900 dark:text-white truncate">
                 {file.name}
               </h2>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {(file.size / 1024 / 1024).toFixed(2)} MB
               </p>
 
@@ -207,7 +207,7 @@ function Resume() {
               <button
                 type="button"
                 onClick={handleDownload}
-                className="p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                className="p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                 title="Download"
               >
                 <Download size={19} />
@@ -241,16 +241,16 @@ function Resume() {
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         {/* Resume Score */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-colors rounded-2xl p-6">
 
           <div className="flex items-center justify-between">
 
             <div>
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-gray-900 dark:text-white">
                 Resume Score
               </h2>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Overall resume quality
               </p>
             </div>
@@ -291,7 +291,7 @@ function Resume() {
               </span>
             </div>
 
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <div className="h-full w-[82%] bg-blue-600 rounded-full" />
             </div>
 
@@ -300,7 +300,7 @@ function Resume() {
         </div>
 
         {/* Skills */}
-        <div className="xl:col-span-2 bg-white border border-gray-200 rounded-2xl p-6">
+        <div className="xl:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-colors rounded-2xl p-6">
 
           <div className="flex items-center gap-3">
 
@@ -325,7 +325,7 @@ function Resume() {
             {skills.map((skill) => (
               <span
                 key={skill}
-                className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700"
+                className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200"
               >
                 {skill}
               </span>
@@ -335,7 +335,7 @@ function Resume() {
 
           <div className="mt-8 grid sm:grid-cols-2 gap-4">
 
-            <div className="p-4 rounded-xl bg-blue-50">
+            <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950">
 
               <div className="flex items-center gap-2 text-blue-700">
                 <Briefcase size={18} />
@@ -350,7 +350,7 @@ function Resume() {
 
             </div>
 
-            <div className="p-4 rounded-xl bg-green-50">
+            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950">
 
               <div className="flex items-center gap-2 text-green-700">
                 <GraduationCap size={18} />
@@ -372,7 +372,7 @@ function Resume() {
       </section>
 
       {/* Recommendations */}
-      <section className="bg-white border border-gray-200 rounded-2xl p-6">
+      <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-colors rounded-2xl p-6">
 
         <div className="flex items-start gap-3">
 
@@ -399,14 +399,14 @@ function Resume() {
           {recommendations.map((recommendation, index) => (
             <div
               key={recommendation}
-              className="flex gap-3 p-4 bg-gray-50 rounded-xl"
+              className="flex gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl"
             >
 
               <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
                 {index + 1}
               </span>
 
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-700 dark:text-gray-200">
                 {recommendation}
               </p>
 
@@ -420,7 +420,7 @@ function Resume() {
       {/* Privacy Notice */}
       <section className="text-center">
 
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 dark:text-gray-500">
           Your resume will be used only to personalize your PrepMentor
           experience.
         </p>

@@ -6,8 +6,6 @@ import {
   BarChart3,
   History,
   User,
-  Settings,
-  ChevronLeft,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -55,12 +53,12 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 min-h-[calc(100vh-4rem)] bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-64 min-h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-colors">
 
       {/* Main Navigation */}
       <div className="flex-1 p-4">
 
-        <p className="px-3 mb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <p className="px-3 mb-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
           Main Menu
         </p>
 
@@ -77,7 +75,7 @@ function Sidebar() {
                   `flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
                     isActive
                       ? "bg-blue-600 text-white shadow-sm"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                   }`
                 }
               >
@@ -92,7 +90,7 @@ function Sidebar() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
 
         <nav className="space-y-1">
 
@@ -107,7 +105,7 @@ function Sidebar() {
                   `flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
                     isActive
                       ? "bg-blue-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                   }`
                 }
               >
@@ -121,7 +119,7 @@ function Sidebar() {
         </nav>
 
         {/* Version */}
-        <p className="text-xs text-gray-400 text-center mt-4">
+        <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-4">
           PrepMentor v1.0
         </p>
 

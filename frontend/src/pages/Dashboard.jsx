@@ -22,32 +22,32 @@ function Dashboard() {
       value: "12",
       change: "+3 this month",
       icon: Mic,
-      iconBg: "bg-blue-50",
-      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50 dark:bg-blue-950",
+      iconColor: "text-blue-600 dark:text-blue-400",
     },
     {
       title: "Average Score",
       value: "82%",
       change: "+8% from last month",
       icon: Target,
-      iconBg: "bg-green-50",
-      iconColor: "text-green-600",
+      iconBg: "bg-green-50 dark:bg-green-950",
+      iconColor: "text-green-600 dark:text-green-400",
     },
     {
       title: "Practice Hours",
       value: "18.5h",
       change: "+4.2h this month",
       icon: Clock3,
-      iconBg: "bg-purple-50",
-      iconColor: "text-purple-600",
+      iconBg: "bg-purple-50 dark:bg-purple-950",
+      iconColor: "text-purple-600 dark:text-purple-400",
     },
     {
       title: "Current Streak",
       value: "7 days",
       change: "Personal best",
       icon: Flame,
-      iconBg: "bg-orange-50",
-      iconColor: "text-orange-600",
+      iconBg: "bg-orange-50 dark:bg-orange-950",
+      iconColor: "text-orange-600 dark:text-orange-400",
     },
   ];
 
@@ -109,15 +109,15 @@ function Dashboard() {
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
 
         <div>
-          <p className="text-sm font-medium text-blue-600">
+          <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
             Thursday, August 20, 2026
           </p>
 
-          <h1 className="mt-1 text-3xl font-bold text-gray-900">
+          <h1 className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
             Welcome back, Alok! 👋
           </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
             Keep practicing. You're getting closer to interview-ready.
           </p>
         </div>
@@ -141,17 +141,17 @@ function Dashboard() {
           return (
             <div
               key={stat.title}
-              className="bg-white border border-gray-200 rounded-2xl p-5"
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 transition-colors"
             >
 
               <div className="flex items-start justify-between">
 
                 <div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {stat.title}
                   </p>
 
-                  <p className="mt-2 text-3xl font-bold text-gray-900">
+                  <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
                     {stat.value}
                   </p>
                 </div>
@@ -171,7 +171,7 @@ function Dashboard() {
                   className="text-green-500"
                 />
 
-                <span className="text-green-600 font-medium">
+                <span className="text-green-600 dark:text-green-400 font-medium">
                   {stat.change}
                 </span>
 
@@ -187,23 +187,23 @@ function Dashboard() {
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         {/* Performance */}
-        <div className="xl:col-span-2 bg-white border border-gray-200 rounded-2xl p-6">
+        <div className="xl:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 transition-colors">
 
           <div className="flex items-center justify-between">
 
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Performance Overview
               </h2>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Your interview scores over the last 6 sessions
               </p>
             </div>
 
             <Link
               to="/history"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700"
+              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
             >
               View history
             </Link>
@@ -213,7 +213,7 @@ function Dashboard() {
           {/* Chart */}
           <div className="mt-8">
 
-            <div className="h-64 flex items-end gap-4 sm:gap-7 border-b border-gray-200 px-2">
+            <div className="h-64 flex items-end gap-4 sm:gap-7 border-b border-gray-200 dark:border-gray-700 px-2">
 
               {[58, 67, 63, 74, 81, 88].map((score, index) => (
                 <div
@@ -221,7 +221,7 @@ function Dashboard() {
                   className="flex-1 h-full flex flex-col justify-end items-center gap-2"
                 >
 
-                  <span className="text-xs font-medium text-gray-500">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
                     {score}%
                   </span>
 
@@ -237,7 +237,7 @@ function Dashboard() {
 
             </div>
 
-            <div className="grid grid-cols-6 mt-3 text-xs text-gray-400 text-center">
+            <div className="grid grid-cols-6 mt-3 text-xs text-gray-400 dark:text-gray-500 text-center">
               <span>Session 1</span>
               <span>Session 2</span>
               <span>Session 3</span>
@@ -251,20 +251,20 @@ function Dashboard() {
         </div>
 
         {/* Weekly Goal */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 transition-colors">
 
           <div className="flex items-center gap-3">
 
-            <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-950 text-green-600 dark:text-green-400 flex items-center justify-center">
               <BarChart3 size={20} />
             </div>
 
             <div>
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-gray-900 dark:text-white">
                 Weekly Goal
               </h2>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Interview practice
               </p>
             </div>
@@ -273,16 +273,16 @@ function Dashboard() {
 
           <div className="mt-8 flex justify-center">
 
-            <div className="relative w-40 h-40 rounded-full border-[14px] border-gray-100 flex items-center justify-center">
+            <div className="relative w-40 h-40 rounded-full border-[14px] border-gray-100 dark:border-gray-800 flex items-center justify-center">
 
               <div className="absolute inset-[-14px] rounded-full border-[14px] border-transparent border-t-green-500 border-r-green-500 rotate-12" />
 
               <div className="text-center">
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">
                   4/5
                 </p>
 
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   sessions
                 </p>
               </div>
@@ -294,22 +294,24 @@ function Dashboard() {
           <div className="mt-7">
 
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-500">
+
+              <span className="text-gray-500 dark:text-gray-400">
                 Progress
               </span>
 
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">
                 80%
               </span>
+
             </div>
 
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <div className="h-full w-4/5 bg-green-500 rounded-full" />
             </div>
 
           </div>
 
-          <p className="mt-5 text-sm text-gray-500 text-center">
+          <p className="mt-5 text-sm text-gray-500 dark:text-gray-400 text-center">
             Complete one more session to reach your weekly goal.
           </p>
 
@@ -318,30 +320,30 @@ function Dashboard() {
       </section>
 
       {/* Recent Interviews */}
-      <section className="bg-white border border-gray-200 rounded-2xl">
+      <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl transition-colors">
 
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
 
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Recent Interviews
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Your latest practice sessions
             </p>
           </div>
 
           <Link
             to="/history"
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
           >
             View all
           </Link>
 
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 dark:divide-gray-800">
 
           {recentInterviews.map((interview) => (
             <div
@@ -349,19 +351,19 @@ function Dashboard() {
               className="p-5 flex flex-col md:flex-row md:items-center gap-4"
             >
 
-              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                 <Mic size={20} />
               </div>
 
               <div className="flex-1">
 
-                <h3 className="font-semibold text-gray-900">
+                <h3 className="font-semibold text-gray-900 dark:text-white">
                   {interview.role}
                 </h3>
 
-                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
 
-                  <span className="px-2 py-1 bg-gray-100 rounded-md">
+                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
                     {interview.type}
                   </span>
 
@@ -386,14 +388,14 @@ function Dashboard() {
                   <p
                     className={`text-xl font-bold ${
                       interview.score >= 80
-                        ? "text-green-600"
-                        : "text-orange-500"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-orange-500 dark:text-orange-400"
                     }`}
                   >
                     {interview.score}%
                   </p>
 
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
                     Score
                   </p>
 
@@ -401,7 +403,7 @@ function Dashboard() {
 
                 <Link
                   to="/history"
-                  className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
                 >
                   <ArrowRight size={18} />
                 </Link>
@@ -420,11 +422,11 @@ function Dashboard() {
 
         <div className="mb-5">
 
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Recommended Practice
           </h2>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Based on your recent performance
           </p>
 
@@ -438,24 +440,24 @@ function Dashboard() {
             return (
               <div
                 key={item.title}
-                className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition"
+                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 hover:shadow-md transition"
               >
 
-                <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <Icon size={21} />
                 </div>
 
-                <h3 className="mt-5 font-semibold text-gray-900">
+                <h3 className="mt-5 font-semibold text-gray-900 dark:text-white">
                   {item.title}
                 </h3>
 
-                <p className="mt-2 text-sm text-gray-500 leading-relaxed">
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   {item.description}
                 </p>
 
                 <Link
                   to={item.link}
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                 >
                   {item.action}
                   <ArrowRight size={16} />
@@ -476,6 +478,7 @@ function Dashboard() {
 
           <div className="flex items-center gap-2">
             <CheckCircle2 size={21} />
+
             <span className="font-semibold">
               You're making progress!
             </span>
