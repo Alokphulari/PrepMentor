@@ -1,26 +1,31 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Upload,
   FileText,
-  CheckCircle2,
-  AlertCircle,
-  Trash2,
-  Download,
-  Sparkles,
-  Briefcase,
-  GraduationCap,
-  Code2,
+  CheckCircle,
+  X,
+  ArrowRight,
+  Loader2,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Resume() {
-  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+  const { markResumeUploaded } = useAuth();
 
   const [file, setFile] = useState(null);
-  const [dragActive, setDragActive] = useState(false);
+  const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const handleFile = (selectedFile) => {
-    if (!selectedFile) return;
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files?.[0];
+
+    setError("");
+
+    if (!selectedFile) {
+      return;
+    }
 
     const allowedTypes = [
       "application/pdf",
@@ -28,404 +33,206 @@ function Resume() {
     ];
 
     if (!allowedTypes.includes(selectedFile.type)) {
-      alert("Please upload a PDF or DOCX file.");
+      setError("Please upload your resume as a PDF or DOCX file.");
       return;
     }
 
     if (selectedFile.size > 5 * 1024 * 1024) {
-      alert("File size must be less than 5 MB.");
+      setError("Resume must be smaller than 5 MB.");
       return;
     }
 
-    setUploading(true);
-
-    setTimeout(() => {
-      setFile(selectedFile);
-      setUploading(false);
-    }, 1000);
-  };
-
-  const handleInputChange = (event) => {
-    handleFile(event.target.files?.[0]);
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    setDragActive(false);
-
-    const droppedFile = event.dataTransfer.files?.[0];
-    handleFile(droppedFile);
+    setFile(selectedFile);
   };
 
   const removeFile = () => {
     setFile(null);
+    setError("");
+  };
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const handleUpload = async () => {
+    if (!file) {
+      setError("Please select your resume first.");
+      return;
     }
+
+    setError("");
+    setUploading(true);
+
+    /*
+      Backend resume upload will be connected here later.
+      For now we store the completed state locally.
+    */
+
+    setTimeout(() => {
+      markResumeUploaded();
+
+      setUploading(false);
+
+      navigate("/dashboard");
+    }, 1000);
   };
-
-  const handleDownload = () => {
-    if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = file.name;
-    link.click();
-
-    URL.revokeObjectURL(url);
-  };
-
-  const skills = [
-    "React",
-    "JavaScript",
-    "TypeScript",
-    "Node.js",
-    "REST APIs",
-    "Git",
-  ];
-
-  const recommendations = [
-    "Add measurable achievements to your experience section.",
-    "Mention specific projects that demonstrate your technical skills.",
-    "Include keywords related to your target job role.",
-  ];
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-4xl mx-auto">
 
       {/* Header */}
-      <section>
-        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-          Resume
+      <div className="mb-8">
+        <p className="text-sm font-semibold text-blue-600 mb-2">
+          Step 2 of 3
         </p>
 
-        <h1 className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
-          Resume Analysis
+        <h1 className="text-3xl font-bold text-gray-900">
+          Upload your resume
         </h1>
 
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
-          Upload your resume to get personalized insights and interview
-          preparation recommendations.
+        <p className="mt-2 text-gray-500">
+          Upload your latest resume so PrepMentor can analyze your
+          skills, education, projects, and experience.
         </p>
-      </section>
+      </div>
 
-      {/* Upload Section */}
-      {!file ? (
-        <section
-          onDragEnter={(event) => {
-            event.preventDefault();
-            setDragActive(true);
-          }}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragActive(true);
-          }}
-          onDragLeave={(event) => {
-            event.preventDefault();
-            setDragActive(false);
-          }}
-          onDrop={handleDrop}
-          className={`bg-white dark:bg-gray-900 border-2 border-dashed rounded-2xl p-10 md:p-14 text-center transition ${
-            dragActive
-              ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-              : "border-gray-300 dark:border-gray-700"
-          }`}
-        >
+      {/* Upload Card */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
 
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-            <Upload size={28} />
-          </div>
-
-          <h2 className="mt-6 text-xl font-semibold text-gray-900">
-            Upload your resume
-          </h2>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Drag and drop your resume here, or select a file from your
-            computer.
-          </p>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.docx"
-            onChange={handleInputChange}
-            className="hidden"
-          />
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-60 transition"
+        {!file ? (
+          <label
+            htmlFor="resume-upload"
+            className="block border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50/30 transition"
           >
-            {uploading ? (
-              <>
-                <Upload size={18} className="animate-bounce" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Upload size={18} />
-                Choose Resume
-              </>
-            )}
-          </button>
-
-          <p className="mt-4 text-xs text-gray-400">
-            PDF or DOCX · Maximum 5 MB
-          </p>
-
-        </section>
-      ) : (
-        /* Uploaded File */
-        <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 transition-colors">
-
-          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-
-            <div className="w-14 h-14 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
-              <FileText size={27} />
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center">
+              <Upload size={30} />
             </div>
 
-            <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Upload your resume
+            </h2>
 
-              <h2 className="font-semibold text-gray-900 dark:text-white truncate">
-                {file.name}
-              </h2>
+            <p className="mt-2 text-sm text-gray-500">
+              Drag and drop your file here or click to browse
+            </p>
 
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {(file.size / 1024 / 1024).toFixed(2)} MB
-              </p>
+            <p className="mt-3 text-xs text-gray-400">
+              PDF or DOCX • Maximum 5 MB
+            </p>
 
-            </div>
+            <input
+              id="resume-upload"
+              type="file"
+              accept=".pdf,.docx"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+        ) : (
+          <div className="border border-gray-200 rounded-2xl p-5">
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-4">
 
-              <button
-                type="button"
-                onClick={handleDownload}
-                className="p-2.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                title="Download"
-              >
-                <Download size={19} />
-              </button>
+              <div className="flex items-center gap-4">
+
+                <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                  <FileText size={24} />
+                </div>
+
+                <div>
+                  <p className="font-semibold text-gray-900 break-all">
+                    {file.name}
+                  </p>
+
+                  <p className="text-sm text-gray-500 mt-1">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+
+              </div>
 
               <button
                 type="button"
                 onClick={removeFile}
-                className="p-2.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600"
-                title="Remove"
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition"
+                aria-label="Remove resume"
               >
-                <Trash2 size={19} />
+                <X size={20} />
               </button>
 
             </div>
 
-          </div>
-
-          <div className="mt-5 flex items-center gap-2 text-sm text-green-600">
-
-            <CheckCircle2 size={18} />
-
-            Resume uploaded successfully.
-
-          </div>
-
-        </section>
-      )}
-
-      {/* Analysis */}
-      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-        {/* Resume Score */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-colors rounded-2xl p-6">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-              <h2 className="font-semibold text-gray-900 dark:text-white">
-                Resume Score
-              </h2>
-
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Overall resume quality
-              </p>
-            </div>
-
-            <Sparkles className="text-blue-600" size={21} />
-
-          </div>
-
-          <div className="mt-8 flex justify-center">
-
-            <div className="w-36 h-36 rounded-full border-[12px] border-blue-100 flex items-center justify-center">
-
-              <div className="text-center">
-
-                <p className="text-4xl font-bold text-gray-900">
-                  82
-                </p>
-
-                <p className="text-sm text-gray-500">
-                  / 100
-                </p>
-
-              </div>
-
+            <div className="mt-5 flex items-center gap-2 text-sm text-green-600">
+              <CheckCircle size={18} />
+              Resume selected successfully
             </div>
 
           </div>
+        )}
 
-          <div className="mt-7">
-
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-500">
-                Strong resume
-              </span>
-
-              <span className="font-semibold text-green-600">
-                Good
-              </span>
-            </div>
-
-            <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-              <div className="h-full w-[82%] bg-blue-600 rounded-full" />
-            </div>
-
+        {/* Error */}
+        {error && (
+          <div className="mt-5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-600">
+            {error}
           </div>
+        )}
+
+        {/* Continue */}
+        <div className="mt-8 flex justify-end">
+
+          <button
+            type="button"
+            onClick={handleUpload}
+            disabled={!file || uploading}
+            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            {uploading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Continue
+                <ArrowRight size={18} />
+              </>
+            )}
+          </button>
 
         </div>
 
-        {/* Skills */}
-        <div className="xl:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-colors rounded-2xl p-6">
+      </div>
 
-          <div className="flex items-center gap-3">
+      {/* Information */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
 
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <Code2 size={20} />
-            </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 className="font-semibold text-gray-900">
+            Skills
+          </h3>
 
-            <div>
-              <h2 className="font-semibold text-gray-900">
-                Detected Skills
-              </h2>
-
-              <p className="text-sm text-gray-500">
-                Skills found in your resume
-              </p>
-            </div>
-
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200"
-              >
-                {skill}
-              </span>
-            ))}
-
-          </div>
-
-          <div className="mt-8 grid sm:grid-cols-2 gap-4">
-
-            <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950">
-
-              <div className="flex items-center gap-2 text-blue-700">
-                <Briefcase size={18} />
-                <span className="font-semibold">
-                  Experience
-                </span>
-              </div>
-
-              <p className="mt-2 text-sm text-gray-600">
-                2+ years of relevant experience detected.
-              </p>
-
-            </div>
-
-            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950">
-
-              <div className="flex items-center gap-2 text-green-700">
-                <GraduationCap size={18} />
-                <span className="font-semibold">
-                  Education
-                </span>
-              </div>
-
-              <p className="mt-2 text-sm text-gray-600">
-                Bachelor's degree detected.
-              </p>
-
-            </div>
-
-          </div>
-
+          <p className="text-sm text-gray-500 mt-1">
+            Identify your technical and professional skills.
+          </p>
         </div>
 
-      </section>
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 className="font-semibold text-gray-900">
+            Experience
+          </h3>
 
-      {/* Recommendations */}
-      <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-colors rounded-2xl p-6">
-
-        <div className="flex items-start gap-3">
-
-          <div className="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center shrink-0">
-            <AlertCircle size={20} />
-          </div>
-
-          <div>
-
-            <h2 className="font-semibold text-gray-900">
-              AI Recommendations
-            </h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Suggestions to make your resume stronger.
-            </p>
-
-          </div>
-
+          <p className="text-sm text-gray-500 mt-1">
+            Extract projects, internships, and work experience.
+          </p>
         </div>
 
-        <div className="mt-6 space-y-3">
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <h3 className="font-semibold text-gray-900">
+            AI Analysis
+          </h3>
 
-          {recommendations.map((recommendation, index) => (
-            <div
-              key={recommendation}
-              className="flex gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl"
-            >
-
-              <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0">
-                {index + 1}
-              </span>
-
-              <p className="text-sm text-gray-700 dark:text-gray-200">
-                {recommendation}
-              </p>
-
-            </div>
-          ))}
-
+          <p className="text-sm text-gray-500 mt-1">
+            Generate personalized preparation recommendations.
+          </p>
         </div>
 
-      </section>
-
-      {/* Privacy Notice */}
-      <section className="text-center">
-
-        <p className="text-xs text-gray-400 dark:text-gray-500">
-          Your resume will be used only to personalize your PrepMentor
-          experience.
-        </p>
-
-      </section>
+      </div>
 
     </div>
   );

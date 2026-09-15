@@ -8,9 +8,11 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 import AuthLayout from "../components/AuthLayout";
+import { useAuth } from "../context/AuthContext";
 
 function Register() {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -50,8 +52,8 @@ function Register() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters.");
       return;
     }
 
@@ -61,15 +63,14 @@ function Register() {
     }
 
     setLoading(true);
-
-    /*
-      Backend registration will be connected here later.
-    */
-
-    setTimeout(() => {
+    try {
+      await register({ name: formData.name, email: formData.email, password: formData.password });
       setLoading(false);
-      navigate("/dashboard");
-    }, 800);
+      navigate("/complete-profile");
+    } catch (registerError) {
+      setError(registerError.message || "Unable to create your account.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -92,6 +93,9 @@ function Register() {
             id="name"
             name="name"
             type="text"
+            autoComplete="name"
+            required
+            maxLength={120}
             value={formData.name}
             onChange={handleChange}
             placeholder="Your name"
@@ -112,6 +116,9 @@ function Register() {
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
+            required
+            maxLength={180}
             value={formData.email}
             onChange={handleChange}
             placeholder="you@example.com"
@@ -134,9 +141,13 @@ function Register() {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              required
+              minLength={8}
+              maxLength={256}
               value={formData.password}
               onChange={handleChange}
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
 
@@ -146,6 +157,7 @@ function Register() {
                 setShowPassword((previous) => !previous)
               }
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
                 <EyeOff size={20} />
@@ -172,6 +184,10 @@ function Register() {
               id="confirmPassword"
               name="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
+              required
+              minLength={8}
+              maxLength={256}
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Re-enter your password"
@@ -186,6 +202,7 @@ function Register() {
                 )
               }
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              aria-label={showConfirmPassword ? "Hide confirmation password" : "Show confirmation password"}
             >
               {showConfirmPassword ? (
                 <EyeOff size={20} />

@@ -1,4 +1,14 @@
-# React + Vite
+# PrepMentor Frontend
+
+From this directory, start the complete local application with:
+
+```bash
+npm run dev
+```
+
+This launches both the frontend on `http://localhost:5173` and the API on `http://localhost:4000`. Use `npm run dev:client` only when the backend is already running separately.
+
+## Vite foundation
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

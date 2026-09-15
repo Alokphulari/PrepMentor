@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import AuthLayout from "../components/AuthLayout";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,15 +40,14 @@ function Login() {
     }
 
     setLoading(true);
-
-    /*
-      Backend authentication will be connected here later.
-    */
-
-    setTimeout(() => {
+    try {
+      const authenticatedUser = await login({ email: formData.email, password: formData.password });
       setLoading(false);
-      navigate("/dashboard");
-    }, 800);
+      navigate(authenticatedUser.profileCompleted ? location.state?.from || "/dashboard" : "/complete-profile", { replace: true });
+    } catch (loginError) {
+      setError(loginError.message || "Unable to sign in.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,6 +70,9 @@ function Login() {
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
+            required
+            maxLength={180}
             value={formData.email}
             onChange={handleChange}
             placeholder="you@example.com"
@@ -86,12 +91,7 @@ function Login() {
               Password
             </label>
 
-            <button
-              type="button"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700"
-            >
-              Forgot password?
-            </button>
+            <span className="text-xs font-medium text-gray-400">Secure account sign-in</span>
 
           </div>
 
@@ -101,6 +101,10 @@ function Login() {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              minLength={8}
+              maxLength={256}
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
