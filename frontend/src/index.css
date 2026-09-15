@@ -1,0 +1,265 @@
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  /* Brand blue/indigo utilities resolve to one deliberate violet system. */
+  --color-blue-50: #f7f4ff;
+  --color-blue-100: #eee8ff;
+  --color-blue-200: #dfd4ff;
+  --color-blue-300: #c8b4ff;
+  --color-blue-400: #aa84ff;
+  --color-blue-500: #8b50ff;
+  --color-blue-600: #7427f5;
+  --color-blue-700: #6219d8;
+  --color-blue-800: #5119ae;
+  --color-blue-900: #43188b;
+  --color-blue-950: #29085f;
+  --color-indigo-50: #f7f4ff;
+  --color-indigo-100: #eee8ff;
+  --color-indigo-200: #dfd4ff;
+  --color-indigo-300: #c8b4ff;
+  --color-indigo-400: #aa84ff;
+  --color-indigo-500: #8b50ff;
+  --color-indigo-600: #6737f4;
+  --color-indigo-700: #5625d7;
+  --color-indigo-800: #471fac;
+  --color-indigo-900: #3c1c87;
+  --color-indigo-950: #25105c;
+  --color-violet-500: #961dff;
+  --color-violet-600: #8615f4;
+  --color-violet-700: #7212d0;
+  --app-bg: #f7f6fb;
+  --app-surface: rgba(255, 255, 255, 0.92);
+  --app-surface-solid: #ffffff;
+  --app-border: #e7e3ef;
+  --app-text: #191526;
+  --app-muted: #6d667a;
+  --app-primary: #6737f4;
+  --app-primary-strong: #5625d7;
+  --app-primary-soft: #eee8ff;
+  --app-primary-soft-strong: #f7f4ff;
+  --app-primary-gradient: linear-gradient(135deg, #6737f4 0%, #8615f4 100%);
+  --app-track: #e9e5ef;
+  --app-accent: #0f9f8f;
+  --app-shadow: 0 20px 55px -32px rgba(52, 25, 105, 0.3);
+}
+
+.dark {
+  color-scheme: dark;
+  --app-bg: #09070f;
+  --app-surface: rgba(20, 16, 31, 0.92);
+  --app-surface-solid: #14101f;
+  --app-border: #302841;
+  --app-text: #f7f4fc;
+  --app-muted: #aaa2b8;
+  --app-primary: #a97aff;
+  --app-primary-strong: #8b50ff;
+  --app-primary-soft: rgba(139, 80, 255, 0.16);
+  --app-primary-soft-strong: rgba(139, 80, 255, 0.1);
+  --app-primary-gradient: linear-gradient(135deg, #7950f8 0%, #9b32ff 100%);
+  --app-track: #292334;
+  --app-accent: #2dd4bf;
+  --app-shadow: 0 24px 70px -34px rgba(0, 0, 0, 0.88), 0 0 0 1px rgba(139, 80, 255, 0.03);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--app-primary) 45%, transparent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--app-primary) 24%, transparent);
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 88% 2%, rgba(116, 39, 245, 0.1), transparent 25rem),
+    radial-gradient(circle at 12% 90%, rgba(15, 159, 143, 0.06), transparent 26rem),
+    var(--app-bg);
+}
+
+.dark .app-shell {
+  background:
+    radial-gradient(circle at 88% 0%, rgba(134, 21, 244, 0.14), transparent 30rem),
+    radial-gradient(circle at 8% 100%, rgba(103, 55, 244, 0.08), transparent 28rem),
+    var(--app-bg);
+}
+
+.brand-hero {
+  background:
+    radial-gradient(circle at 84% 8%, rgba(255, 255, 255, 0.2), transparent 22rem),
+    radial-gradient(circle at 15% 120%, rgba(210, 184, 255, 0.28), transparent 24rem),
+    linear-gradient(135deg, #5f3cf4 0%, #7626f5 52%, #941bfa 100%);
+  border: 1px solid rgba(110, 55, 235, 0.22);
+  box-shadow: 0 26px 60px -30px rgba(103, 38, 220, 0.58);
+}
+
+.dark .brand-hero {
+  background:
+    radial-gradient(circle at 84% 12%, rgba(151, 55, 255, 0.32), transparent 28rem),
+    radial-gradient(circle at 14% 120%, rgba(103, 55, 244, 0.2), transparent 23rem),
+    linear-gradient(135deg, #100b1b 0%, #191026 55%, #281044 100%);
+  border-color: rgba(169, 122, 255, 0.22);
+  box-shadow: 0 28px 75px -38px rgba(0, 0, 0, 0.9);
+}
+
+/* Dashboard is intentionally summary-only; full module controls live in navigation. */
+.dashboard-summary > :nth-child(2),
+.dashboard-summary > :nth-child(6),
+.dashboard-summary > :nth-child(5) > :first-child,
+.dashboard-summary > :nth-child(4) > :last-child {
+  display: none;
+}
+
+.dashboard-summary > :nth-child(5) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+main.surface-card > button.bg-teal-600:last-child {
+  display: none;
+}
+
+.page-enter {
+  animation: page-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.surface-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.interactive-card {
+  transition: transform 180ms ease, border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--app-primary) 30%, var(--app-border));
+  box-shadow: 0 22px 60px -32px rgba(103, 55, 244, 0.44);
+}
+
+.dark .auth-shell label {
+  color: #d0d5dd;
+}
+
+.dark .auth-shell input {
+  border-color: #344054;
+  background: #111827;
+  color: #f9fafb;
+}
+
+.dark .auth-shell input::placeholder {
+  color: #667085;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 14mm;
+}
+
+@media print {
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  html,
+  body,
+  #root,
+  .app-shell {
+    min-height: 0;
+    background: #ffffff !important;
+  }
+
+  .app-main {
+    display: block;
+    padding: 0 !important;
+  }
+
+  .page-enter,
+  .resume-print-shell,
+  .resume-preview {
+    width: 100% !important;
+    max-width: none !important;
+    animation: none !important;
+  }
+
+  .resume-preview {
+    position: static !important;
+  }
+
+  .resume-document {
+    min-height: 0 !important;
+    padding: 0 !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .resume-document section,
+  .resume-document header,
+  .resume-document > div {
+    break-inside: avoid;
+  }
+}
