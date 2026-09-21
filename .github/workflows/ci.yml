@@ -32,6 +32,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix frontend
 
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+
       - name: Run repository quality gate
         run: npm run check
 

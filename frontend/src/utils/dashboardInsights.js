@@ -5,7 +5,7 @@ const modules = [
 ];
 
 export function getDashboardInsights(history) {
-  const entries = Array.isArray(history) ? history : [];
+  const entries = Array.isArray(history) ? history.filter((item)=>item.evidenceType!=="semantic-or-static-review"&&item.evidenceType!=="self-reported"&&!(item.evaluationMode||"").includes("rubric")) : [];
   const performance = modules.map((module) => {
     const attempts = entries.filter((entry) => module.match(String(entry?.type || "").toLowerCase()));
     const average = attempts.length

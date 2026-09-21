@@ -1,12 +1,10 @@
+import { providerConfig, providerRequest, isConfigured } from "./ai/aiClient.js";
 const allowedAudioTypes = new Set(["audio/webm", "audio/ogg", "audio/mp4", "audio/wav", "audio/mpeg"]);
 
-function providerBaseUrl() {
-  return (process.env.LLM_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
-}
 
 function requireLlm() {
-  if (!process.env.LLM_API_KEY) {
-    const error = new Error("AI speech is not configured on the backend. Add LLM_API_KEY to backend/.env.");
+  if (!isConfigured("stt") && !isConfigured("tts")) {
+    const error = new Error("AI speech is not configured on the server.");
     error.status = 503;
     throw error;
   }
@@ -19,6 +17,7 @@ export function normalizeAudioPayload(value) {
   const audio = typeof value.audio === "string" ? value.audio : "";
   if (!audio || !/^[A-Za-z0-9+/]+={0,2}$/.test(audio)) throw new Error("Valid base64 audio is required.");
   const buffer = Buffer.from(audio, "base64");
+  if (buffer.toString("base64") !== audio) throw new Error("Valid canonical base64 audio is required.");
   if (!buffer.length || buffer.length > 6_000_000) throw new Error("Audio must be between 1 byte and 6 MB.");
   return { buffer, mimeType };
 }
@@ -29,11 +28,11 @@ export async function transcribeSpeech(value) {
   const extension = mimeType.split("/")[1].replace("mpeg", "mp3");
   const form = new FormData();
   form.append("file", new Blob([buffer], { type: mimeType }), `interview-answer.${extension}`);
-  form.append("model", process.env.LLM_TRANSCRIPTION_MODEL || "whisper-1");
+  form.append("model", providerConfig("stt").model);
   form.append("language", "en");
-  const response = await fetch(`${providerBaseUrl()}/audio/transcriptions`, {
+  const response = await providerRequest("/audio/transcriptions", {
+    kind: "stt", json: false,
     method: "POST",
-    headers: { Authorization: `Bearer ${process.env.LLM_API_KEY}` },
     body: form,
     signal: AbortSignal.timeout(60000),
   });
@@ -62,15 +61,15 @@ export function normalizeSpeechPrompt(value) {
 export async function synthesizeSpeech(value) {
   requireLlm();
   const input = normalizeSpeechPrompt(value);
-  const response = await fetch(`${providerBaseUrl()}/audio/speech`, {
+  const response = await providerRequest("/audio/speech", {
+    kind: "tts",
     method: "POST",
-    headers: { Authorization: `Bearer ${process.env.LLM_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: process.env.LLM_TTS_MODEL || "gpt-4o-mini-tts",
-      voice: process.env.LLM_TTS_VOICE || "alloy",
+    body: {
+      model: providerConfig("tts").model,
+      voice: providerConfig("tts").voice,
       input,
       response_format: "mp3",
-    }),
+    },
     signal: AbortSignal.timeout(60000),
   });
   if (!response.ok) {

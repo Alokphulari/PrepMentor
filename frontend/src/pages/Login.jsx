@@ -1,3 +1,4 @@
+import GoogleSignIn from "../components/GoogleSignIn";
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -166,7 +167,7 @@ function Login() {
           </Link>
         </p>
 
-      </form>
+      </form><GoogleSignIn/>
     </AuthLayout>
   );
 }

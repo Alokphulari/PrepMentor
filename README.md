@@ -1,77 +1,149 @@
 # PrepMentor
 
-PrepMentor is a React/Vite interview and placement-preparation workspace backed by a dependency-free Node API. It includes aptitude practice, sequential Placement assessments, coding exercises, mock interviews with optional voice input, performance history, profile management, and a resume builder.
+AI-Powered Real-Time Voice Agent Platform for Progressive Placement Preparation.
 
-The Coding Lab supports authenticated LLM semantic review with rate limits and
-an offline structural-check fallback. Semantic review analyzes submitted source
-but does not execute untrusted code.
+This repository retains the existing React 19/Vite/Tailwind UI, dark/light mode, navigation, resume builder, practice catalog, daily engagement and Placement progression. A Node HTTP API provides authentication, persistence, server AI, document analysis and sandbox execution.
 
-## Requirements
+## Architecture
 
-- Node.js 20 or newer
-- npm
+- frontend/src: existing pages, reusable UI, contexts, account-scoped caches and API clients.
+- backend/src/ai: shared compatible AI provider, environment configuration, bounded retries, timeouts and structured-output validation.
+- backend/src/interviewSessions.js: authenticated, persistent conversations and final evaluation. Recent context is bounded; all completed turns are evaluated.
+- backend/src/codingAssessment.js: curated execution problems and Judge0 sample/hidden tests. Candidate code is never executed by this server. Hidden inputs, expected outputs, stdout and stderr are not returned.
+- backend/src/resumeAnalysis.js and documentWorker.js: PDF/DOCX validation and bounded text extraction; only validated analysis is retained.
+- backend/src/userStore.js and mongoRepository.js: atomic development JSON storage or MongoDB with optimistic concurrency. Related records are bounded embedded aggregates owned by the user.
+- Existing deterministic question/roadmap/learning services remain honest offline fallbacks.
 
-## Install
+See [implementation status](docs/IMPLEMENTATION_STATUS.md), [baseline audit](docs/BASELINE.md) and [demo checklist](docs/DEMO_CHECKLIST.md).
 
-Install each workspace once:
+## Installation and local development
 
-```bash
-npm install --prefix frontend
-npm install --prefix backend
+Use Node.js 24 LTS and npm. Run from the repository root. In Windows PowerShell use npm.cmd if npm.ps1 is blocked; no execution-policy change is needed.
+
+```powershell
+npm.cmd ci --prefix frontend
+npm.cmd ci --prefix backend
+Copy-Item frontend/.env.example frontend/.env
+Copy-Item backend/.env.example backend/.env
+npm.cmd run dev
 ```
 
-Copy `frontend/.env.example` to `frontend/.env`. For the included API, keep:
+Copy examples only on initial setup; do not overwrite an existing environment file. On macOS/Linux use npm and cp instead.
 
-```env
-VITE_API_BASE_URL=http://localhost:4000
-```
+Open http://localhost:5173. The API runs at http://localhost:4000; /api/health reports safe configuration capabilities. Stop both with Ctrl+C. Separate commands are npm.cmd --prefix backend run dev and npm.cmd --prefix frontend run dev:client.
 
-For fresh LLM-generated aptitude, coding, and interview questions, copy
-`backend/.env.example` to `backend/.env` and set the server-only values:
+## Environment setup
 
-```env
-LLM_API_KEY=your-provider-key
-LLM_MODEL=gpt-4.1-mini
-LLM_TRANSCRIPTION_MODEL=whisper-1
-LLM_TTS_MODEL=gpt-4o-mini-tts
-LLM_TTS_VOICE=alloy
-LLM_BASE_URL=https://api.openai.com/v1
-```
+No credentials are included. Environment files are ignored. Never prefix a server secret with VITE_. Vite variables are public browser configuration.
 
-Never use `VITE_` for the LLM key; Vite variables are exposed to the browser.
-The backend accepts an OpenAI-compatible chat-completions endpoint. Aptitude
-practice has a curated fallback when the model is unavailable.
+| Server variable | Purpose |
+|---|---|
+| PORT | API port; hosting may supply it |
+| CLIENT_ORIGIN | Exact allowed frontend origin, without a trailing slash |
+| NODE_ENV | development locally; production on Render |
+| MONGODB_URI | MongoDB connection string; required in production |
+| MONGODB_DB_NAME | Database name, defaults to prepmentor |
+| AI_PROVIDER | openai or openrouter for text generation |
+| OPENAI_API_KEY | Backend-only OpenAI-compatible key |
+| OPENAI_BASE_URL | Compatible API base, normally https://api.openai.com/v1 |
+| OPENAI_LLM_MODEL | Explicit compatible chat model supporting JSON-object output |
+| OPENAI_STT_MODEL | Explicit audio transcription model |
+| OPENAI_TTS_MODEL | Explicit text-to-speech model |
+| OPENAI_TTS_VOICE | Supported voice; default alloy |
+| OPENROUTER_API_KEY / OPENROUTER_BASE_URL | Optional text-provider configuration |
+| JUDGE0_BASE_URL / JUDGE0_API_KEY | Sandbox endpoint and credential |
+| JUDGE0_RAPIDAPI_HOST | Required only when using a RapidAPI-hosted Judge0 endpoint |
+| GOOGLE_CLIENT_ID | Public OAuth web client ID used for server verification |
 
-Interview questions use server-side AI speech with browser text-to-speech as a
-fallback. Voice answers first use the browser speech API; when that service is
-blocked (commonly in embedded IDE previews), PrepMentor automatically switches
-to recorded-audio transcription through the authenticated backend. AI speech
-requires `LLM_API_KEY`. Keep recordings below the 6 MB request limit.
+Frontend VITE_API_BASE_URL points to the API origin. Optional VITE_GOOGLE_CLIENT_ID is public; the rendered Google button uses the server-advertised client ID to avoid mismatched configuration.
 
-## Run locally
+Legacy LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_TRANSCRIPTION_MODEL, LLM_TTS_MODEL and LLM_TTS_VOICE remain accepted where the corresponding OPENAI_* value is absent. Model names are configured centrally, not embedded across application logic.
 
-From the repository root, start both the API and frontend:
+## MongoDB Atlas
 
-```bash
-npm run dev
-```
+1. Create an Atlas cluster and a dedicated database user with access only to the prepmentor database. Use a strong password and keep the URI on the backend.
+2. Allow your local IP for development and the backend host's outbound addresses for deployment in Atlas Network Access. Avoid unrestricted network access where fixed egress addresses are available.
+3. Copy the driver connection string into MONGODB_URI and set MONGODB_DB_NAME. Percent-encode reserved characters in credentials.
+4. Restart the API. /api/health must report database: mongodb. Indexes on user email and ID are created automatically.
+5. Back up the database. Existing JSON data is not silently migrated; retain a backup and perform a deliberate migration if needed.
 
-Open `http://localhost:5173`. The API health endpoint is `http://localhost:4000/api/health`. Stop both services with `Ctrl+C`.
+With no URI, development/tests use the atomic JSON store at backend/data/users.json (or PREPMENTOR_DATA_FILE). Production requires MongoDB and never silently falls back when it fails. Authentication sessions and rate limits are process-local, so deploy one API instance; restarting the API requires login again, but stored results survive.
 
-Running `npm run dev` inside `frontend/` also starts both services, preventing authentication failures caused by an offline API. To run services separately, use `npm run dev` inside `backend/` and `npm run dev:client` inside `frontend/` in two terminals.
+## LLM, transcription and speech
+
+Set OPENAI_API_KEY and OPENAI_LLM_MODEL to a model available to your account that supports compatible Chat Completions JSON-object output. All outputs undergo application validation. The provider retries network failures, 429 and 5xx once, but not malformed requests. Missing keys/models expose false capabilities and use labelled fallbacks.
+
+For an OpenRouter text model set AI_PROVIDER=openrouter, OPENROUTER_API_KEY and the model ID in OPENAI_LLM_MODEL. Speech continues to use the OpenAI-compatible audio settings.
+
+For STT set OPENAI_STT_MODEL to your supported file-transcription model, for example whisper-1 when available to your account. MediaRecorder sends a bounded base64 audio payload to the authenticated backend, which forwards multipart audio to /audio/transcriptions. WebM, OGG, MP4, WAV and MPEG MIME types are accepted up to 6 MB. The candidate can edit the transcript or type if transcription fails.
+
+For TTS set OPENAI_TTS_MODEL and OPENAI_TTS_VOICE to a supported pair. The backend requests MP3 from /audio/speech. The interview replays/stops audio and falls back to browser speech. Audio is AI-generated. Browser autoplay and microphone access require permission; use localhost or HTTPS.
+
+See the official [OpenAI audio reference](https://developers.openai.com/api/reference/typescript/resources/audio) and [structured output guide](https://developers.openai.com/api/docs/guides/structured-outputs). JSON mode is supplemented by strict application validation; it is not assumed to guarantee a schema by itself.
+
+## Judge0
+
+Configure a trusted Judge0 CE deployment or compatible hosted endpoint in JUDGE0_BASE_URL. Supply its API key if required. The adapter supports X-Auth-Token and X-RapidAPI-Key; set JUDGE0_RAPIDAPI_HOST for RapidAPI.
+
+The backend creates asynchronous submissions, polls bounded status results and enforces CPU/wall-time/memory/network restrictions. Current language IDs are JavaScript 63, Python 71, Java 62 and C++ 54; confirm these against your instance's /languages endpoint before the demo. Java programs use class Main. All solutions use standard input/output, not a function wrapper.
+
+The three curated execution problems cover Easy, Medium and Hard. Final scores use hidden-test correctness with an 80% pass threshold. AI reviews never decide correctness. A failed submission requires Learning Hub remediation; unavailable execution records no score. The larger practice catalog retains semantic/static review and is labelled as not executed. See [Judge0 API documentation](https://ce.judge0.com/).
+
+## Google authentication
+
+Create a Google OAuth web client. Add http://localhost:5173 and your deployed frontend origin to Authorized JavaScript origins. Configure the consent screen and test users if the application is in testing. Set GOOGLE_CLIENT_ID on the backend (optionally mirror it in VITE_GOOGLE_CLIENT_ID).
+
+The browser uses Google Identity Services; the server verifies the ID token signature, audience, issuer, expiry, verified email and subject with google-auth-library. Existing password accounts are not silently linked to a new Google identity. When configuration is absent, the Google button is hidden and email/password continues to work. See [Google's verification guide](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token).
+
+## New API operations
+
+All operations below require a Bearer token and enforce authenticated ownership.
+
+| Endpoint | Operation |
+|---|---|
+| POST /api/interview-sessions | Start configured practice/Placement session |
+| GET /api/interview-sessions/:id | Restore the owned conversation |
+| POST /api/interview-sessions/:id/answer | Submit turnIndex/transcript and optional finish |
+| POST /api/interview-remediation | Complete reflection after failed interview |
+| GET /api/code/problems | Public task statements and samples; no hidden tests |
+| POST /api/code/run | Execute sample tests |
+| POST /api/code/submit | Execute hidden tests and persist result/progress |
+| POST /api/code/remediation | Complete reflection before coding retake |
+| POST /api/resume/analyze | Base64 PDF/DOCX or manual:true for saved builder draft |
+| GET /api/baseline | Resume estimates plus latest assessment evidence |
+| GET/POST /api/learning/plan | Retrieve/generate a persisted learning plan |
+| GET/POST /api/career-roadmap | Retrieve/generate roadmap snapshots |
+
+POST /api/auth/google accepts a Google credential and returns an ordinary application session. Existing APIs remain available. GET /api/health is public and returns database, llm, stt, tts and codeExecution plus compatibility fields; capabilities report configuration, not a paid connectivity probe.
 
 ## Verification
 
-Root commands coordinate the workspace checks:
-
-```bash
-npm test
-npm run lint
-npm run build
-npm run check
+```powershell
+npm.cmd test
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run check
+npm.cmd exec --prefix frontend -- playwright test --config frontend/playwright.config.js
 ```
 
-Pull requests and pushes to `main`, `develop`, and feature branches run this
-same quality gate through `.github/workflows/ci.yml` using Node.js 20.
+Unit/integration tests isolate storage and mock LLM/STT/TTS/Judge0/Mongo; they do not make paid API calls. Browser tests use mocked API responses and installed Chrome. Set PLAYWRIGHT_CHANNEL=msedge for Edge. Test output directories are ignored. See docs/VERIFICATION.md for the recorded result.
 
-Backend development data is stored under `backend/data/` and is not committed. Do not place secrets in frontend environment variables or source files.
+## Production deployment
+
+Frontend: import this repository into Vercel, select frontend as the root directory, set VITE_API_BASE_URL to the HTTPS API origin and build with npm run build. frontend/vercel.json supplies SPA rewrites so deep links reload correctly. Rebuild after changing Vite variables.
+
+Backend: deploy the root render.yaml blueprint or a Node web service using npm ci --prefix backend and npm --prefix backend start. Use Node 24, NODE_ENV=production, the Vercel URL as CLIENT_ORIGIN and MongoDB Atlas credentials. Add AI/speech/Judge0/Google settings as needed in Render's environment UI. Keep secrets out of build output and Git. The deployment must retain the repository's frontend/src/data/interviewQuestions.js because the API reuses that curated bank.
+
+Deploy a single API instance while sessions/rate limits remain process-local. Check /api/health, CORS, Google authorized origins and HTTPS microphone support after deployment. No deployment was performed by the implementation task.
+
+## Troubleshooting
+
+- PowerShell blocks npm.ps1: use npm.cmd.
+- Authentication fails: confirm the API is running and the frontend URL matches CLIENT_ORIGIN; login again after an API restart.
+- AI capabilities are false: both key and relevant model are required. Restart the API after configuration changes.
+- Speech fails: allow microphone/sound, use localhost/HTTPS, check STT/TTS models, and type your answer while troubleshooting.
+- Resume has no text: upload a valid unencrypted file with selectable text; scanned PDFs need OCR. Maximum size is 5 MB.
+- Judge0 unavailable: verify endpoint/auth headers/language IDs and hosted quota. A service failure cannot unlock a Placement level.
+- MongoDB unavailable: check Atlas network rules, encoded credentials and database permissions. Production cannot use the JSON fallback.
+- Browser state differs: re-login to restore authoritative server Placement progress; offline browser caches remain for continuity.
+- A report says fallback: semantic evaluation did not finish successfully. It must not be presented as AI-scored correctness.

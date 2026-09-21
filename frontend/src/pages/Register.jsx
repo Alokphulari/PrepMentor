@@ -1,3 +1,4 @@
+import GoogleSignIn from "../components/GoogleSignIn";
 import { useState } from "react";
 import {
   Eye,
@@ -251,7 +252,7 @@ function Register() {
           </Link>
         </p>
 
-      </form>
+      </form><GoogleSignIn/>
     </AuthLayout>
   );
 }

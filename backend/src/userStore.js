@@ -2,6 +2,21 @@ import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
+import { mongoRepository } from "./mongoRepository.js";
+
+function useMongo() {
+  if (process.env.MONGODB_URI) return true;
+  if (process.env.NODE_ENV === "production") throw Object.assign(new Error("Production requires MONGODB_URI."), { status: 503 });
+  return false;
+}
+
+export async function databaseStatus() {
+  try {
+    if (!useMongo()) return "file";
+    await (await mongoRepository()).ping();
+    return "mongodb";
+  } catch { return "unavailable"; }
+}
 
 const defaultDataFile = fileURLToPath(new URL("../data/users.json", import.meta.url));
 let mutationQueue = Promise.resolve();
@@ -71,15 +86,18 @@ function enqueueMutation(mutator) {
 }
 
 export async function findUserByEmail(email) {
+  if (useMongo()) return (await mongoRepository()).findUserByEmail(email);
   const normalized = email.trim().toLowerCase();
   return (await readUsers()).find((user) => user.email === normalized) || null;
 }
 
 export async function findUserById(id) {
+  if (useMongo()) return (await mongoRepository()).findUserById(id);
   return (await readUsers()).find((user) => user.id === id) || null;
 }
 
 export async function createUser(user) {
+  if (useMongo()) return (await mongoRepository()).createUser(user);
   return enqueueMutation((users) => {
     if (users.some((existing) => existing.email === user.email)) {
       const error = new Error("An account with this email already exists.");
@@ -96,6 +114,7 @@ export async function updateUser(id, updates) {
 }
 
 export async function mutateUser(id, updater) {
+  if (useMongo()) return (await mongoRepository()).mutateUser(id, updater);
   return enqueueMutation((users) => {
     const index = users.findIndex((user) => user.id === id);
     if (index === -1) return null;

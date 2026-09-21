@@ -11,5 +11,11 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.1.0",
+    "mammoth": "^1.12.3",
+    "mongodb": "^7.6.0",
+    "pdf-parse": "^2.4.5"
   }
 }

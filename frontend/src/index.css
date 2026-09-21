@@ -139,22 +139,6 @@ a {
   box-shadow: 0 28px 75px -38px rgba(0, 0, 0, 0.9);
 }
 
-/* Dashboard is intentionally summary-only; full module controls live in navigation. */
-.dashboard-summary > :nth-child(2),
-.dashboard-summary > :nth-child(6),
-.dashboard-summary > :nth-child(5) > :first-child,
-.dashboard-summary > :nth-child(4) > :last-child {
-  display: none;
-}
-
-.dashboard-summary > :nth-child(5) {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-main.surface-card > button.bg-teal-600:last-child {
-  display: none;
-}
-
 .page-enter {
   animation: page-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }

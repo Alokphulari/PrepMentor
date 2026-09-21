@@ -5,17 +5,17 @@ let speechCapability;
 let speechCapabilityCheckedAt = 0;
 const SPEECH_CAPABILITY_TTL_MS = 5000;
 
-export async function hasAiSpeechSupport() {
+export async function hasAiSpeechSupport(kind = "stt") {
   if (!hasRemoteApi) return false;
-  if (typeof speechCapability === "boolean" && Date.now() - speechCapabilityCheckedAt < SPEECH_CAPABILITY_TTL_MS) return speechCapability;
+  if (speechCapability && Date.now() - speechCapabilityCheckedAt < SPEECH_CAPABILITY_TTL_MS) return Boolean(speechCapability[kind]);
   try {
     const health = await apiRequest("/api/health", { timeoutMs: 4000 });
-    speechCapability = health?.speech === "ai";
+    speechCapability = { stt: health.stt ?? health?.speech === "ai", tts: health.tts ?? health?.speech === "ai" };
   } catch {
-    speechCapability = false;
+    speechCapability = { stt: false, tts: false };
   }
   speechCapabilityCheckedAt = Date.now();
-  return speechCapability;
+  return Boolean(speechCapability[kind]);
 }
 
 function bytesToBase64(buffer) {

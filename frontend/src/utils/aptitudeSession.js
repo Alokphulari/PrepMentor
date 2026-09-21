@@ -65,6 +65,7 @@ export function normalizePlacementAptitudeSession(value, expectedLevel) {
     questionIndex,
     selectedAnswer,
     score,
+    answers: Object.fromEntries(Object.entries(source.answers || {}).filter(([key, answer]) => Number.isInteger(Number(key)) && Number(key) >= 0 && Number(key) < questionIndex && questions[Number(key)]?.options.includes(answer))),
     generationSource: typeof source.generationSource === "string"
       ? source.generationSource.slice(0, 80)
       : "curated",
