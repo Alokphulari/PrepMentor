@@ -36,7 +36,8 @@ export async function transcribeInterviewAudio(blob, onTranscribing = () => {}) 
   return authorizedRequest("/api/speech/transcribe", {
     method: "POST",
     expireSession: false,
-    timeoutMs: 10000,
+    // Give the server enough time to decode and transcribe a short recording.
+    timeoutMs: 30_000,
     body: JSON.stringify({
       audio,
       mimeType: blob.type || "audio/webm",

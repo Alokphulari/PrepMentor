@@ -62,9 +62,9 @@ test("injection is candidate data and cannot change the grading system instructi
 test("Gemini STT returns clean editable text and rejects empty speech", async (context) => {
   configured(context);
   const audio = Buffer.from("audio fixture");
-  const result = await transcribeGeminiAudio(audio, "audio/wav", { client: client(async ({ contents }) => {
+  const result = await transcribeGeminiAudio(audio, "audio/wav", { client: client(async ({ contents, config }) => {
     assert.equal(contents[0].inlineData.data, audio.toString("base64"));
-    assert.match(contents[1].text, /Transcribe the audible speech verbatim/);
+    assert.deepEqual(config.audioTranscriptionConfig, { languageCodes: ["en-IN"], mode: "SMART" });
     return { text: "  I use an index.  " };
   }) });
   assert.equal(result.transcript, "I use an index.");

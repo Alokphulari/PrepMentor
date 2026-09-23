@@ -26,6 +26,11 @@ import { rememberInterviewQuestions } from "../services/interviewQuestionHistory
 const EMPTY_CONFIG = Object.freeze({});
 const EMPTY_QUESTIONS = Object.freeze([]);
 
+function transcriptionErrorMessage(error) {
+  const message = typeof error?.message === "string" ? error.message.trim() : "";
+  return message || "Your recording could not be transcribed. Please try again or type your answer.";
+}
+
 function Interview() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -325,8 +330,10 @@ function Interview() {
           setRecordingState("ready");
           setAnswers((current) => ({ ...current, [questionIndex]: [current[questionIndex], response.transcript].filter(Boolean).join(" ") }));
           setSpeechError("");
-        } catch {
-          backendVoiceUnavailableRef.current = true;
+        } catch (error) {
+          // A quota, timeout, or temporary provider error must not disable voice
+          // input for the rest of the interview. The next attempt may succeed.
+          setSpeechError(transcriptionErrorMessage(error));
           needsBrowserFallback = true;
         } finally {
           if (mountedRef.current) setTranscribing(false);
@@ -467,13 +474,12 @@ function Interview() {
         setSpeechError(backup?.heardAudio === false
           ? "No microphone sound was detected. Check Chrome's selected microphone and your microphone mute switch, then try again."
           : recognitionError || "Chrome returned no speech text. Check the selected microphone in Chrome, then try again or type your answer.");
-      } catch {
+      } catch (error) {
         if (!mountedRef.current) return;
-        backendVoiceUnavailableRef.current = true;
         setRecordingState("error");
         setSpeechError(backup?.heardAudio === false
           ? "No microphone sound was detected. Check Chrome's selected microphone and your microphone mute switch, then try again."
-          : "Your recording could not be transcribed. Check your connection, then try again or type your answer.");
+          : transcriptionErrorMessage(error));
       } finally {
         if (voiceBackupRef.current === backup) voiceBackupRef.current = null;
         if (mountedRef.current) setTranscribing(false);
