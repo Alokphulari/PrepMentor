@@ -1,3 +1,6 @@
+import prepmentorIcon from "../assets/prepmentor-icon-transparent.png";
+import prepmentorWordmark from "../assets/prepmentor-wordmark-transparent.png";
+
 import {
   ArrowRight,
   Mic,
@@ -72,17 +75,20 @@ function Landing() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">
-                P
-              </span>
-            </div>
+         {/* Logo */}
+        <Link to="/" className="flex items-center gap-2">
+          <img
+            src={prepmentorIcon}
+            alt="PrepMentor"
+            className="h-10 w-10 object-contain"
+          />
 
-            <span className="text-xl font-bold">
-              PrepMentor
-            </span>
-          </Link>
+          <img
+            src={prepmentorWordmark}
+            alt="PrepMentor"
+            className="h-auto w-[150px] object-contain"
+          />
+        </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
