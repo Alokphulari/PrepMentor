@@ -19,11 +19,11 @@ test("answer validation rejects fabricated metrics and missing sample answers",(
   assert.throws(()=>validateAnswerEvaluation({...evaluation,score:"80"}));
   assert.throws(()=>validateAnswerEvaluation({...evaluation,idealAnswer:""}));
 });
-test("offline evaluation is explicitly non-semantic and does not invent correctness",async()=>{
-  const result=await evaluateAnswer({},[],{question:"Explain HTTP",transcript:"A short answer"},{},async()=>{throw new Error("offline");});
-  assert.match(result.source,/Offline/);
-  assert.equal(result.technicalAccuracy,null);
-  assert.equal(result.idealAnswer,null);
+test("AI failure is recoverable and never invents correctness",async()=>{
+  const result = await evaluateAnswer({},[],{question:"Explain HTTP",transcript:"A short answer"},{},async()=>{throw new Error("offline");});
+  assert.equal(result.provider, "local");
+  assert.equal(result.technicalAccuracy, 0);
+  assert.match(result.feedback, /does not verify factual correctness/);
 });
 test("follow-up receives current evaluation and weak/strong adaptation instructions",async()=>{
   const result=await nextInterviewQuestion({role:"Backend developer",difficulty:"medium"},[{question:"What is REST?",transcript:"HTTP",focus:"API",answerEvaluation:evaluation}],async(instruction,data,validate)=>{

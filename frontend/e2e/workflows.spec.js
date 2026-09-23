@@ -1,5 +1,40 @@
 import { test, expect } from "@playwright/test";
 
+test("avatar speaks practice evaluation and stops before the next question", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.narration = [];
+    window.cancelledNarration = 0;
+    window.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
+    Object.defineProperty(window, "speechSynthesis", { value: {
+      getVoices: () => [], cancel: () => { window.cancelledNarration++; },
+      speak: (utterance) => { window.narration.push(utterance.text); utterance.onstart?.(); },
+    } });
+  });
+  let session = { id: "feedback-voice", status: "active", config: { mode: "practice", role: "Frontend Developer", duration: 20 }, startedAt: new Date().toISOString(), turns: [], currentQuestion: { question: "Explain closures", focus: "JavaScript" } };
+  await page.route("**/api/interview-sessions", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/interview-sessions/feedback-voice", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/interview-sessions/feedback-voice/answer", route => {
+    session = { ...session, turns: [{ ...session.currentQuestion, transcript: route.request().postDataJSON().transcript, answerEvaluation: { score: 75, feedback: "Explain the captured lexical scope.", improvements: ["Give a practical example."], source: "AI semantic answer evaluation" } }], currentQuestion: { question: "How would you use a closure in a counter?", focus: "JavaScript" } };
+    return route.fulfill({ json: { session } });
+  });
+  await page.goto("/interview/setup");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await page.getByRole("textbox", { name: "Your response" }).fill("A closure retains access to its lexical scope.");
+  await page.getByRole("button", { name: "Submit Answer", exact: true }).click();
+  await expect(page.getByText("Ava is reviewing your answer", { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.narration.at(-1))).toContain("Your answer scored 75 out of 100.");
+  expect(await page.evaluate(() => window.narration.at(-1))).toContain("Give a practical example.");
+  await page.getByRole("button", { name: "Stop feedback", exact: true }).click();
+  await expect(page.getByText("Your feedback is ready", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Replay feedback", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Stop feedback", exact: true })).toBeVisible();
+  const stops = await page.evaluate(() => window.cancelledNarration);
+  await page.getByRole("button", { name: "Next Question", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Your response" })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.cancelledNarration)).toBeGreaterThan(stops);
+  await expect.poll(() => page.evaluate(() => window.narration.at(-1))).toContain("How would you use a closure in a counter?");
+});
+
 const user = { id: "browser-student", name: "Browser Student", email: "browser@example.test", profileCompleted: true };
 const placement = { aptitude: { easy: "passed", medium: "passed", hard: "passed" }, coding: { easy: "available", medium: "locked", hard: "locked" }, interview: { status: "locked", whiteboard: "locked" } };
 test.beforeEach(async ({ page }) => {
@@ -29,12 +64,12 @@ test("coding outage shows an error without a score or progress", async ({ page }
   await page.goto("/placement/coding");
   await expect(page.getByRole("textbox", { name: "Source code" })).toBeVisible();
   await page.getByRole("textbox", { name: "Source code" }).fill("print(6)");
-  await page.getByRole("button", { name: "Submit hidden tests" }).click();
+  await page.getByRole("button", { name: "Submit solution" }).click();
   await expect(page.getByRole("alert")).toContainText("No score was recorded");
   await expect(page.getByText("Hidden test results", { exact: false })).toHaveCount(0);
 });
 test("server interview displays adaptive question and allows typed answers", async ({ page }) => {
-  const session = { id: "session-test", config: { mode: "practice" }, startedAt: new Date().toISOString(), turns: [], currentQuestion: { question: "How do you choose a database index?", focus: "Databases" } };
+  const session = { id: "session-test", status: "active", config: { mode: "practice", role: "Software Engineer", duration: 20, interviewType: "Mixed" }, startedAt: new Date().toISOString(), turns: [], currentQuestion: { question: "How do you choose a database index?", focus: "Databases" } };
   await page.route("**/api/interview-sessions", (route) => route.fulfill({ json: { session } }));
   await page.route("**/api/interview-sessions/session-test", (route) => route.fulfill({ json: { session } }));
   await page.route("**/api/interview-sessions/session-test/answer", async (route) => {
@@ -133,7 +168,7 @@ test("baseline and Learning Hub fit mobile and dark surfaces",async({page})=>{
 
 test("Placement interview advances without samples and final report includes answers",async({page})=>{
   const start=new Date().toISOString();
-  let session={id:"placement-session",config:{mode:"placement"},startedAt:start,turns:[],currentQuestion:{question:"Describe your API design.",focus:"APIs"}};
+  let session={id:"placement-session",status:"active",config:{mode:"placement",role:"Software Engineer",duration:20},startedAt:start,turns:[],currentQuestion:{question:"Describe your API design.",focus:"APIs"}};
   await page.route("**/api/interview-sessions",route=>route.fulfill({json:{session}}));
   await page.route("**/api/interview-sessions/placement-session",route=>route.fulfill({json:{session}}));
   let submissions=0;
@@ -167,7 +202,7 @@ test("voice transcript remains editable and question playback can replay and sto
     Object.defineProperty(navigator.mediaDevices,"getUserMedia",{value:async()=>({getTracks:()=>[{stop(){}}]})});
     window.SpeechRecognition=class{start(){this.onresult?.({resultIndex:0,results:[Object.assign([{transcript:"I explain my approach using a concrete example"}],{isFinal:true})]});this.onend?.();}stop(){}abort(){}};
   });
-  const session={id:"voice-session",config:{mode:"practice"},startedAt:new Date().toISOString(),turns:[],currentQuestion:{question:"Explain your approach.",focus:"Reasoning"}};
+  const session={id:"voice-session",status:"active",config:{mode:"practice",role:"Software Engineer",duration:20},startedAt:new Date().toISOString(),turns:[],currentQuestion:{question:"Explain your approach.",focus:"Reasoning"}};
   await page.route("**/api/interview-sessions",route=>route.fulfill({json:{session}}));
   await page.route("**/api/interview-sessions/voice-session",route=>route.fulfill({json:{session}}));
   await page.goto("/interview/setup");await page.getByRole("button",{name:"Start interview",exact:true}).click();
@@ -190,4 +225,155 @@ test("recommended learning topic opens stored tasks in the remediation workspace
   await expect(page.getByRole("button",{name:"Return to practice",exact:true})).toBeDisabled();
   await page.reload();
   await expect(page.getByRole("heading",{name:"Databases",exact:true})).toBeVisible();
+});
+
+
+test("remote interview passes eight turns, restores drafts, recovers 409 and preserves the report", async ({ page }) => {
+  let session = { id: "dynamic-session", status: "active", config: { mode: "practice", role: "Software Engineer", duration: 20, interviewType: "Mixed" }, startedAt: new Date().toISOString(), turns: [], currentQuestion: { question: "Dynamic question 1", focus: "Engineering" } };
+  let starts = 0;
+  let conflict = true;
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.route("**/api/interview-sessions", route => { starts++; return route.fulfill({ json: { session } }); });
+  await page.route("**/api/interview-sessions/dynamic-session", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/interview-sessions/dynamic-session/answer", route => {
+    const body = route.request().postDataJSON();
+    if (conflict) { conflict = false; return route.fulfill({ status: 409, json: { message: "Refresh the session" } }); }
+    expect(body.turnIndex).toBe(session.turns.length);
+    session = { ...session, turns: [...session.turns, { ...session.currentQuestion, transcript: body.transcript, answerEvaluation: { score: 75, source: "AI semantic answer evaluation", feedback: "Explain tradeoffs", idealAnswer: "Compare time and space costs." } }], currentQuestion: { question: `Dynamic question ${session.turns.length + 2}`, focus: "Engineering" } };
+    if (body.finish) session = { ...session, status: "completed", currentQuestion: null, result: { id: "dynamic-report", role: "Software Engineer", score: 75, evaluationMode: "AI semantic interview evaluation", metrics: {}, questionFeedback: session.turns.map(turn => ({ question: turn.question, answer: turn.transcript, score: 75, feedback: "Explain tradeoffs", idealAnswer: "Compare time and space costs." })) } };
+    return route.fulfill({ json: { session } });
+  });
+  await page.route("**/api/history", route => route.fulfill({ json: { history: session.result ? [{ id: "dynamic-report", title: "Software Engineer Interview", type: "Interview", score: 75, createdAt: new Date().toISOString() }] : [] } }));
+  await page.goto("/interview/setup");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await page.getByRole("textbox", { name: "Your response" }).fill("A concise answer.");
+  await page.getByRole("button", { name: "Submit Answer", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Your response" })).toHaveValue("A concise answer.");
+  for (let index = 0; index < 9; index++) {
+    await expect(page.getByRole("heading", { name: `Dynamic question ${index + 1}`, exact: true })).toBeVisible();
+    await page.getByRole("textbox", { name: "Your response" }).fill(`Answer for question ${index + 1}`);
+    await page.getByRole("button", { name: "Submit Answer", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Strong sample answer" })).toBeVisible();
+    if (index === 7) {
+      await page.reload();
+      await expect(page.getByRole("heading", { name: "Strong sample answer" })).toBeVisible();
+    }
+    await page.getByRole("button", { name: "Next Question", exact: true }).click();
+  }
+  await page.getByRole("textbox", { name: "Your response" }).fill("Draft survives refresh");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Dynamic question 10", exact: true })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Your response" })).toHaveValue("Draft survives refresh");
+  expect(starts).toBe(1);
+  await page.getByRole("button", { name: "Finish interview after this answer" }).click();
+  await expect(page).toHaveURL(/interview\/result\/dynamic-report$/);
+  await expect(page.getByRole("heading", { name: "Question-by-question feedback" })).toBeVisible();
+  await page.goto("/history");
+  await expect(page.getByText("Software Engineer Interview", { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("backend voice appends editable transcription, releases tracks and rejects permission denial", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.SpeechRecognition = undefined;
+    window.webkitSpeechRecognition = undefined;
+    window.stoppedTracks = 0;
+    window.denyMicrophone = false;
+    Object.defineProperty(navigator, "mediaDevices", { value: { getUserMedia: async () => {
+      if (window.denyMicrophone) throw new DOMException("Denied", "NotAllowedError");
+      return { getTracks: () => [{ stop: () => { window.stoppedTracks++; } }] };
+    } } });
+    window.MediaRecorder = class {
+      static isTypeSupported(type) { return type === "audio/webm;codecs=opus"; }
+      constructor(_stream, options) { this.mimeType = options.mimeType; this.state = "inactive"; }
+      start() { this.state = "recording"; }
+      stop() { this.state = "inactive"; this.ondataavailable({ data: new Blob(["recorded audio"], { type: this.mimeType }) }); this.onstop(); }
+    };
+  });
+  const session = { id: "voice-session", status: "active", config: { mode: "practice", role: "Software Engineer", duration: 20 }, startedAt: new Date().toISOString(), turns: [], currentQuestion: { question: "Explain a project", focus: "Engineering" } };
+  await page.route("**/api/health", route => route.fulfill({ json: { llm: true, stt: true, tts: false } }));
+  await page.route("**/api/interview-sessions", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/interview-sessions/voice-session", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/speech/transcribe", route => {
+    expect(route.request().postDataJSON().mimeType).toBe("audio/webm;codecs=opus");
+    return route.fulfill({ json: { transcript: "Transcribed project explanation." } });
+  });
+  await page.goto("/interview/setup");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await page.getByRole("textbox", { name: "Your response" }).fill("Typed introduction.");
+  await page.getByRole("button", { name: "Answer with voice" }).click();
+  await expect(page.getByText("Recording...", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Stop listening" }).click();
+  await expect(page.getByRole("textbox", { name: "Your response" })).toHaveValue("Typed introduction. Transcribed project explanation.");
+  expect(await page.evaluate(() => window.stoppedTracks)).toBe(1);
+  await page.getByRole("textbox", { name: "Your response" }).fill("Edited transcript");
+  await page.evaluate(() => { window.denyMicrophone = true; });
+  await page.getByRole("button", { name: "Answer with voice" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Microphone access is blocked" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Type answer instead", exact: true })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Your response" })).toHaveValue("Edited transcript");
+});
+
+test("interview setup preserves settings and can retry after Gemini overload", async ({ page }) => {
+  let attempts = 0;
+  const session = { id: "retry-session", config: { role: "Software Engineer", mode: "practice", duration: 10 }, startedAt: new Date().toISOString(), status: "active", turns: [], currentQuestion: { question: "Explain a database index", focus: "Databases" } };
+  await page.route("**/api/interview-sessions", route => {
+    attempts++;
+    return route.fulfill(attempts === 1 ? { status: 503, json: { message: "Gemini is experiencing high demand. Please retry shortly." } } : { json: { session } });
+  });
+  await page.route("**/api/interview-sessions/retry-session", route => route.fulfill({ json: { session } }));
+  await page.goto("/interview/setup");
+  await page.getByLabel("Target role").selectOption("Software Engineer");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("high demand");
+  await expect(page.getByLabel("Target role")).toHaveValue("Software Engineer");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Your response" })).toBeVisible();
+  expect(attempts).toBe(2);
+});
+
+test("interview setup stops a stalled request and releases its start button", async ({ page }) => {
+  await page.clock.install();
+  await page.route("**/api/interview-sessions", () => {});
+  await page.goto("/interview/setup");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await page.clock.fastForward(9000);
+  await expect(page.getByText(/Gemini is taking longer than usual/)).toBeVisible();
+  await page.clock.fastForward(17000);
+  await expect(page.getByRole("alert")).toContainText("settings are preserved");
+  await expect(page.getByRole("button", { name: "Start interview", exact: true })).toBeEnabled();
+});
+
+test("question audio never overlaps and a TTS outage falls back while typing stays available", async ({ page }) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    window.audioChecks = { active: 0, maximum: 0, fallback: 0 };
+    window.Audio = class {
+      constructor() { this.playing = false; }
+      async play() { this.playing = true; window.audioChecks.active++; window.audioChecks.maximum = Math.max(window.audioChecks.maximum, window.audioChecks.active); this.onplay?.(); }
+      pause() { if (this.playing) window.audioChecks.active--; this.playing = false; }
+    };
+    window.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
+    Object.defineProperty(window, "speechSynthesis", { value: { getVoices: () => [], cancel() {}, speak(prompt) { window.audioChecks.fallback++; prompt.onstart?.(); } } });
+  });
+  const session = { id: "audio-session", status: "active", config: { mode: "practice", role: "Software Engineer", duration: 10 }, startedAt: new Date().toISOString(), turns: [], currentQuestion: { question: "Explain indexes", focus: "Databases" } };
+  let outage = false;
+  await page.route("**/api/health", route => route.fulfill({ json: { llm: true, stt: false, tts: true } }));
+  await page.route("**/api/interview-sessions", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/interview-sessions/audio-session", route => route.fulfill({ json: { session } }));
+  await page.route("**/api/speech/synthesize", route => route.fulfill(outage ? { status: 503, json: { message: "TTS unavailable" } } : { json: { mimeType: "audio/wav", audio: "AAAA" } }));
+  await page.goto("/interview/setup");
+  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  await page.getByRole("button", { name: "Stop spoken question" }).click();
+  await page.getByRole("button", { name: "Replay spoken question" }).click();
+  await page.getByRole("button", { name: "Stop spoken question" }).click();
+  outage = true;
+  await page.getByRole("button", { name: "Replay spoken question" }).click();
+  await expect.poll(() => page.evaluate(() => window.audioChecks.fallback)).toBe(1);
+  await page.getByRole("textbox", { name: "Your response" }).fill("An index speeds selective lookups.");
+  expect(await page.evaluate(() => window.audioChecks.maximum)).toBe(1);
+  await page.goto("/dashboard");
+  expect(errors).toEqual([]);
 });

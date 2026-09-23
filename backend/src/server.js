@@ -1,3 +1,5 @@
+import { interviewHealth } from "../services/interviewAIService.js";
+import { interviewConfigured, interviewProviderConfig } from "./ai/interviewProvider.js";
 import { googleLogin } from "./auth.js";
 import { databaseStatus } from "./userStore.js";
 import { isConfigured } from "./ai/aiClient.js";
@@ -13,16 +15,18 @@ import { getResume, saveResume } from "./resume.js";
 import { getInterviewResult, saveInterviewResult } from "./interviewResults.js";
 import { createRateLimiter } from "./rateLimit.js";
 import { generateQuestions, isLlmConfigured } from "./questionGenerator.js";
-import { synthesizeSpeech, transcribeSpeech } from "./speechTranscription.js";
+import { synthesizeSpeech, transcribeSpeech, speechConfigured } from "./speechTranscription.js";
 import { evaluateInterviewSemantically } from "./interviewEvaluator.js";
 import { reviewCode } from "./codeReviewer.js";
 
 const port = Number(process.env.PORT) || 4000;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
-function commonHeaders() {
+function commonHeaders(origin) {
+  const localOrigins = ["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174"];
+  const allowedOrigin = process.env.NODE_ENV !== "production" && localOrigins.includes(origin) ? origin : clientOrigin;
   return {
-    "Access-Control-Allow-Origin": clientOrigin,
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, OPTIONS",
     "Access-Control-Max-Age": "600",
@@ -38,7 +42,7 @@ function commonHeaders() {
 
 function send(response, status, payload, headers = {}) {
   response.writeHead(status, {
-    ...commonHeaders(),
+    ...commonHeaders(response.req?.headers.origin),
     "Content-Type": "application/json; charset=utf-8",
     ...headers,
   });
@@ -47,7 +51,7 @@ function send(response, status, payload, headers = {}) {
 
 function redirect(response, location) {
   response.writeHead(302, {
-    ...commonHeaders(),
+    ...commonHeaders(response.req?.headers.origin),
     Location: location,
   });
   response.end();
@@ -62,10 +66,6 @@ async function readJson(request, maximumSize = 1_000_000) {
     chunks.push(chunk);
   }
   return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
-}
-
-function clamp(value) {
-  return Math.max(0, Math.min(100, Math.round(value)));
 }
 
 function interviewText(value, fallback, limit) {
@@ -88,29 +88,12 @@ function evaluateInterview(payload) {
   if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
     throw new Error("Interview answers must be an object.");
   }
-  const wordCounts = questions.map((_, index) =>
-    String(answers[index] || "").slice(0, 10_000).trim().split(/\s+/).filter(Boolean).length
-  );
-  const answered = wordCounts.filter((count) => count >= 20).length;
-  const completion = clamp((answered / questions.length) * 100);
-  const depth = clamp(
-    (wordCounts.reduce((sum, count) => sum + Math.min(count, 80), 0) /
-      questions.length) *
-      1.25
-  );
-  const score = clamp(completion * 0.65 + depth * 0.35);
   const interviewTypes = new Set(["Technical", "Behavioral", "Mixed"]);
   const requestedType = interviewText(config.interviewType, "Mixed", 40);
   return {
-    score,
     role: interviewText(config.role, "Software Engineer", 160),
     type: interviewTypes.has(requestedType) ? requestedType : "Mixed",
-    metrics: {
-      communication: clamp(depth * 0.9 + completion * 0.1),
-      technical: clamp(score * 0.92),
-      problemSolving: clamp(score * 0.96),
-      confidence: completion,
-    },
+
   };
 }
 
@@ -127,9 +110,10 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
       health: "/api/health",
     });
   }
+  if (request.method === "GET" && request.url === "/api/interview/health") return send(response, 200, interviewHealth());
   if (request.method === "GET" && request.url === "/api/health") {
     const database = await databaseStatus();
-    return send(response, database === "unavailable" ? 503 : 200, { database, llm: isConfigured(), stt: isConfigured("stt"), tts: isConfigured("tts"), codeExecution: Boolean(process.env.JUDGE0_BASE_URL), googleClientId: process.env.GOOGLE_CLIENT_ID || null, status: database === "unavailable" ? "degraded" : "ok", service: "prepmentor-backend", questionGeneration: isLlmConfigured() ? "llm" : "offline", speech: isConfigured("stt") || isConfigured("tts") ? "ai" : "browser-only", timestamp: new Date().toISOString() });
+    return send(response, database === "unavailable" ? 503 : 200, { database, interview: { ...interviewHealth(), provider: interviewProviderConfig().provider, llm: interviewConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts") }, llm: isConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts"), codeExecution: Boolean(process.env.JUDGE0_BASE_URL), googleAuth: Boolean(process.env.GOOGLE_CLIENT_ID), googleClientId: process.env.GOOGLE_CLIENT_ID || null, status: database === "unavailable" ? "degraded" : "ok", service: "prepmentor-backend", questionGeneration: isLlmConfigured() ? "llm" : "offline", speech: speechConfigured("stt") || speechConfigured("tts") ? "ai" : "browser-only", timestamp: new Date().toISOString() });
   }
   const sessionMatch = request.url.match(/^\/api\/interview-sessions\/([a-zA-Z0-9-]+)(\/answer)?$/);
   const featurePaths = ["/api/interview-remediation","/api/interview-sessions", "/api/code/problems", "/api/code/run", "/api/code/submit", "/api/code/remediation", "/api/resume/analyze", "/api/baseline", "/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"];
@@ -152,7 +136,7 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
       if (sessionMatch && request.method === "GET" && !sessionMatch[2]) return send(response, 200, { session: await getInterviewSession(user.id, sessionMatch[1]) });
       if (sessionMatch && request.method === "POST" && sessionMatch[2]) return send(response, 200, { session: await answerInterviewSession(user.id, sessionMatch[1], await readJson(request)) });
       return send(response, 405, { message: "Method not allowed." });
-    } catch (error) { return send(response, error.status || 400, { message: error.status === 500 ? "Storage is unavailable." : error.message || "Unable to complete this request." }); }
+    } catch (error) { return send(response, error.status || 400, { code: error.code, message: error.status === 500 ? "Storage is unavailable." : error.message || "Unable to complete this request." }); }
   }
   if (request.method === "POST" && request.url === "/api/auth/google") {
     const rate = checkAuthRateLimit("google:" + request.socket.remoteAddress);
@@ -312,13 +296,16 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
     try {
       const payload = await readJson(request);
       const rubric = evaluateInterview(payload);
+      // This legacy endpoint accepts client questions, not trusted stored turns.
+      // Never let supplied scores, provider labels, or keywords become evidence.
+      payload.questions = payload.questions.map((item) => ({ question: interviewText(item?.question, "Interview question", 2000) }));
       const evaluation = await evaluateInterviewSemantically(payload, rubric);
       const result = await saveInterviewResult(user.id, evaluation, `${Math.max(1, Math.min(180, Number(payload.config?.duration) || 30))} min`);
       return send(response, 200, {
         result,
       });
     } catch (error) {
-      return send(response, 400, { message: error.message || "Invalid interview payload." });
+      return send(response, error.status || 400, { code: error.code, message: error.message || "Invalid interview payload." });
     }
   }
   if (request.method === "GET" && request.url.startsWith("/api/interviews/")) {
@@ -335,7 +322,7 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
 
 export function createAppServer() {
   const checkAuthRateLimit = createRateLimiter();
-  const checkGenerationRateLimit = createRateLimiter({ limit: 20, windowMs: 60 * 60 * 1000 });
+  const checkGenerationRateLimit = createRateLimiter({ limit: 120, windowMs: 60 * 60 * 1000 });
   return http.createServer((request, response) => {
     handleRequest(request, response, checkAuthRateLimit, checkGenerationRateLimit).catch((error) => {
       console.error("API request failed:", error.status || 500);

@@ -40,6 +40,7 @@ function normalizeQuestions(value, config) {
 export function createInterviewSession(configValue, questionValue, progress = {}) {
   const config = normalizeConfig(configValue);
   if (!config) return null;
+  if (config.remoteSessionId) return { config, questions: [], index: 0, answers: progress.answers || {} };
   const questions = normalizeQuestions(questionValue, config);
   const answers = {};
   if (progress.answers && typeof progress.answers === "object" && !Array.isArray(progress.answers)) {

@@ -7,12 +7,14 @@
     "dev": "node --env-file-if-exists=.env --watch src/server.js",
     "start": "node --env-file-if-exists=.env src/server.js",
     "check": "node --check src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "interview:smoke": "node --env-file-if-exists=.env scripts/interviewSmoke.js"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "@google/genai": "^2.23.0",
     "google-auth-library": "^11.1.0",
     "mammoth": "^1.12.3",
     "mongodb": "^7.6.0",

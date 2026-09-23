@@ -10,6 +10,8 @@ test("authenticated workflow persists resume, coding, adaptive interview, report
   const directory = await mkdtemp(join(tmpdir(), "prepmentor-workflow-"));
   process.env.PREPMENTOR_DATA_FILE = join(directory, "users.json");
   delete process.env.MONGODB_URI; delete process.env.NODE_ENV;
+  process.env.INTERVIEW_AI_PROVIDER = "gemini";
+  process.env.GEMINI_API_KEY = "mock-not-a-real-key";
   process.env.OPENAI_API_KEY = "mock-not-a-real-key";
   process.env.OPENAI_LLM_MODEL = "mock-model";
   process.env.OPENAI_BASE_URL = "https://ai.example.test/v1";
@@ -21,11 +23,12 @@ test("authenticated workflow persists resume, coding, adaptive interview, report
   context.mock.method(globalThis, "fetch", async (url, options) => {
     if (String(url).startsWith("http://127.0.0.1:")) return fetchLocal(url, options);
     if (String(url).startsWith(process.env.JUDGE0_BASE_URL)) return { ok: true, json: async () => options.method === "POST" ? { token: "mock-token" } : { status: { id: 3 }, time: "0.01", memory: 512 } };
-    assert.ok(String(url).startsWith(process.env.OPENAI_BASE_URL), "No real external providers may be called");
+    const gemini = String(url).includes("generativelanguage.googleapis.com");
+    assert.ok(gemini || String(url).startsWith(process.env.OPENAI_BASE_URL), "No real external providers may be called");
     const body = JSON.parse(options.body);
-    assert.match(body.messages[0].content, /untrusted data/);
-    const instruction = body.messages[0].content;
-    const data = JSON.parse(body.messages[1].content);
+    const instruction = gemini ? body.systemInstruction.parts[0].text : body.input[0].content;
+    assert.match(instruction, /untrusted data/i);
+    const data = JSON.parse(gemini ? body.contents[0].parts[0].text : body.input[1].content);
     let value;
     if (instruction.startsWith("Extract only")) value = { personalInfo: { name: "Student", email: null, phone: null, location: null }, skills: ["JavaScript"], technologies: [], education: [], experience: [], projects: ["Web project"], certifications: [], strengths: ["Project evidence"], missingAreas: [], targetRoles: ["Developer"], baseline: { programming: 50, webDevelopment: 50, coreCS: null, problemSolving: null, interviewReadiness: null } };
     else if (instruction.startsWith("Evaluate the CURRENT")) { answerEvaluations++; value = { score: 72, technicalAccuracy: 70, relevance: 85, communication: 80, reasoning: 65, strengths: ["Relevant explanation"], improvements: ["Explain write overhead"], feedback: "Compare the costs explicitly", idealAnswer: "I measure reads and writes under representative load before choosing an index." }; }
@@ -34,7 +37,14 @@ test("authenticated workflow persists resume, coding, adaptive interview, report
     else if (instruction.startsWith("Create a personalized career")) { roadmapGenerations++; value = { role: data.role, readinessSummary: "Good foundation", currentStrengths: ["Coding"], gaps: ["Index costs"], steps: [{ period: "Week 1", title: "Database trade-offs", tasks: ["Compare read and write workloads"], successMetric: "Explain three index costs" }] }; }
     else if (instruction.startsWith("Create learning")) value = { learningPlan: data.weakTopics.map((item) => ({ topic: item.topic, priority: "high", explanation: "Review measured gaps", tasks: ["Explain an example"], practiceGoal: "Reach 80%" })) };
     else assert.fail("Unexpected provider operation");
-    return { ok: true, json: async () => ({ choices: [{ message: { content: JSON.stringify(value) } }] }) };
+    if (gemini && instruction.startsWith("Act as")) Object.assign(value, { category: "Technical", topic: value.focus, difficulty: "medium", isFollowUp: questionNumber > 1 });
+    if (gemini && instruction.startsWith("Evaluate the CURRENT")) Object.assign(value, { completeness: 75, clarity: 80, specificity: 75, problemSolving: 80, weakTopics: ["Index costs"] });
+    if (gemini && instruction.startsWith("Evaluate the FULL")) {
+      Object.assign(value, { summary: "Relevant examples with room to improve cost analysis", nextSteps: ["Review indexing"] });
+      value.questionFeedback = value.questionFeedback.map((item, index) => ({ ...item, turnNumber: index + 1, idealAnswer: item.betterApproach }));
+    }
+    if (gemini) return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify(value) }] }, finishReason: "STOP" }] }));
+    return { ok: true, json: async () => ({ status: "completed", output: [{ type: "message", content: [{ type: "output_text", text: JSON.stringify(value) }] }] }) };
   });
   const server = createAppServer();
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));

@@ -1,3 +1,5 @@
+import { audioFixture } from "./helpers/audioFixtures.js";
+import { geminiMock } from "./helpers/geminiMock.js";
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -56,13 +58,14 @@ test("audio rejects malformed canonical base64", () => {
   assert.throws(() => normalizeAudioPayload({ audio: "YQ", mimeType: "audio/webm" }), /base64/);
 });
 test("STT and TTS use configured models and validate provider responses", async (context) => {
+  process.env.INTERVIEW_AI_PROVIDER = "openai";
   process.env.OPENAI_API_KEY = "test-only"; process.env.OPENAI_STT_MODEL = "stt-test"; process.env.OPENAI_TTS_MODEL = "tts-test";
   context.mock.method(globalThis, "fetch", async (url, options) => {
     if (url.endsWith("transcriptions")) { assert.equal(options.body.get("model"), "stt-test"); return { ok: true, json: async () => ({ text: "A recorded answer" }) }; }
     assert.equal(JSON.parse(options.body).model, "tts-test");
     return { ok: true, arrayBuffer: async () => Buffer.from("audio") };
   });
-  assert.equal((await transcribeSpeech({ audio: Buffer.from("audio").toString("base64"), mimeType: "audio/ogg" })).transcript, "A recorded answer");
+  assert.equal((await transcribeSpeech({ audio: audioFixture("audio/ogg").toString("base64"), mimeType: "audio/ogg" })).transcript, "A recorded answer");
   assert.equal((await synthesizeSpeech({ input: "Question?" })).mimeType, "audio/mpeg");
   delete process.env.OPENAI_API_KEY;
 });
@@ -74,14 +77,15 @@ test("adaptive context is bounded and includes recent answers and role", async (
   });
   assert.equal(result.source, "llm");
 });
-test("interview sessions enforce ownership, persist turns and final fallback", async () => {
+test("interview sessions enforce ownership, persist turns and semantic reports", async (context) => {
+  geminiMock(context);
   const session = await startInterviewSession("student", { role: "Backend Developer" });
   await assert.rejects(getInterviewSession("other-user", session.id), /not found/);
   const next = await answerInterviewSession("student", session.id, { turnIndex: 0, transcript: "I used an index to reduce the number of records scanned by the query and measured latency before and after." });
   assert.equal(next.turns.length, 1); assert.ok(next.turns[0].answerEndedAt);
   await assert.rejects(answerInterviewSession("student", session.id, { turnIndex: 0, transcript: "duplicate" }), /already changed/);
   const final = await answerInterviewSession("student", session.id, { turnIndex: 1, transcript: "I compared a realistic dataset with different index choices and measured latency under concurrent load before choosing the final implementation.", finish: true });
-  assert.equal(final.status, "completed"); assert.match(final.result.evaluationMode, /rubric/);
+  assert.equal(final.status, "completed"); assert.match(final.result.evaluationMode, /AI semantic/);
   assert.ok((await findUserById("student")).history.some((item) => item.id === final.result.id));
 });
 test("placement interview is blocked before coding pass", async () => {
@@ -89,7 +93,7 @@ test("placement interview is blocked before coding pass", async () => {
 });
 test("hidden tests never appear in public problem catalog", () => {
   const catalog = publicCodingProblems();
-  assert.equal(catalog.length, 3); assert.ok(catalog.every((problem) => !Object.hasOwn(problem, "hidden")));
+  assert.equal(catalog.length, 36); assert.ok(catalog.every((problem) => !Object.hasOwn(problem, "hidden")));
   assert.equal(JSON.stringify(catalog).includes("pwwkew"), false);
 });
 test("sandbox validates code sizes and supported languages", () => {
@@ -163,7 +167,7 @@ test("roadmap rejects malformed AI output and uses stored multi-assessment evide
   await createUser({id:"roadmap-student",email:"roadmap@test.example",targetRole:"Backend Developer",skills:["JavaScript"],resumeAnalysis:{skills:["SQL"],baseline:{programming:60}},history:[{id:"daily",type:"Daily Challenge",score:100},{id:"a",type:"Aptitude",title:"Aptitude",score:55,createdAt:"2026-09-19",topicPerformance:[{topic:"Ratios",percentage:55}]},{id:"c",type:"Coding",title:"Coding",score:85,createdAt:"2026-09-18"}],interviewResults:[{score:70,weakTopics:[{topic:"Indexes",score:50}]}]});
   process.env.OPENAI_API_KEY="test-only"; process.env.OPENAI_LLM_MODEL="mock";
   let supplied, calls=0;
-  context.mock.method(globalThis,"fetch",async(_url,options)=>{calls++;supplied=JSON.parse(JSON.parse(options.body).messages[1].content);return {ok:true,json:async()=>({choices:[{message:{content:JSON.stringify({steps:"invalid"})}}]})};});
+  context.mock.method(globalThis,"fetch",async(_url,options)=>{calls++;supplied=JSON.parse(JSON.parse(options.body).input[1].content);return {ok:true,json:async()=>({choices:[{message:{content:JSON.stringify({steps:"invalid"})}}]})};});
   try {
     const plan=await personalizedPlan("roadmap-student","roadmap");
     assert.match(plan.source,/fallback/);

@@ -10,7 +10,8 @@ export async function hasAiSpeechSupport(kind = "stt") {
   if (speechCapability && Date.now() - speechCapabilityCheckedAt < SPEECH_CAPABILITY_TTL_MS) return Boolean(speechCapability[kind]);
   try {
     const health = await apiRequest("/api/health", { timeoutMs: 4000 });
-    speechCapability = { stt: health.stt ?? health?.speech === "ai", tts: health.tts ?? health?.speech === "ai" };
+    const interview = health.interview || health;
+    speechCapability = { llm: interview.llm === true, stt: interview.stt === true, tts: interview.tts === true };
   } catch {
     speechCapability = { stt: false, tts: false };
   }
@@ -27,15 +28,17 @@ function bytesToBase64(buffer) {
   return btoa(binary);
 }
 
-export async function transcribeInterviewAudio(blob) {
+export async function transcribeInterviewAudio(blob, onTranscribing = () => {}) {
   if (!(blob instanceof Blob) || !blob.size) throw new Error("No voice recording was captured.");
   if (blob.size > 6_000_000) throw new Error("Voice recording is too large. Record a shorter answer segment.");
+  const audio = bytesToBase64(await blob.arrayBuffer());
+  onTranscribing();
   return authorizedRequest("/api/speech/transcribe", {
     method: "POST",
     expireSession: false,
-    timeoutMs: 65000,
+    timeoutMs: 10000,
     body: JSON.stringify({
-      audio: bytesToBase64(await blob.arrayBuffer()),
+      audio,
       mimeType: blob.type || "audio/webm",
     }),
   });
@@ -47,7 +50,7 @@ export async function synthesizeInterviewSpeech(input) {
   return authorizedRequest("/api/speech/synthesize", {
     method: "POST",
     expireSession: false,
-    timeoutMs: 65000,
+    timeoutMs: 10000,
     body: JSON.stringify({ input: text }),
   });
 }

@@ -16,6 +16,8 @@ export default function GoogleSignIn() {
     let script;
     apiRequest("/api/health").then(({ googleClientId }) => {
       if (!active || !googleClientId) return;
+      const frontendClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
+      if (frontendClientId && frontendClientId !== googleClientId) { setError("Google sign-in configuration does not match the server. Use email and password."); return; }
       const initialize = () => {
         if (!active || !holder.current || !window.google?.accounts) return;
         window.google.accounts.id.initialize({ client_id: googleClientId, callback: async ({ credential }) => {

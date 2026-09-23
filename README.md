@@ -14,7 +14,7 @@ This repository retains the existing React 19/Vite/Tailwind UI, dark/light mode,
 - backend/src/userStore.js and mongoRepository.js: atomic development JSON storage or MongoDB with optimistic concurrency. Related records are bounded embedded aggregates owned by the user.
 - Existing deterministic question/roadmap/learning services remain honest offline fallbacks.
 
-See [implementation status](docs/IMPLEMENTATION_STATUS.md), [baseline audit](docs/BASELINE.md) and [demo checklist](docs/DEMO_CHECKLIST.md).
+See the [voice interview completion and verification report](docs/VOICE_INTERVIEW_COMPLETION.md), [implementation status](docs/IMPLEMENTATION_STATUS.md), [baseline audit](docs/BASELINE.md) and [demo checklist](docs/DEMO_CHECKLIST.md).
 
 ## Installation and local development
 
@@ -46,11 +46,11 @@ No credentials are included. Environment files are ignored. Never prefix a serve
 | AI_PROVIDER | openai or openrouter for text generation |
 | OPENAI_API_KEY | Backend-only OpenAI-compatible key |
 | OPENAI_BASE_URL | Compatible API base, normally https://api.openai.com/v1 |
-| OPENAI_LLM_MODEL | Explicit compatible chat model supporting JSON-object output |
+| OPENAI_LLM_MODEL | Responses API model supporting JSON-object output |
 | OPENAI_STT_MODEL | Explicit audio transcription model |
 | OPENAI_TTS_MODEL | Explicit text-to-speech model |
 | OPENAI_TTS_VOICE | Supported voice; default alloy |
-| OPENROUTER_API_KEY / OPENROUTER_BASE_URL | Optional text-provider configuration |
+| OPENROUTER_API_KEY / OPENROUTER_BASE_URL / OPENROUTER_LLM_MODEL | Optional text-provider configuration |
 | JUDGE0_BASE_URL / JUDGE0_API_KEY | Sandbox endpoint and credential |
 | JUDGE0_RAPIDAPI_HOST | Required only when using a RapidAPI-hosted Judge0 endpoint |
 | GOOGLE_CLIENT_ID | Public OAuth web client ID used for server verification |
@@ -61,7 +61,7 @@ Legacy LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_TRANSCRIPTION_MODEL, LLM_TTS_MO
 
 ## MongoDB Atlas
 
-1. Create an Atlas cluster and a dedicated database user with access only to the prepmentor database. Use a strong password and keep the URI on the backend.
+1. At [MongoDB Atlas](https://www.mongodb.com/cloud/atlas), create a cluster and a dedicated database user with access only to the prepmentor database. Use a strong password and keep the URI on the backend.
 2. Allow your local IP for development and the backend host's outbound addresses for deployment in Atlas Network Access. Avoid unrestricted network access where fixed egress addresses are available.
 3. Copy the driver connection string into MONGODB_URI and set MONGODB_DB_NAME. Percent-encode reserved characters in credentials.
 4. Restart the API. /api/health must report database: mongodb. Indexes on user email and ID are created automatically.
@@ -71,13 +71,13 @@ With no URI, development/tests use the atomic JSON store at backend/data/users.j
 
 ## LLM, transcription and speech
 
-Set OPENAI_API_KEY and OPENAI_LLM_MODEL to a model available to your account that supports compatible Chat Completions JSON-object output. All outputs undergo application validation. The provider retries network failures, 429 and 5xx once, but not malformed requests. Missing keys/models expose false capabilities and use labelled fallbacks.
+Create a project and API key at [OpenAI Platform](https://platform.openai.com/api-keys), enable API billing, and set OPENAI_API_KEY only in backend/.env. Set OPENAI_LLM_MODEL to a Responses-compatible model available to your account, for example [gpt-5-mini](https://developers.openai.com/api/docs/models/gpt-5-mini). OpenAI text requests use /v1/responses with store:false and JSON output; no unsupported temperature option is sent. All outputs undergo application validation. The provider retries network failures, 429 and 5xx once, but not malformed requests. Missing keys/models expose false capabilities and use labelled fallbacks.
 
-For an OpenRouter text model set AI_PROVIDER=openrouter, OPENROUTER_API_KEY and the model ID in OPENAI_LLM_MODEL. Speech continues to use the OpenAI-compatible audio settings.
+For an OpenRouter text model set AI_PROVIDER=openrouter, OPENROUTER_API_KEY and the model ID in OPENROUTER_LLM_MODEL (OPENAI_LLM_MODEL remains a legacy fallback). Speech continues to use the OpenAI-compatible audio settings.
 
-For STT set OPENAI_STT_MODEL to your supported file-transcription model, for example whisper-1 when available to your account. MediaRecorder sends a bounded base64 audio payload to the authenticated backend, which forwards multipart audio to /audio/transcriptions. WebM, OGG, MP4, WAV and MPEG MIME types are accepted up to 6 MB. The candidate can edit the transcript or type if transcription fails.
+For STT set OPENAI_STT_MODEL to your supported file-transcription model, for example gpt-4o-mini-transcribe when available to your account. MediaRecorder sends a bounded base64 audio payload to the authenticated backend, which forwards multipart audio to /audio/transcriptions. WebM, OGG, MP4, WAV and MPEG MIME types are accepted up to 6 MB. The candidate can edit the transcript or type if transcription fails.
 
-For TTS set OPENAI_TTS_MODEL and OPENAI_TTS_VOICE to a supported pair. The backend requests MP3 from /audio/speech. The interview replays/stops audio and falls back to browser speech. Audio is AI-generated. Browser autoplay and microphone access require permission; use localhost or HTTPS.
+For TTS set OPENAI_TTS_MODEL=gpt-4o-mini-tts and OPENAI_TTS_VOICE=alloy, subject to your account access. The backend requests MP3 from /audio/speech. The interview replays/stops audio and falls back to browser speech. Audio is AI-generated. Browser autoplay and microphone access require permission; use localhost or HTTPS.
 
 See the official [OpenAI audio reference](https://developers.openai.com/api/reference/typescript/resources/audio) and [structured output guide](https://developers.openai.com/api/docs/guides/structured-outputs). JSON mode is supplemented by strict application validation; it is not assumed to guarantee a schema by itself.
 
@@ -85,15 +85,27 @@ See the official [OpenAI audio reference](https://developers.openai.com/api/refe
 
 Configure a trusted Judge0 CE deployment or compatible hosted endpoint in JUDGE0_BASE_URL. Supply its API key if required. The adapter supports X-Auth-Token and X-RapidAPI-Key; set JUDGE0_RAPIDAPI_HOST for RapidAPI.
 
-The backend creates asynchronous submissions, polls bounded status results and enforces CPU/wall-time/memory/network restrictions. Current language IDs are JavaScript 63, Python 71, Java 62 and C++ 54; confirm these against your instance's /languages endpoint before the demo. Java programs use class Main. All solutions use standard input/output, not a function wrapper.
+Sample runs return bounded stdout, stderr and compiler output; hidden runs return aggregates only. The backend creates asynchronous submissions, polls bounded status results and enforces CPU/wall-time/memory/network restrictions. Current language IDs are JavaScript 63, Python 71, Java 62 and C++ 54; confirm these against your instance's /languages endpoint before the demo. Java programs use class Main. All solutions use standard input/output, not a function wrapper.
 
 The three curated execution problems cover Easy, Medium and Hard. Final scores use hidden-test correctness with an 80% pass threshold. AI reviews never decide correctness. A failed submission requires Learning Hub remediation; unavailable execution records no score. The larger practice catalog retains semantic/static review and is labelled as not executed. See [Judge0 API documentation](https://ce.judge0.com/).
 
 ## Google authentication
 
-Create a Google OAuth web client. Add http://localhost:5173 and your deployed frontend origin to Authorized JavaScript origins. Configure the consent screen and test users if the application is in testing. Set GOOGLE_CLIENT_ID on the backend (optionally mirror it in VITE_GOOGLE_CLIENT_ID).
+In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create a Google OAuth web client. Add http://localhost:5173 and your deployed frontend origin to Authorized JavaScript origins. Configure the consent screen and test users if the application is in testing. Set GOOGLE_CLIENT_ID on the backend (optionally mirror it in VITE_GOOGLE_CLIENT_ID).
 
 The browser uses Google Identity Services; the server verifies the ID token signature, audience, issuer, expiry, verified email and subject with google-auth-library. Existing password accounts are not silently linked to a new Google identity. When configuration is absent, the Google button is hidden and email/password continues to work. See [Google's verification guide](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token).
+
+## Interview behavior and recovery
+
+Interview now defaults to the official Gemini SDK. Configure `INTERVIEW_AI_PROVIDER=gemini`, `GEMINI_API_KEY`, `GEMINI_INTERVIEW_MODEL`, `GEMINI_TRANSCRIBE_MODEL` and `GEMINI_TTS_MODEL` in backend/.env. See [Gemini setup and errors](docs/GEMINI_INTERVIEW.md) and the [current completion report](docs/INTERVIEW_COMPLETION_REPORT.md). Earlier generic OpenAI instructions below remain relevant to other modules.
+
+Remote sessions use backend turns, currentQuestion, status and result. There are no placeholder questions. The 10/20/30-minute timer resumes from the server startedAt; the current response is accepted before finishing. The server also enforces a 20-turn safety maximum. The candidate can explicitly finish after an answer. Local offline practice retains its bounded question count.
+
+Practice shows per-answer evaluation before Next Question. Placement hides it until the final report and requires successful Gemini evaluation of every turn and the final report plus its existing 80% threshold to pass. Remote AI failures remain recoverable and never create a fallback score or pass. Question generation receives role, experience, type, difficulty, focus areas, recent answers/evaluations and available weak-topic evidence. The final report evaluates all completed turns.
+
+Refreshing restores the same remote session and the current typed draft. A stale 409 or uncertain network submission refetches progress rather than resubmitting automatically. Results remain in Interview History. The HTML5 Canvas/React whiteboard persists across questions and is cleared when the interview finishes; no Fabric.js is used.
+
+Backend STT is preferred when configured and recording is supported; browser SpeechRecognition is the fallback. MediaRecorder alone does not enable transcription. Voice input reports permission, recording, transcription and error states, appends to existing text, and permits edits. Stop/replay controls cancel previous question audio. TTS falls back to browser speechSynthesis and readable text.
 
 ## New API operations
 
@@ -114,7 +126,7 @@ All operations below require a Bearer token and enforce authenticated ownership.
 | GET/POST /api/learning/plan | Retrieve/generate a persisted learning plan |
 | GET/POST /api/career-roadmap | Retrieve/generate roadmap snapshots |
 
-POST /api/auth/google accepts a Google credential and returns an ordinary application session. Existing APIs remain available. GET /api/health is public and returns database, llm, stt, tts and codeExecution plus compatibility fields; capabilities report configuration, not a paid connectivity probe.
+POST /api/auth/google accepts a Google credential and returns an ordinary application session. Existing APIs remain available. GET /api/health is public and returns database, llm, stt, tts, googleAuth and codeExecution plus compatibility fields; capabilities report configuration, not a paid connectivity probe.
 
 ## Verification
 
@@ -147,3 +159,19 @@ Deploy a single API instance while sessions/rate limits remain process-local. Ch
 - MongoDB unavailable: check Atlas network rules, encoded credentials and database permissions. Production cannot use the JSON fallback.
 - Browser state differs: re-login to restore authoritative server Placement progress; offline browser caches remain for continuity.
 - A report says fallback: semantic evaluation did not finish successfully. It must not be presented as AI-scored correctness.
+
+
+## Credential setup and demo verification
+
+1. Copy missing .env examples using the Windows commands above. For Interview, configure the private Gemini key and models described above. Other modules retain their optional OpenAI/OpenRouter settings.
+2. For persistent hosted data, configure Atlas or local MongoDB (`mongodb://127.0.0.1:27017` locally). A failed configured database never silently switches storage.
+3. Optionally configure Google Cloud OAuth with matching client IDs in both environment files. Add the exact frontend origin, including port, to authorized JavaScript origins.
+4. Configure a [Judge0](https://judge0.com/) server or its [RapidAPI listing](https://rapidapi.com/judge0-official/api/judge0-ce). Copy your endpoint, key and RapidAPI host where applicable. Check language availability on your chosen service.
+5. Run `npm.cmd run dev`, then `Invoke-RestMethod http://localhost:4000/api/health`. Expect independent `llm`, `stt`, `tts`, `googleAuth`, `codeExecution` booleans and `database: mongodb` or `file`. True means configured, not that credentials/billing were verified by a paid call.
+6. Register, complete your profile, open Interview Setup, select Software Engineer / Mixed / Medium / 10 minutes and start. Allow microphone access; replay audio if autoplay was blocked. Answer with voice, stop, edit the transcript and submit. Review feedback, continue past eight turns, refresh, then finish and open History. Also submit a concise typed answer.
+7. For Placement, pass Aptitude, each Coding stage and the AI interview in order. A failed interview opens Learning Hub remediation. Without semantic AI, Placement interview passing is intentionally unavailable.
+8. Upload a real selectable-text PDF and DOCX to verify resume extraction and analysis against your own document. No extracted claims are invented when AI is unavailable.
+
+If an API key is rejected, check that it belongs to the correct provider/project, has model access and active billing, and contains no surrounding quotes/whitespace; restart the API. Secrets are never returned in errors. For CORS, match CLIENT_ORIGIN exactly to the browser's origin and rebuild Vite after changing VITE_API_BASE_URL. For microphone failures, check Chrome/Edge site permissions and Windows Settings > Privacy & security > Microphone, select a working input device, and use localhost or HTTPS. Empty recordings can be retried without losing typed text.
+
+Tests use controlled provider responses; they cannot certify your account quota, real microphone transcription quality, Google consent setup, Atlas network access, or hosted Judge0 connectivity. Those require the credential-backed steps above. No paid requests or deployment are performed automatically.
