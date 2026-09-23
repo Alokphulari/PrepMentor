@@ -1,0 +1,3522 @@
+[
+  {
+    "id": "frontend-01",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "How would you break a dashboard into reusable components?",
+    "keywords": [
+      "component",
+      "props",
+      "state",
+      "reuse"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of component in this situation."
+    ]
+  },
+  {
+    "id": "frontend-02",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "How do you decide whether state belongs in a page or a shared provider?",
+    "keywords": [
+      "state",
+      "ownership",
+      "shared",
+      "local"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of state in this situation."
+    ]
+  },
+  {
+    "id": "frontend-03",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "hard",
+    "question": "How would you investigate a slow first page load?",
+    "keywords": [
+      "network",
+      "bundle",
+      "cache",
+      "measure"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of network in this situation."
+    ]
+  },
+  {
+    "id": "frontend-04",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "What makes a web form accessible to keyboard users?",
+    "keywords": [
+      "label",
+      "focus",
+      "keyboard",
+      "error"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of label in this situation."
+    ]
+  },
+  {
+    "id": "frontend-05",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "How would you handle loading and failure states for a search page?",
+    "keywords": [
+      "loading",
+      "error",
+      "retry",
+      "empty"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of loading in this situation."
+    ]
+  },
+  {
+    "id": "frontend-06",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "hard",
+    "question": "How do you prevent stale search responses from replacing newer results?",
+    "keywords": [
+      "abort",
+      "request",
+      "debounce",
+      "race"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of abort in this situation."
+    ]
+  },
+  {
+    "id": "frontend-07",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "How would you implement pagination for a large product list?",
+    "keywords": [
+      "page",
+      "limit",
+      "cursor",
+      "loading"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of page in this situation."
+    ]
+  },
+  {
+    "id": "frontend-08",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "When would you choose server rendering over client rendering?",
+    "keywords": [
+      "seo",
+      "latency",
+      "server",
+      "hydration"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of seo in this situation."
+    ]
+  },
+  {
+    "id": "frontend-09",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "hard",
+    "question": "How would you avoid exposing secrets in a frontend application?",
+    "keywords": [
+      "server",
+      "environment",
+      "public",
+      "token"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of server in this situation."
+    ]
+  },
+  {
+    "id": "frontend-10",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "How would you test a checkout form without making a real purchase?",
+    "keywords": [
+      "mock",
+      "validation",
+      "integration",
+      "submit"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of mock in this situation."
+    ]
+  },
+  {
+    "id": "frontend-11",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "How would you make a navigation menu work on small screens?",
+    "keywords": [
+      "responsive",
+      "keyboard",
+      "focus",
+      "breakpoint"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of responsive in this situation."
+    ]
+  },
+  {
+    "id": "frontend-12",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "hard",
+    "question": "How would you reduce the JavaScript downloaded for the first route?",
+    "keywords": [
+      "lazy",
+      "split",
+      "bundle",
+      "import"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of lazy in this situation."
+    ]
+  },
+  {
+    "id": "frontend-13",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "How do you handle dates for users in different time zones?",
+    "keywords": [
+      "utc",
+      "timezone",
+      "format",
+      "locale"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of utc in this situation."
+    ]
+  },
+  {
+    "id": "frontend-14",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "How would you prevent layout shifts while images load?",
+    "keywords": [
+      "width",
+      "height",
+      "aspect ratio",
+      "placeholder"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of width in this situation."
+    ]
+  },
+  {
+    "id": "frontend-15",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "hard",
+    "question": "How would you safely render user-provided text?",
+    "keywords": [
+      "escape",
+      "sanitize",
+      "xss",
+      "text"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of escape in this situation."
+    ]
+  },
+  {
+    "id": "frontend-16",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "What information would you include in a useful frontend error report?",
+    "keywords": [
+      "stack",
+      "route",
+      "version",
+      "privacy"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of stack in this situation."
+    ]
+  },
+  {
+    "id": "frontend-17",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "How would you support offline access to previously loaded content?",
+    "keywords": [
+      "cache",
+      "service worker",
+      "storage",
+      "offline"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of cache in this situation."
+    ]
+  },
+  {
+    "id": "frontend-18",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "hard",
+    "question": "How would you design an optimistic update with rollback?",
+    "keywords": [
+      "optimistic",
+      "rollback",
+      "error",
+      "state"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of optimistic in this situation."
+    ]
+  },
+  {
+    "id": "frontend-19",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "easy",
+    "question": "How would you investigate a memory leak in a long-lived page?",
+    "keywords": [
+      "listener",
+      "cleanup",
+      "heap",
+      "timer"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of listener in this situation."
+    ]
+  },
+  {
+    "id": "frontend-20",
+    "role": "Frontend Developer",
+    "category": "Frontend",
+    "difficulty": "medium",
+    "question": "What tradeoffs arise when introducing a shared component library?",
+    "keywords": [
+      "consistency",
+      "accessibility",
+      "version",
+      "flexibility"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of consistency in this situation."
+    ]
+  },
+  {
+    "id": "javascript-01",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "How do var, let and const differ?",
+    "keywords": [
+      "scope",
+      "hoisting",
+      "reassignment",
+      "block"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of scope in this situation."
+    ]
+  },
+  {
+    "id": "javascript-02",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "What is a closure and where have you used one?",
+    "keywords": [
+      "function",
+      "scope",
+      "lexical",
+      "state"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of function in this situation."
+    ]
+  },
+  {
+    "id": "javascript-03",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "hard",
+    "question": "How does the JavaScript event loop schedule promises and timers?",
+    "keywords": [
+      "stack",
+      "microtask",
+      "task",
+      "promise"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of stack in this situation."
+    ]
+  },
+  {
+    "id": "javascript-04",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "What is the difference between strict and loose equality?",
+    "keywords": [
+      "type",
+      "coercion",
+      "equality",
+      "value"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of type in this situation."
+    ]
+  },
+  {
+    "id": "javascript-05",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "How does this behave in arrow functions compared with ordinary functions?",
+    "keywords": [
+      "lexical",
+      "call",
+      "context",
+      "arrow"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of lexical in this situation."
+    ]
+  },
+  {
+    "id": "javascript-06",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "hard",
+    "question": "How do async and await simplify promise handling?",
+    "keywords": [
+      "promise",
+      "await",
+      "catch",
+      "asynchronous"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of promise in this situation."
+    ]
+  },
+  {
+    "id": "javascript-07",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "How would you handle errors from multiple concurrent requests?",
+    "keywords": [
+      "promise",
+      "allsettled",
+      "catch",
+      "concurrent"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of promise in this situation."
+    ]
+  },
+  {
+    "id": "javascript-08",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "What is the difference between a shallow copy and a deep copy?",
+    "keywords": [
+      "reference",
+      "nested",
+      "copy",
+      "mutation"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of reference in this situation."
+    ]
+  },
+  {
+    "id": "javascript-09",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "hard",
+    "question": "How would you implement debouncing for search input?",
+    "keywords": [
+      "timer",
+      "clearTimeout",
+      "delay",
+      "input"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of timer in this situation."
+    ]
+  },
+  {
+    "id": "javascript-10",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "When is throttling preferable to debouncing?",
+    "keywords": [
+      "interval",
+      "scroll",
+      "frequency",
+      "event"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of interval in this situation."
+    ]
+  },
+  {
+    "id": "javascript-11",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "How does prototypal inheritance work?",
+    "keywords": [
+      "prototype",
+      "chain",
+      "object",
+      "property"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of prototype in this situation."
+    ]
+  },
+  {
+    "id": "javascript-12",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "hard",
+    "question": "What are map, filter and reduce used for?",
+    "keywords": [
+      "array",
+      "transform",
+      "predicate",
+      "accumulator"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of array in this situation."
+    ]
+  },
+  {
+    "id": "javascript-13",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "Why can a function declaration be called before its definition?",
+    "keywords": [
+      "hoisting",
+      "declaration",
+      "scope",
+      "initialization"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of hoisting in this situation."
+    ]
+  },
+  {
+    "id": "javascript-14",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "What causes the temporal dead zone?",
+    "keywords": [
+      "let",
+      "const",
+      "initialization",
+      "scope"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of let in this situation."
+    ]
+  },
+  {
+    "id": "javascript-15",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "hard",
+    "question": "How do ES modules differ from global scripts?",
+    "keywords": [
+      "import",
+      "export",
+      "scope",
+      "module"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of import in this situation."
+    ]
+  },
+  {
+    "id": "javascript-16",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "How would you cancel an in-flight fetch request?",
+    "keywords": [
+      "AbortController",
+      "signal",
+      "abort",
+      "catch"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of AbortController in this situation."
+    ]
+  },
+  {
+    "id": "javascript-17",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "What are generators useful for?",
+    "keywords": [
+      "yield",
+      "iterator",
+      "lazy",
+      "next"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of yield in this situation."
+    ]
+  },
+  {
+    "id": "javascript-18",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "hard",
+    "question": "How would you remove duplicates while preserving array order?",
+    "keywords": [
+      "set",
+      "iteration",
+      "order",
+      "unique"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of set in this situation."
+    ]
+  },
+  {
+    "id": "javascript-19",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "easy",
+    "question": "What is event delegation and why is it useful?",
+    "keywords": [
+      "bubbling",
+      "target",
+      "parent",
+      "listener"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of bubbling in this situation."
+    ]
+  },
+  {
+    "id": "javascript-20",
+    "role": "Frontend Developer",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "question": "How can floating-point arithmetic affect monetary calculations?",
+    "keywords": [
+      "precision",
+      "rounding",
+      "integer",
+      "decimal"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of precision in this situation."
+    ]
+  },
+  {
+    "id": "react-01",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "What are props and how do they differ from state?",
+    "keywords": [
+      "props",
+      "state",
+      "parent",
+      "update"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of props in this situation."
+    ]
+  },
+  {
+    "id": "react-02",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "Why should React state be updated immutably?",
+    "keywords": [
+      "reference",
+      "render",
+      "copy",
+      "mutation"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of reference in this situation."
+    ]
+  },
+  {
+    "id": "react-03",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "hard",
+    "question": "When does a useEffect cleanup function run?",
+    "keywords": [
+      "cleanup",
+      "dependency",
+      "unmount",
+      "effect"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of cleanup in this situation."
+    ]
+  },
+  {
+    "id": "react-04",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "Why are stable keys important when rendering lists?",
+    "keywords": [
+      "identity",
+      "key",
+      "reconciliation",
+      "state"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of identity in this situation."
+    ]
+  },
+  {
+    "id": "react-05",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "How would you prevent an effect from creating an infinite render loop?",
+    "keywords": [
+      "dependency",
+      "state",
+      "effect",
+      "reference"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of dependency in this situation."
+    ]
+  },
+  {
+    "id": "react-06",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "hard",
+    "question": "How do controlled and uncontrolled inputs differ?",
+    "keywords": [
+      "value",
+      "state",
+      "ref",
+      "input"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of value in this situation."
+    ]
+  },
+  {
+    "id": "react-07",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "When should you lift state up?",
+    "keywords": [
+      "shared",
+      "parent",
+      "state",
+      "props"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of shared in this situation."
+    ]
+  },
+  {
+    "id": "react-08",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "What problem does React context solve?",
+    "keywords": [
+      "provider",
+      "consumer",
+      "props",
+      "shared"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of provider in this situation."
+    ]
+  },
+  {
+    "id": "react-09",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "hard",
+    "question": "When can useMemo or useCallback help performance?",
+    "keywords": [
+      "reference",
+      "memoization",
+      "dependency",
+      "measure"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of reference in this situation."
+    ]
+  },
+  {
+    "id": "react-10",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "How would you handle errors thrown while rendering a component?",
+    "keywords": [
+      "boundary",
+      "fallback",
+      "render",
+      "error"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of boundary in this situation."
+    ]
+  },
+  {
+    "id": "react-11",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "Why must hooks be called in the same order?",
+    "keywords": [
+      "hook",
+      "order",
+      "state",
+      "conditional"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of hook in this situation."
+    ]
+  },
+  {
+    "id": "react-12",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "hard",
+    "question": "How would you avoid a stale closure in an interval?",
+    "keywords": [
+      "closure",
+      "dependency",
+      "ref",
+      "functional"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of closure in this situation."
+    ]
+  },
+  {
+    "id": "react-13",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "What is the purpose of a functional state updater?",
+    "keywords": [
+      "previous",
+      "state",
+      "batch",
+      "update"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of previous in this situation."
+    ]
+  },
+  {
+    "id": "react-14",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "How would you build a reusable data-fetching hook?",
+    "keywords": [
+      "loading",
+      "error",
+      "effect",
+      "cleanup"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of loading in this situation."
+    ]
+  },
+  {
+    "id": "react-15",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "hard",
+    "question": "How do you share logic without sharing component markup?",
+    "keywords": [
+      "hook",
+      "reuse",
+      "state",
+      "composition"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of hook in this situation."
+    ]
+  },
+  {
+    "id": "react-16",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "How would you test a component that submits a form?",
+    "keywords": [
+      "input",
+      "submit",
+      "mock",
+      "assert"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of input in this situation."
+    ]
+  },
+  {
+    "id": "react-17",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "How does lazy loading help a large React application?",
+    "keywords": [
+      "import",
+      "suspense",
+      "bundle",
+      "route"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of import in this situation."
+    ]
+  },
+  {
+    "id": "react-18",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "hard",
+    "question": "How would you preserve a draft when navigating between pages?",
+    "keywords": [
+      "storage",
+      "state",
+      "persist",
+      "restore"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of storage in this situation."
+    ]
+  },
+  {
+    "id": "react-19",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "easy",
+    "question": "How can unnecessary context updates affect performance?",
+    "keywords": [
+      "provider",
+      "value",
+      "render",
+      "split"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of provider in this situation."
+    ]
+  },
+  {
+    "id": "react-20",
+    "role": "Frontend Developer",
+    "category": "React",
+    "difficulty": "medium",
+    "question": "How would you handle focus when opening and closing a dialog?",
+    "keywords": [
+      "ref",
+      "focus",
+      "keyboard",
+      "restore"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of ref in this situation."
+    ]
+  },
+  {
+    "id": "html-01",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "easy",
+    "question": "Why use semantic HTML instead of generic div elements?",
+    "keywords": [
+      "semantic",
+      "accessibility",
+      "structure",
+      "meaning"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of semantic in this situation."
+    ]
+  },
+  {
+    "id": "html-02",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "medium",
+    "question": "How do labels improve form usability?",
+    "keywords": [
+      "label",
+      "id",
+      "focus",
+      "accessible"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of label in this situation."
+    ]
+  },
+  {
+    "id": "html-03",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "hard",
+    "question": "When should an image have empty alternative text?",
+    "keywords": [
+      "decorative",
+      "alt",
+      "screen reader",
+      "content"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of decorative in this situation."
+    ]
+  },
+  {
+    "id": "html-04",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "easy",
+    "question": "How do buttons differ from links?",
+    "keywords": [
+      "action",
+      "navigation",
+      "keyboard",
+      "semantic"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of action in this situation."
+    ]
+  },
+  {
+    "id": "html-05",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "medium",
+    "question": "What is the purpose of the viewport meta tag?",
+    "keywords": [
+      "width",
+      "device",
+      "responsive",
+      "scale"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of width in this situation."
+    ]
+  },
+  {
+    "id": "html-06",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "hard",
+    "question": "How would you group related form controls?",
+    "keywords": [
+      "fieldset",
+      "legend",
+      "label",
+      "group"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of fieldset in this situation."
+    ]
+  },
+  {
+    "id": "html-07",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "easy",
+    "question": "What is the difference between defer and async script loading?",
+    "keywords": [
+      "order",
+      "parse",
+      "download",
+      "execution"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of order in this situation."
+    ]
+  },
+  {
+    "id": "html-08",
+    "role": "Frontend Developer",
+    "category": "HTML",
+    "difficulty": "medium",
+    "question": "How would you choose heading levels on a page?",
+    "keywords": [
+      "hierarchy",
+      "heading",
+      "structure",
+      "accessibility"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of hierarchy in this situation."
+    ]
+  },
+  {
+    "id": "css-01",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "easy",
+    "question": "How does the CSS box model affect element size?",
+    "keywords": [
+      "content",
+      "padding",
+      "border",
+      "margin"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of content in this situation."
+    ]
+  },
+  {
+    "id": "css-02",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "medium",
+    "question": "When would you use Grid rather than Flexbox?",
+    "keywords": [
+      "grid",
+      "flexbox",
+      "rows",
+      "columns"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of grid in this situation."
+    ]
+  },
+  {
+    "id": "css-03",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "hard",
+    "question": "How does CSS specificity determine which rule wins?",
+    "keywords": [
+      "selector",
+      "specificity",
+      "cascade",
+      "order"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of selector in this situation."
+    ]
+  },
+  {
+    "id": "css-04",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "easy",
+    "question": "How do relative, absolute and fixed positioning differ?",
+    "keywords": [
+      "flow",
+      "ancestor",
+      "viewport",
+      "position"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of flow in this situation."
+    ]
+  },
+  {
+    "id": "css-05",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "medium",
+    "question": "How would you create a responsive two-column layout?",
+    "keywords": [
+      "grid",
+      "media query",
+      "breakpoint",
+      "width"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of grid in this situation."
+    ]
+  },
+  {
+    "id": "css-06",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "hard",
+    "question": "How would you debug an element hidden behind another?",
+    "keywords": [
+      "z index",
+      "stacking",
+      "position",
+      "context"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of z index in this situation."
+    ]
+  },
+  {
+    "id": "css-07",
+    "role": "Frontend Developer",
+    "category": "CSS",
+    "difficulty": "easy",
+    "question": "How can you respect reduced-motion preferences?",
+    "keywords": [
+      "media query",
+      "animation",
+      "transition",
+      "accessibility"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of media query in this situation."
+    ]
+  },
+  {
+    "id": "mern-01",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "Describe the journey of a request through a MERN application.",
+    "keywords": [
+      "react",
+      "express",
+      "node",
+      "mongodb"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of react in this situation."
+    ]
+  },
+  {
+    "id": "mern-02",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you implement server-side validation in a MERN app?",
+    "keywords": [
+      "schema",
+      "validation",
+      "server",
+      "error"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of schema in this situation."
+    ]
+  },
+  {
+    "id": "mern-03",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "hard",
+    "question": "Where should authentication tokens be stored and what are the tradeoffs?",
+    "keywords": [
+      "cookie",
+      "xss",
+      "csrf",
+      "token"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of cookie in this situation."
+    ]
+  },
+  {
+    "id": "mern-04",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "How would you protect a private API route?",
+    "keywords": [
+      "authentication",
+      "authorization",
+      "middleware",
+      "token"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of authentication in this situation."
+    ]
+  },
+  {
+    "id": "mern-05",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you paginate MongoDB results in a React table?",
+    "keywords": [
+      "cursor",
+      "limit",
+      "sort",
+      "state"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of cursor in this situation."
+    ]
+  },
+  {
+    "id": "mern-06",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "hard",
+    "question": "How would you prevent duplicate submissions of an order?",
+    "keywords": [
+      "idempotency",
+      "key",
+      "unique",
+      "transaction"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of idempotency in this situation."
+    ]
+  },
+  {
+    "id": "mern-07",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "How would you structure a MERN project for maintainability?",
+    "keywords": [
+      "route",
+      "service",
+      "model",
+      "component"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of route in this situation."
+    ]
+  },
+  {
+    "id": "mern-08",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you diagnose a CORS error between React and Express?",
+    "keywords": [
+      "origin",
+      "preflight",
+      "headers",
+      "method"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of origin in this situation."
+    ]
+  },
+  {
+    "id": "mern-09",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "hard",
+    "question": "How would you handle expired authentication sessions?",
+    "keywords": [
+      "expiry",
+      "unauthorized",
+      "login",
+      "refresh"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of expiry in this situation."
+    ]
+  },
+  {
+    "id": "mern-10",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "How would you implement file uploads without blocking the server?",
+    "keywords": [
+      "stream",
+      "validation",
+      "size",
+      "storage"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of stream in this situation."
+    ]
+  },
+  {
+    "id": "mern-11",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you update the UI after a successful database write?",
+    "keywords": [
+      "response",
+      "state",
+      "invalidate",
+      "cache"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of response in this situation."
+    ]
+  },
+  {
+    "id": "mern-12",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "hard",
+    "question": "How would you store passwords safely?",
+    "keywords": [
+      "hash",
+      "salt",
+      "bcrypt",
+      "server"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of hash in this situation."
+    ]
+  },
+  {
+    "id": "mern-13",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "How would you deploy frontend and API configuration separately?",
+    "keywords": [
+      "environment",
+      "build",
+      "server",
+      "url"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of environment in this situation."
+    ]
+  },
+  {
+    "id": "mern-14",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you implement search across a product catalog?",
+    "keywords": [
+      "index",
+      "query",
+      "debounce",
+      "pagination"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of index in this situation."
+    ]
+  },
+  {
+    "id": "mern-15",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "hard",
+    "question": "How would you prevent one user from reading another user's records?",
+    "keywords": [
+      "ownership",
+      "authorization",
+      "filter",
+      "user"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of ownership in this situation."
+    ]
+  },
+  {
+    "id": "mern-16",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "How would you handle an API outage while preserving form input?",
+    "keywords": [
+      "draft",
+      "retry",
+      "error",
+      "state"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of draft in this situation."
+    ]
+  },
+  {
+    "id": "mern-17",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you test a complete registration flow?",
+    "keywords": [
+      "integration",
+      "validation",
+      "database",
+      "isolation"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of integration in this situation."
+    ]
+  },
+  {
+    "id": "mern-18",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "hard",
+    "question": "How would you manage database connection reuse in Node?",
+    "keywords": [
+      "pool",
+      "connection",
+      "lifecycle",
+      "limit"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of pool in this situation."
+    ]
+  },
+  {
+    "id": "mern-19",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "easy",
+    "question": "How would you implement role-based access control?",
+    "keywords": [
+      "role",
+      "permission",
+      "middleware",
+      "server"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of role in this situation."
+    ]
+  },
+  {
+    "id": "mern-20",
+    "role": "Full Stack Developer",
+    "category": "MERN",
+    "difficulty": "medium",
+    "question": "How would you keep a dashboard synchronized across clients?",
+    "keywords": [
+      "websocket",
+      "event",
+      "polling",
+      "state"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of websocket in this situation."
+    ]
+  },
+  {
+    "id": "node-js-01",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "easy",
+    "question": "Why can CPU-heavy code block a Node.js server?",
+    "keywords": [
+      "event loop",
+      "cpu",
+      "blocking",
+      "worker"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of event loop in this situation."
+    ]
+  },
+  {
+    "id": "node-js-02",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "medium",
+    "question": "How do streams help process large files?",
+    "keywords": [
+      "stream",
+      "chunk",
+      "memory",
+      "backpressure"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of stream in this situation."
+    ]
+  },
+  {
+    "id": "node-js-03",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "hard",
+    "question": "What is the difference between synchronous and asynchronous file access?",
+    "keywords": [
+      "blocking",
+      "callback",
+      "promise",
+      "event loop"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of blocking in this situation."
+    ]
+  },
+  {
+    "id": "node-js-04",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "easy",
+    "question": "How would you handle an unhandled promise rejection?",
+    "keywords": [
+      "catch",
+      "logging",
+      "shutdown",
+      "rejection"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of catch in this situation."
+    ]
+  },
+  {
+    "id": "node-js-05",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "medium",
+    "question": "How should a Node server shut down gracefully?",
+    "keywords": [
+      "signal",
+      "connection",
+      "request",
+      "close"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of signal in this situation."
+    ]
+  },
+  {
+    "id": "node-js-06",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "hard",
+    "question": "How would you manage configuration without committing secrets?",
+    "keywords": [
+      "environment",
+      "secret",
+      "validation",
+      "gitignore"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of environment in this situation."
+    ]
+  },
+  {
+    "id": "node-js-07",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "easy",
+    "question": "When would you use worker threads?",
+    "keywords": [
+      "cpu",
+      "worker",
+      "parallel",
+      "event loop"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of cpu in this situation."
+    ]
+  },
+  {
+    "id": "node-js-08",
+    "role": "Backend Developer",
+    "category": "Node.js",
+    "difficulty": "medium",
+    "question": "How would you investigate high memory usage in Node?",
+    "keywords": [
+      "heap",
+      "leak",
+      "profiling",
+      "reference"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of heap in this situation."
+    ]
+  },
+  {
+    "id": "express-01",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "easy",
+    "question": "How does middleware ordering affect Express requests?",
+    "keywords": [
+      "middleware",
+      "next",
+      "order",
+      "response"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of middleware in this situation."
+    ]
+  },
+  {
+    "id": "express-02",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "medium",
+    "question": "How would you implement centralized error handling?",
+    "keywords": [
+      "error",
+      "middleware",
+      "status",
+      "next"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of error in this situation."
+    ]
+  },
+  {
+    "id": "express-03",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "hard",
+    "question": "How would you validate route parameters and request bodies?",
+    "keywords": [
+      "schema",
+      "type",
+      "validation",
+      "status"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of schema in this situation."
+    ]
+  },
+  {
+    "id": "express-04",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "easy",
+    "question": "How would you implement rate limiting for login requests?",
+    "keywords": [
+      "limit",
+      "window",
+      "identity",
+      "retry"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of limit in this situation."
+    ]
+  },
+  {
+    "id": "express-05",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "medium",
+    "question": "How do route parameters differ from query parameters?",
+    "keywords": [
+      "path",
+      "query",
+      "parameter",
+      "filter"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of path in this situation."
+    ]
+  },
+  {
+    "id": "express-06",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "hard",
+    "question": "How would you avoid sending two responses for one request?",
+    "keywords": [
+      "return",
+      "response",
+      "async",
+      "headers"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of return in this situation."
+    ]
+  },
+  {
+    "id": "express-07",
+    "role": "Backend Developer",
+    "category": "Express",
+    "difficulty": "easy",
+    "question": "How would you configure CORS for a known frontend origin?",
+    "keywords": [
+      "origin",
+      "preflight",
+      "methods",
+      "headers"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of origin in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-01",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "easy",
+    "question": "When would you embed documents rather than reference them?",
+    "keywords": [
+      "access",
+      "document",
+      "reference",
+      "duplication"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of access in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-02",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "medium",
+    "question": "How does an index improve query performance?",
+    "keywords": [
+      "index",
+      "scan",
+      "read",
+      "write"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of index in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-03",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "hard",
+    "question": "How would you enforce unique email addresses?",
+    "keywords": [
+      "unique",
+      "index",
+      "duplicate",
+      "normalize"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of unique in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-04",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "easy",
+    "question": "What is an aggregation pipeline?",
+    "keywords": [
+      "stage",
+      "match",
+      "group",
+      "project"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of stage in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-05",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "medium",
+    "question": "How would you query a nested document field?",
+    "keywords": [
+      "dot",
+      "field",
+      "query",
+      "nested"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of dot in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-06",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "hard",
+    "question": "Why does field order matter in a compound index?",
+    "keywords": [
+      "prefix",
+      "sort",
+      "equality",
+      "range"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of prefix in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-07",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "easy",
+    "question": "How would you avoid lost updates to a document?",
+    "keywords": [
+      "atomic",
+      "version",
+      "update",
+      "condition"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of atomic in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-08",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "medium",
+    "question": "When would you use a multi-document transaction?",
+    "keywords": [
+      "transaction",
+      "atomicity",
+      "consistency",
+      "session"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of transaction in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-09",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "hard",
+    "question": "How does replication improve availability?",
+    "keywords": [
+      "replica",
+      "primary",
+      "secondary",
+      "failover"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of replica in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-10",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "easy",
+    "question": "What problem does sharding solve?",
+    "keywords": [
+      "partition",
+      "scale",
+      "key",
+      "distribution"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of partition in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-11",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "medium",
+    "question": "How would you inspect a slow MongoDB query?",
+    "keywords": [
+      "explain",
+      "index",
+      "scan",
+      "plan"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of explain in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-12",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "hard",
+    "question": "What are the risks of unbounded arrays inside documents?",
+    "keywords": [
+      "size",
+      "growth",
+      "index",
+      "limit"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of size in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-13",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "easy",
+    "question": "How would you implement cursor pagination?",
+    "keywords": [
+      "sort",
+      "id",
+      "limit",
+      "cursor"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of sort in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-14",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "medium",
+    "question": "How would you validate document structure?",
+    "keywords": [
+      "schema",
+      "validator",
+      "type",
+      "required"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of schema in this situation."
+    ]
+  },
+  {
+    "id": "mongodb-15",
+    "role": "Backend Developer",
+    "category": "MongoDB",
+    "difficulty": "hard",
+    "question": "How do read and write concerns affect consistency?",
+    "keywords": [
+      "acknowledgment",
+      "majority",
+      "consistency",
+      "durability"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of acknowledgment in this situation."
+    ]
+  },
+  {
+    "id": "dbms-01",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "easy",
+    "question": "What are the ACID properties of a transaction?",
+    "keywords": [
+      "atomicity",
+      "consistency",
+      "isolation",
+      "durability"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of atomicity in this situation."
+    ]
+  },
+  {
+    "id": "dbms-02",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "medium",
+    "question": "How do primary and foreign keys differ?",
+    "keywords": [
+      "unique",
+      "reference",
+      "key",
+      "integrity"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of unique in this situation."
+    ]
+  },
+  {
+    "id": "dbms-03",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "hard",
+    "question": "Why normalize a relational schema?",
+    "keywords": [
+      "redundancy",
+      "dependency",
+      "anomaly",
+      "table"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of redundancy in this situation."
+    ]
+  },
+  {
+    "id": "dbms-04",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "easy",
+    "question": "How do inner joins and left joins differ?",
+    "keywords": [
+      "match",
+      "null",
+      "left",
+      "row"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of match in this situation."
+    ]
+  },
+  {
+    "id": "dbms-05",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "medium",
+    "question": "What is the difference between WHERE and HAVING?",
+    "keywords": [
+      "filter",
+      "group",
+      "aggregate",
+      "row"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of filter in this situation."
+    ]
+  },
+  {
+    "id": "dbms-06",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "hard",
+    "question": "How can an index slow down writes?",
+    "keywords": [
+      "update",
+      "index",
+      "storage",
+      "maintenance"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of update in this situation."
+    ]
+  },
+  {
+    "id": "dbms-07",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "easy",
+    "question": "What causes a database deadlock?",
+    "keywords": [
+      "lock",
+      "cycle",
+      "transaction",
+      "wait"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of lock in this situation."
+    ]
+  },
+  {
+    "id": "dbms-08",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "medium",
+    "question": "What is a dirty read?",
+    "keywords": [
+      "uncommitted",
+      "transaction",
+      "isolation",
+      "read"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of uncommitted in this situation."
+    ]
+  },
+  {
+    "id": "dbms-09",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "hard",
+    "question": "How would you find the second highest salary in SQL?",
+    "keywords": [
+      "distinct",
+      "order",
+      "rank",
+      "subquery"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of distinct in this situation."
+    ]
+  },
+  {
+    "id": "dbms-10",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "easy",
+    "question": "When would you denormalize data?",
+    "keywords": [
+      "read",
+      "join",
+      "duplication",
+      "consistency"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of read in this situation."
+    ]
+  },
+  {
+    "id": "dbms-11",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "medium",
+    "question": "How do clustered and nonclustered indexes differ?",
+    "keywords": [
+      "order",
+      "storage",
+      "pointer",
+      "index"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of order in this situation."
+    ]
+  },
+  {
+    "id": "dbms-12",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "hard",
+    "question": "What is a composite key?",
+    "keywords": [
+      "column",
+      "combination",
+      "unique",
+      "key"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of column in this situation."
+    ]
+  },
+  {
+    "id": "dbms-13",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "easy",
+    "question": "How would you prevent SQL injection?",
+    "keywords": [
+      "parameter",
+      "prepared",
+      "query",
+      "input"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of parameter in this situation."
+    ]
+  },
+  {
+    "id": "dbms-14",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "medium",
+    "question": "What is the difference between DELETE and TRUNCATE?",
+    "keywords": [
+      "row",
+      "table",
+      "filter",
+      "transaction"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of row in this situation."
+    ]
+  },
+  {
+    "id": "dbms-15",
+    "role": "Software Engineer",
+    "category": "DBMS",
+    "difficulty": "hard",
+    "question": "How would you design tables for students and course enrollments?",
+    "keywords": [
+      "student",
+      "course",
+      "junction",
+      "foreign key"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of student in this situation."
+    ]
+  },
+  {
+    "id": "oop-01",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "easy",
+    "question": "What is encapsulation and why is it useful?",
+    "keywords": [
+      "state",
+      "private",
+      "interface",
+      "access"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of state in this situation."
+    ]
+  },
+  {
+    "id": "oop-02",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "medium",
+    "question": "How does abstraction differ from encapsulation?",
+    "keywords": [
+      "implementation",
+      "interface",
+      "detail",
+      "access"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of implementation in this situation."
+    ]
+  },
+  {
+    "id": "oop-03",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "hard",
+    "question": "When would you prefer composition over inheritance?",
+    "keywords": [
+      "composition",
+      "coupling",
+      "inheritance",
+      "reuse"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of composition in this situation."
+    ]
+  },
+  {
+    "id": "oop-04",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "easy",
+    "question": "What is polymorphism?",
+    "keywords": [
+      "interface",
+      "implementation",
+      "dispatch",
+      "method"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of interface in this situation."
+    ]
+  },
+  {
+    "id": "oop-05",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "medium",
+    "question": "How do method overloading and overriding differ?",
+    "keywords": [
+      "signature",
+      "inheritance",
+      "runtime",
+      "compile"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of signature in this situation."
+    ]
+  },
+  {
+    "id": "oop-06",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "hard",
+    "question": "What is the single responsibility principle?",
+    "keywords": [
+      "responsibility",
+      "change",
+      "class",
+      "cohesion"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of responsibility in this situation."
+    ]
+  },
+  {
+    "id": "oop-07",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "easy",
+    "question": "How does dependency injection improve testing?",
+    "keywords": [
+      "dependency",
+      "inject",
+      "mock",
+      "coupling"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of dependency in this situation."
+    ]
+  },
+  {
+    "id": "oop-08",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "medium",
+    "question": "What is an interface used for?",
+    "keywords": [
+      "contract",
+      "implementation",
+      "method",
+      "type"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of contract in this situation."
+    ]
+  },
+  {
+    "id": "oop-09",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "hard",
+    "question": "What problem does the Liskov substitution principle address?",
+    "keywords": [
+      "subtype",
+      "contract",
+      "behavior",
+      "substitution"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of subtype in this situation."
+    ]
+  },
+  {
+    "id": "oop-10",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "easy",
+    "question": "How would you model a payment system supporting multiple providers?",
+    "keywords": [
+      "interface",
+      "provider",
+      "composition",
+      "strategy"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of interface in this situation."
+    ]
+  },
+  {
+    "id": "oop-11",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "medium",
+    "question": "What is the difference between a class and an object?",
+    "keywords": [
+      "instance",
+      "class",
+      "state",
+      "behavior"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of instance in this situation."
+    ]
+  },
+  {
+    "id": "oop-12",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "hard",
+    "question": "How do constructors help establish valid objects?",
+    "keywords": [
+      "initialization",
+      "invariant",
+      "state",
+      "validation"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of initialization in this situation."
+    ]
+  },
+  {
+    "id": "oop-13",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "easy",
+    "question": "When is a static method appropriate?",
+    "keywords": [
+      "instance",
+      "state",
+      "class",
+      "utility"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of instance in this situation."
+    ]
+  },
+  {
+    "id": "oop-14",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "medium",
+    "question": "What are the tradeoffs of the singleton pattern?",
+    "keywords": [
+      "global",
+      "state",
+      "testing",
+      "lifecycle"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of global in this situation."
+    ]
+  },
+  {
+    "id": "oop-15",
+    "role": "Software Engineer",
+    "category": "OOP",
+    "difficulty": "hard",
+    "question": "How would you keep a class open for extension without modifying it?",
+    "keywords": [
+      "interface",
+      "extension",
+      "composition",
+      "open closed"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of interface in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-01",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "easy",
+    "question": "How do processes and threads differ?",
+    "keywords": [
+      "memory",
+      "process",
+      "thread",
+      "shared"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of memory in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-02",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "medium",
+    "question": "What is a context switch?",
+    "keywords": [
+      "state",
+      "scheduler",
+      "cpu",
+      "overhead"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of state in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-03",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "hard",
+    "question": "What conditions are necessary for a deadlock?",
+    "keywords": [
+      "mutual exclusion",
+      "hold and wait",
+      "no preemption",
+      "circular wait"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of mutual exclusion in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-04",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "easy",
+    "question": "How does virtual memory work?",
+    "keywords": [
+      "page",
+      "address",
+      "memory",
+      "disk"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of page in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-05",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "medium",
+    "question": "How do mutexes and semaphores differ?",
+    "keywords": [
+      "lock",
+      "count",
+      "ownership",
+      "synchronization"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of lock in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-06",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "hard",
+    "question": "What is a race condition?",
+    "keywords": [
+      "shared",
+      "concurrent",
+      "order",
+      "synchronization"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of shared in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-07",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "easy",
+    "question": "How does round-robin scheduling work?",
+    "keywords": [
+      "quantum",
+      "queue",
+      "preemption",
+      "fairness"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of quantum in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-08",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "medium",
+    "question": "What happens during a page fault?",
+    "keywords": [
+      "page",
+      "memory",
+      "disk",
+      "handler"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of page in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-09",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "hard",
+    "question": "How do user mode and kernel mode differ?",
+    "keywords": [
+      "privilege",
+      "system call",
+      "kernel",
+      "protection"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of privilege in this situation."
+    ]
+  },
+  {
+    "id": "operating-systems-10",
+    "role": "Software Engineer",
+    "category": "Operating Systems",
+    "difficulty": "easy",
+    "question": "How would you diagnose a system that is thrashing?",
+    "keywords": [
+      "page fault",
+      "memory",
+      "working set",
+      "swap"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of page fault in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-01",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "easy",
+    "question": "How do TCP and UDP differ?",
+    "keywords": [
+      "reliable",
+      "connection",
+      "datagram",
+      "order"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of reliable in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-02",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "medium",
+    "question": "What happens when a browser resolves a domain name?",
+    "keywords": [
+      "dns",
+      "cache",
+      "resolver",
+      "address"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of dns in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-03",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "hard",
+    "question": "How does HTTPS protect a connection?",
+    "keywords": [
+      "tls",
+      "certificate",
+      "encryption",
+      "authentication"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of tls in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-04",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "easy",
+    "question": "What is the purpose of the TCP three-way handshake?",
+    "keywords": [
+      "syn",
+      "ack",
+      "connection",
+      "sequence"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of syn in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-05",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "medium",
+    "question": "How do HTTP GET and POST differ?",
+    "keywords": [
+      "retrieve",
+      "submit",
+      "idempotent",
+      "body"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of retrieve in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-06",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "hard",
+    "question": "What do HTTP status codes 401 and 403 mean?",
+    "keywords": [
+      "authentication",
+      "authorization",
+      "credentials",
+      "permission"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of authentication in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-07",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "easy",
+    "question": "What is the difference between a switch and a router?",
+    "keywords": [
+      "mac",
+      "ip",
+      "network",
+      "frame"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of mac in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-08",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "medium",
+    "question": "How does a subnet mask define a network?",
+    "keywords": [
+      "prefix",
+      "address",
+      "network",
+      "host"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of prefix in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-09",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "hard",
+    "question": "How does caching reduce network latency?",
+    "keywords": [
+      "cache",
+      "latency",
+      "expiry",
+      "validation"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of cache in this situation."
+    ]
+  },
+  {
+    "id": "computer-networks-10",
+    "role": "Software Engineer",
+    "category": "Computer Networks",
+    "difficulty": "easy",
+    "question": "How do WebSockets differ from repeated HTTP polling?",
+    "keywords": [
+      "persistent",
+      "bidirectional",
+      "connection",
+      "polling"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of persistent in this situation."
+    ]
+  },
+  {
+    "id": "hr-01",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "easy",
+    "question": "Tell me about yourself and the role you are preparing for.",
+    "keywords": [
+      "experience",
+      "skills",
+      "project",
+      "role"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of experience in this situation."
+    ]
+  },
+  {
+    "id": "hr-02",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "medium",
+    "question": "Why are you interested in this position?",
+    "keywords": [
+      "role",
+      "skills",
+      "learning",
+      "contribution"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of role in this situation."
+    ]
+  },
+  {
+    "id": "hr-03",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "hard",
+    "question": "What strength would you bring to an engineering team?",
+    "keywords": [
+      "strength",
+      "example",
+      "team",
+      "result"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of strength in this situation."
+    ]
+  },
+  {
+    "id": "hr-04",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "easy",
+    "question": "Describe an area you are actively improving.",
+    "keywords": [
+      "improve",
+      "practice",
+      "feedback",
+      "progress"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of improve in this situation."
+    ]
+  },
+  {
+    "id": "hr-05",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "medium",
+    "question": "How do you prioritize competing deadlines?",
+    "keywords": [
+      "priority",
+      "impact",
+      "deadline",
+      "communication"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of priority in this situation."
+    ]
+  },
+  {
+    "id": "hr-06",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "hard",
+    "question": "How do you respond to constructive criticism?",
+    "keywords": [
+      "feedback",
+      "listen",
+      "action",
+      "improve"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of feedback in this situation."
+    ]
+  },
+  {
+    "id": "hr-07",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "easy",
+    "question": "What have you learned outside your coursework?",
+    "keywords": [
+      "learn",
+      "practice",
+      "project",
+      "apply"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of learn in this situation."
+    ]
+  },
+  {
+    "id": "hr-08",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "medium",
+    "question": "What would you do if you did not know how to solve an assigned task?",
+    "keywords": [
+      "clarify",
+      "research",
+      "help",
+      "communicate"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of clarify in this situation."
+    ]
+  },
+  {
+    "id": "hr-09",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "hard",
+    "question": "How do you decide whether a new opportunity fits your goals?",
+    "keywords": [
+      "goal",
+      "learning",
+      "role",
+      "value"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of goal in this situation."
+    ]
+  },
+  {
+    "id": "hr-10",
+    "role": "Software Engineer",
+    "category": "HR",
+    "difficulty": "easy",
+    "question": "What questions would you ask a prospective engineering team?",
+    "keywords": [
+      "team",
+      "process",
+      "expectation",
+      "growth"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of team in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-01",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "easy",
+    "question": "Tell me about a disagreement you resolved within a team.",
+    "keywords": [
+      "situation",
+      "listen",
+      "action",
+      "result"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of situation in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-02",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "medium",
+    "question": "Describe a time you missed a deadline and what changed afterward.",
+    "keywords": [
+      "deadline",
+      "ownership",
+      "action",
+      "lesson"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of deadline in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-03",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "hard",
+    "question": "Tell me about a difficult bug you helped resolve.",
+    "keywords": [
+      "problem",
+      "investigate",
+      "fix",
+      "result"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of problem in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-04",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "easy",
+    "question": "Describe a situation where you took initiative.",
+    "keywords": [
+      "situation",
+      "initiative",
+      "action",
+      "impact"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of situation in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-05",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "medium",
+    "question": "Tell me about a project that did not go as planned.",
+    "keywords": [
+      "challenge",
+      "adapt",
+      "lesson",
+      "result"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of challenge in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-06",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "hard",
+    "question": "Describe how you explained a technical concept to a nontechnical person.",
+    "keywords": [
+      "audience",
+      "example",
+      "clarify",
+      "feedback"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of audience in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-07",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "easy",
+    "question": "Tell me about a time you received conflicting requirements.",
+    "keywords": [
+      "clarify",
+      "stakeholder",
+      "priority",
+      "decision"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of clarify in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-08",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "medium",
+    "question": "Describe a time you helped a teammate learn something.",
+    "keywords": [
+      "support",
+      "example",
+      "practice",
+      "feedback"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of support in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-09",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "hard",
+    "question": "Tell me about a decision you made with incomplete information.",
+    "keywords": [
+      "assumption",
+      "risk",
+      "decision",
+      "validate"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of assumption in this situation."
+    ]
+  },
+  {
+    "id": "behavioral-10",
+    "role": "Software Engineer",
+    "category": "Behavioral",
+    "difficulty": "easy",
+    "question": "Describe a time you improved a process.",
+    "keywords": [
+      "problem",
+      "change",
+      "measure",
+      "result"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of problem in this situation."
+    ]
+  },
+  {
+    "id": "project-01",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "easy",
+    "question": "What problem does your project solve and who uses it?",
+    "keywords": [
+      "problem",
+      "user",
+      "solution",
+      "value"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of problem in this situation."
+    ]
+  },
+  {
+    "id": "project-02",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "medium",
+    "question": "Explain the architecture of your most recent project.",
+    "keywords": [
+      "component",
+      "api",
+      "database",
+      "flow"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of component in this situation."
+    ]
+  },
+  {
+    "id": "project-03",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "hard",
+    "question": "Which project decision involved the largest tradeoff?",
+    "keywords": [
+      "alternative",
+      "tradeoff",
+      "constraint",
+      "decision"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of alternative in this situation."
+    ]
+  },
+  {
+    "id": "project-04",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "easy",
+    "question": "How did you test your project's critical workflow?",
+    "keywords": [
+      "test",
+      "workflow",
+      "assertion",
+      "edge case"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of test in this situation."
+    ]
+  },
+  {
+    "id": "project-05",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "medium",
+    "question": "What was your personal contribution to the project?",
+    "keywords": [
+      "ownership",
+      "implementation",
+      "team",
+      "result"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of ownership in this situation."
+    ]
+  },
+  {
+    "id": "project-06",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "hard",
+    "question": "How did you handle authentication and authorization?",
+    "keywords": [
+      "authentication",
+      "authorization",
+      "token",
+      "permission"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of authentication in this situation."
+    ]
+  },
+  {
+    "id": "project-07",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "easy",
+    "question": "What would break first if your project had ten times more users?",
+    "keywords": [
+      "bottleneck",
+      "load",
+      "database",
+      "scale"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of bottleneck in this situation."
+    ]
+  },
+  {
+    "id": "project-08",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "medium",
+    "question": "How did you handle failures from external APIs?",
+    "keywords": [
+      "timeout",
+      "retry",
+      "fallback",
+      "error"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of timeout in this situation."
+    ]
+  },
+  {
+    "id": "project-09",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "hard",
+    "question": "How would you improve your project's data model?",
+    "keywords": [
+      "schema",
+      "relationship",
+      "index",
+      "migration"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of schema in this situation."
+    ]
+  },
+  {
+    "id": "project-10",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "easy",
+    "question": "Describe a difficult bug from your project and how you diagnosed it.",
+    "keywords": [
+      "reproduce",
+      "log",
+      "cause",
+      "fix"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of reproduce in this situation."
+    ]
+  },
+  {
+    "id": "project-11",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "medium",
+    "question": "How did you manage source control while working with others?",
+    "keywords": [
+      "branch",
+      "review",
+      "merge",
+      "conflict"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of branch in this situation."
+    ]
+  },
+  {
+    "id": "project-12",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "hard",
+    "question": "What metrics would show whether your project succeeds?",
+    "keywords": [
+      "metric",
+      "user",
+      "latency",
+      "outcome"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of metric in this situation."
+    ]
+  },
+  {
+    "id": "project-13",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "easy",
+    "question": "How did you make your project accessible?",
+    "keywords": [
+      "keyboard",
+      "label",
+      "contrast",
+      "focus"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of keyboard in this situation."
+    ]
+  },
+  {
+    "id": "project-14",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "medium",
+    "question": "What would you change if you rebuilt this project?",
+    "keywords": [
+      "lesson",
+      "tradeoff",
+      "improve",
+      "reason"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of lesson in this situation."
+    ]
+  },
+  {
+    "id": "project-15",
+    "role": "Software Engineer",
+    "category": "Project",
+    "difficulty": "hard",
+    "question": "How would you demonstrate your project when an external service is down?",
+    "keywords": [
+      "fallback",
+      "local",
+      "demo",
+      "recovery"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of fallback in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-01",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "easy",
+    "question": "How would you find two numbers that sum to a target?",
+    "keywords": [
+      "hash map",
+      "complement",
+      "iteration",
+      "complexity"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of hash map in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-02",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "medium",
+    "question": "How would you determine whether a string has balanced brackets?",
+    "keywords": [
+      "stack",
+      "push",
+      "pop",
+      "matching"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of stack in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-03",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "hard",
+    "question": "How would you find the first nonrepeating character?",
+    "keywords": [
+      "frequency",
+      "map",
+      "order",
+      "count"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of frequency in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-04",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "easy",
+    "question": "How would you detect a cycle in a linked list?",
+    "keywords": [
+      "slow",
+      "fast",
+      "pointer",
+      "cycle"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of slow in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-05",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "medium",
+    "question": "How would you search a sorted array efficiently?",
+    "keywords": [
+      "binary",
+      "mid",
+      "range",
+      "log"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of binary in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-06",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "hard",
+    "question": "How would you merge overlapping intervals?",
+    "keywords": [
+      "sort",
+      "start",
+      "end",
+      "merge"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of sort in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-07",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "easy",
+    "question": "How would you find the shortest path in an unweighted graph?",
+    "keywords": [
+      "bfs",
+      "queue",
+      "visited",
+      "distance"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of bfs in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-08",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "medium",
+    "question": "How would you identify the maximum sum contiguous subarray?",
+    "keywords": [
+      "current",
+      "maximum",
+      "negative",
+      "linear"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of current in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-09",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "hard",
+    "question": "How would you test an algorithm for edge cases?",
+    "keywords": [
+      "empty",
+      "boundary",
+      "duplicate",
+      "overflow"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of empty in this situation."
+    ]
+  },
+  {
+    "id": "problem-solving-10",
+    "role": "Software Engineer",
+    "category": "Problem Solving",
+    "difficulty": "easy",
+    "question": "How would you compare two solutions with different time and space costs?",
+    "keywords": [
+      "complexity",
+      "time",
+      "space",
+      "constraint"
+    ],
+    "followUps": [
+      "Using a concrete example, explain the role of complexity in this situation."
+    ]
+  }
+]

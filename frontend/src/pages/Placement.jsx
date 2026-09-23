@@ -1,3 +1,4 @@
+import { getHistory, getSyncedHistory } from "../services/history";
 import { usePlacement } from "../context/PlacementContext";
 import {
   Target,
@@ -110,14 +111,15 @@ function Placement() {
    * ----------------------------------------
    */
 
-  const handleAptitude = () => {
+  const handleAptitude = async () => {
+    await getSyncedHistory().catch(()=>{});
     const level = ["easy", "medium", "hard"].find(
       (item) => placementState.aptitude[item] !== "passed"
     ) || "hard";
     if (placementState.aptitude[level] === "failed") {
       navigate("/learning", {
         state: {
-          topicPerformance: [{ topic: `${level} aptitude review`, percentage: 0 }],
+          topicPerformance: getHistory().find((entry)=>entry.type.includes("Aptitude")&&entry.title.toLowerCase().includes(level))?.topicPerformance || [],
           placementMode: true,
           placementLevel: level,
           module: "aptitude",
@@ -128,14 +130,15 @@ function Placement() {
     navigate("/placement/aptitude");
   };
 
-  const handleCoding = () => {
+  const handleCoding = async () => {
+    await getSyncedHistory().catch(()=>{});
     const level = ["easy", "medium", "hard"].find(
       (item) => placementState.coding[item] !== "passed"
     ) || "hard";
     if (placementState.coding[level] === "failed") {
       navigate("/learning", {
         state: {
-          topicPerformance: [{ topic: `${level} coding review`, percentage: 0 }],
+          topicPerformance: getHistory().find((entry)=>entry.type==="Coding"&&entry.difficulty===level)?.topicPerformance || [],
           placementMode: true,
           placementLevel: level,
           module: "coding",
@@ -146,8 +149,10 @@ function Placement() {
     navigate("/placement/coding");
   };
 
-  const handleInterview = () => {
-    navigate("/interview/setup");
+  const handleInterview = async () => {
+    await getSyncedHistory().catch(()=>{});
+    if(placementState.interview.status === "failed"){navigate("/learning",{state:{module:"interview",placementLevel:"status",placementMode:true,topicPerformance:getHistory().find((entry)=>entry.type==="Interview")?.topicPerformance||[]}});return;}
+    navigate("/interview/setup", { state: { mode: "placement" } });
   };
 
   return (

@@ -1,3 +1,4 @@
+import { geminiMock } from "./helpers/geminiMock.js";
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -294,7 +295,9 @@ test("authentication and profile flow protects user data", async () => {
   assert.equal(revokedSession.response.status, 401);
 });
 
-test("interview evaluation validates input and returns rubric metrics", async () => {
+test("interview evaluation validates input and persists semantic metrics", async (context) => {
+  const originalEnv = { ...process.env };
+  context.after(() => { process.env = originalEnv; });
   const credentials = { name: "Interview Student", email: "interview@example.test", password: "StrongPass123!" };
   const registered = await request("/api/auth/register", { method: "POST", body: JSON.stringify(credentials) });
   const authorization = `Bearer ${registered.body.token}`;
@@ -307,6 +310,11 @@ test("interview evaluation validates input and returns rubric metrics", async ()
   assert.equal(oversized.response.status, 400);
   const malformedConfig = await request("/api/interviews/evaluate", { method: "POST", headers: { Authorization: authorization }, body: JSON.stringify({ config: { role: { unsafe: true } }, questions: [{ question: "Question" }], answers: {} }) });
   assert.equal(malformedConfig.response.status, 400);
+  const localFetch = globalThis.fetch;
+  const mocked = geminiMock(context);
+  const providerFetch = globalThis.fetch;
+  mocked.mock.restore();
+  context.mock.method(globalThis, "fetch", (url, options) => String(url).includes("generativelanguage.googleapis.com") ? providerFetch(url, options) : localFetch(url, options));
   const valid = await request("/api/interviews/evaluate", {
     method: "POST",
     headers: { Authorization: authorization },
@@ -324,7 +332,7 @@ test("interview evaluation validates input and returns rubric metrics", async ()
   const loaded = await request(`/api/interviews/${valid.body.result.id}`, { headers: { Authorization: authorization } });
   assert.equal(loaded.response.status, 200);
   assert.equal(loaded.body.result.id, valid.body.result.id);
-  assert.equal(loaded.body.result.evaluationMode, "Server response-completeness rubric");
+  assert.equal(loaded.body.result.evaluationMode, "AI semantic interview evaluation");
   const interviewHistory = await request("/api/history", { headers: { Authorization: authorization } });
   const savedInterviewAttempt = interviewHistory.body.history.find((entry) => entry.id === valid.body.result.id);
   assert.ok(savedInterviewAttempt.topicPerformance.some((item) => item.topic === "Communication"));

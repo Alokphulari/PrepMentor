@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: prepmentor-api
+    runtime: node
+    buildCommand: npm ci --prefix backend
+    startCommand: npm --prefix backend start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 24
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: prepmentor
+      - key: INTERVIEW_AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_INTERVIEW_MODEL
+        sync: false
+      - key: GEMINI_TRANSCRIBE_MODEL
+        sync: false
+      - key: GEMINI_TTS_MODEL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: AI_PROVIDER
+        value: openai
+      - key: OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+      - key: OPENAI_LLM_MODEL
+        sync: false
+      - key: OPENAI_STT_MODEL
+        sync: false
+      - key: OPENAI_TTS_MODEL
+        sync: false
+      - key: OPENAI_TTS_VOICE
+        value: alloy
+      - key: JUDGE0_BASE_URL
+        sync: false
+      - key: JUDGE0_API_KEY
+        sync: false
+      - key: JUDGE0_RAPIDAPI_HOST
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false

@@ -2,6 +2,7 @@ import { randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual } fr
 import { promisify } from "node:util";
 import { createUser, findUserByEmail, findUserById, mutateUser, updateUser } from "./userStore.js";
 import { DEFAULT_PLACEMENT_STATE } from "./placement.js";
+import { OAuth2Client } from "google-auth-library";
 
 const scrypt = promisify(scryptCallback);
 const sessions = new Map();
@@ -38,8 +39,7 @@ function safeTimestamp(value) {
 
 export function publicUser(user) {
   if (!user) return null;
-  const { passwordHash: _passwordHash, passwordSalt: _passwordSalt, history: _history, placementState: _placementState, resume: _resume, interviewResults: _interviewResults, ...safeUser } = user;
-  return safeUser;
+  return Object.fromEntries(["id", "email", "profileCompleted", "resumeUploaded", "createdAt", "updatedAt", ...Object.keys(profileTextLimits)].filter((key) => user[key] !== undefined).map((key) => [key, user[key]]));
 }
 
 async function hashPassword(password, salt = randomBytes(16).toString("hex")) {
@@ -48,6 +48,7 @@ async function hashPassword(password, salt = randomBytes(16).toString("hex")) {
 }
 
 async function passwordMatches(password, user) {
+  if (!user.passwordHash || !user.passwordSalt) return false;
   const candidate = await hashPassword(password, user.passwordSalt);
   return timingSafeEqual(Buffer.from(candidate.hash, "hex"), Buffer.from(user.passwordHash, "hex"));
 }
@@ -56,6 +57,23 @@ function createSession(userId) {
   const token = randomBytes(32).toString("hex");
   sessions.set(token, { userId, expiresAt: Date.now() + SESSION_TTL });
   return token;
+}
+
+export async function googleLogin(value, verify) {
+  if (!process.env.GOOGLE_CLIENT_ID) throw Object.assign(new Error("Google sign-in is not configured."), { status: 503 });
+  if (typeof value?.credential !== "string" || value.credential.length > 10000) throw Object.assign(new Error("Invalid Google token."), { status: 401 });
+  let payload;
+  try {
+    const verifier = verify || (async (idToken) => (await new OAuth2Client().verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID })).getPayload());
+    payload = await verifier(value.credential);
+    if (!payload?.sub || !payload.email_verified || !payload.email || payload.aud !== process.env.GOOGLE_CLIENT_ID || !["accounts.google.com", "https://accounts.google.com"].includes(payload.iss) || payload.exp * 1000 <= Date.now()) throw new Error();
+  } catch { throw Object.assign(new Error("Google token verification failed."), { status: 401 }); }
+  const email = payload.email.toLowerCase();
+  let user = await findUserByEmail(email);
+  // Never silently link an existing password account based only on an email match.
+  if (user && user.googleSub !== payload.sub) throw Object.assign(new Error("This email already has an account. Sign in with your password."), { status: 409 });
+  if (!user) user = await createUser({ id: randomUUID(), email, name: String(payload.name || email).slice(0, 120), googleSub: payload.sub, profileCompleted: false, resumeUploaded: false, placementState: DEFAULT_PLACEMENT_STATE, history: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+  return { user: publicUser(user), token: createSession(user.id) };
 }
 
 export async function register({ name, email, password }) {
@@ -111,12 +129,16 @@ export async function appendHistory(userId, entry) {
     title: entry.title.trim().slice(0, 160),
     type: entry.type.trim().slice(0, 80),
     score: Math.max(0, Math.min(100, Math.round(score))),
+    mode: entry.mode === "placement" ? "placement" : "practice",
+    difficulty: ["easy", "medium", "hard"].includes(entry.difficulty) ? entry.difficulty : null,
+    evidenceType: /aptitude/i.test(entry.type) ? "browser-assessment" : "self-reported",
+    ...(entry.type === "Interview" ? { evaluationMode: "Client-reported practice rubric" } : {}),
     duration: typeof entry.duration === "string" ? entry.duration.trim().slice(0, 40) || "Self-paced" : "Self-paced",
     createdAt: safeTimestamp(entry.createdAt),
     ...(topicPerformance.length ? { topicPerformance } : {}),
   };
   const user = await mutateUser(userId, (current) => ({
-    history: [safeEntry, ...(Array.isArray(current.history) ? current.history : [])]
+    history: [current.history?.find((item) => item.id === safeEntry.id && item.evidenceType === "server-assessment") || safeEntry, ...(Array.isArray(current.history) ? current.history : [])]
       .filter((item, index, entries) => entries.findIndex((candidate) => candidate.id === item.id) === index)
       .slice(0, 100),
   }));

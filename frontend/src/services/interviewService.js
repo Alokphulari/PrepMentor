@@ -23,12 +23,8 @@ export function evaluateLocally({ config, questions, answers }) {
     role: config.role || "Software Engineer",
     type: config.interviewType || "Mixed",
     evaluationMode: "Local response-completeness rubric",
-    metrics: {
-      communication: clamp(depth * 0.9 + completion * 0.1),
-      technical: clamp(score * 0.92),
-      problemSolving: clamp(score * 0.96),
-      confidence: completion,
-    },
+    metrics: {},
+    summary: "Offline response completion only. Technical correctness, reasoning and communication have not been assessed.",
   };
 }
 
@@ -37,17 +33,12 @@ export async function evaluateInterview(payload) {
     return evaluateLocally(payload);
   }
 
-  try {
-    const response = await authorizedRequest("/api/interviews/evaluate", {
+  const response = await authorizedRequest("/api/interviews/evaluate", {
       method: "POST",
       expireSession: false,
       body: JSON.stringify(payload),
     });
-    return response.result;
-  } catch (error) {
-    if (error.status === 401 || error.status === 0 || !error.status) return evaluateLocally(payload);
-    throw error;
-  }
+  return response.result;
 }
 
 export async function getRemoteInterviewResult(id) {
