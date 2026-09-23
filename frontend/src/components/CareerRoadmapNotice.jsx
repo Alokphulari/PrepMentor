@@ -6,7 +6,7 @@ import CareerRoadmap from "./CareerRoadmap";
 function CareerRoadmapNotice() {
   const [result, setResult] = useState(null);
   useEffect(() => {
-    const show = (event) => { if (event.detail?.title) setResult(event.detail); };
+    const show = (event) => { if (event.detail?.showCareerRoadmap === true && /aptitude|coding|interview/i.test(event.detail?.type || "")) setResult(event.detail); };
     window.addEventListener(HISTORY_UPDATED_EVENT, show);
     return () => window.removeEventListener(HISTORY_UPDATED_EVENT, show);
   }, []);

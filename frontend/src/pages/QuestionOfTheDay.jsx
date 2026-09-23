@@ -6,7 +6,6 @@ import { addHistoryEntry } from "../services/history";
 import { markDailyQuestionActivity } from "../services/dailyActivity";
 import { DAILY_CHALLENGE_KEY, getDailyQuestion, getLocalDayKey, normalizeDailyChallenge } from "../utils/dailyChallenge";
 import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storage";
-import CareerRoadmap from "../components/CareerRoadmap";
 
 const dailyQuestions = Object.entries(aptitudeQuestions).flatMap(([category, levels]) =>
   Object.entries(levels).flatMap(([difficulty, questions]) =>
@@ -52,7 +51,7 @@ function QuestionOfTheDay() {
       <div className="mt-7 grid gap-3 sm:grid-cols-2">{question.options.map((option, index) => {const selected=selectedAnswer===option;const correct=result&&option===question.answer;const wrong=result&&selected&&!result.correct;return <button key={option} type="button" disabled={Boolean(result)} onClick={()=>setSelectedAnswer(option)} className={`flex min-h-16 items-center gap-3 rounded-2xl border p-4 text-left font-semibold transition ${correct?"border-emerald-400 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-200":wrong?"border-rose-400 bg-rose-50 text-rose-800 dark:bg-rose-950/30 dark:text-rose-200":selected?"border-indigo-500 bg-indigo-50 text-indigo-800 ring-4 ring-indigo-500/10 dark:bg-indigo-950/40 dark:text-indigo-200":"border-gray-200 hover:border-indigo-300 dark:border-gray-700"}`}><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/70 text-xs font-black text-gray-600 dark:bg-gray-800 dark:text-gray-300">{String.fromCharCode(65+index)}</span><span>{option}</span>{correct&&<CheckCircle2 className="ml-auto text-emerald-600" size={19}/>} {wrong&&<XCircle className="ml-auto text-rose-600" size={19}/>}</button>})}</div>
       {result ? <div className={`mt-7 rounded-2xl border p-5 ${result.correct?"border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30":"border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30"}`}><p className="flex items-center gap-2 font-extrabold">{result.correct?<CheckCircle2 className="text-emerald-600"/>:<Sparkles className="text-amber-600"/>}{result.correct?"Correct—nice work.":`The correct answer is ${question.answer}.`}</p><p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Today’s challenge is recorded. Come back tomorrow for a new question.</p></div> : <button type="button" disabled={!selectedAnswer} onClick={submit} className="mt-7 w-full rounded-xl bg-indigo-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40">Lock in answer</button>}
     </section>
-    {result&&<CareerRoadmap score={result.correct?100:0} module="Daily challenge" topicPerformance={[{topic:question.topic,percentage:result.correct?100:0}]}/>} 
+
   </div>;
 }
 

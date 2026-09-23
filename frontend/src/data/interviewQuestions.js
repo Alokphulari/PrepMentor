@@ -43,7 +43,7 @@ function shuffle(values) {
   return result;
 }
 
-export function buildInterviewQuestions(config = {}) {
+export function buildInterviewQuestions(config = {}, maximumQuestions = 8) {
   const safeConfig = config && typeof config === "object" && !Array.isArray(config) ? config : {};
   const role = typeof safeConfig.role === "string" && safeConfig.role.trim()
     ? safeConfig.role.trim().slice(0, 160)
@@ -64,7 +64,7 @@ export function buildInterviewQuestions(config = {}) {
   const prioritized = [...shuffle(available.filter((item) => focusAreas.includes(item.focus))), ...shuffle(available.filter((item) => !focusAreas.includes(item.focus)))];
   const requestedCount = Number(safeConfig.questionCount);
   const questionCount = Number.isInteger(requestedCount) && requestedCount >= 1
-    ? Math.min(requestedCount, 8)
+    ? Math.min(requestedCount, Math.max(1, Math.min(20, maximumQuestions)))
     : 5;
   return [introduction, ...prioritized].slice(0, questionCount);
 }

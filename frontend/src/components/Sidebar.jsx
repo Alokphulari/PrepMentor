@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   BarChart3,
+  BookOpen,
   History,
   User,
   Target,
@@ -41,6 +42,11 @@ function Sidebar({ open, onClose }) {
       name: "Performance",
       path: "/performance",
       icon: BarChart3,
+    },
+    {
+      name: "Learning Hub",
+      path: "/learning",
+      icon: BookOpen,
     },
     {
       name: "History",

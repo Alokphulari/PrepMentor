@@ -9,7 +9,7 @@ import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storag
 import { useAuth } from "./AuthContext";
 import { hasRemoteApi } from "../services/api";
 import { getRemotePlacementState, saveRemotePlacementState } from "../services/placementService";
-import { mergePlacementStates, normalizePlacementState, retryFailedPlacementLevel } from "../utils/placementProgress";
+import { normalizePlacementState, retryFailedPlacementLevel } from "../utils/placementProgress";
 
 const PlacementContext = createContext(null);
 const PLACEMENT_KEY = "prepmentor-placement-state";
@@ -52,7 +52,7 @@ function PlacementStateProvider({ children, authReady, isAuthenticated, storageK
     getRemotePlacementState()
       .then((savedState) => {
         if (active && savedState) {
-          setPlacementState((current) => mergePlacementStates(current, savedState));
+          setPlacementState(normalizePlacementState(savedState));
         }
       })
       .catch((error) => {
@@ -333,6 +333,7 @@ function PlacementStateProvider({ children, authReady, isAuthenticated, storageK
     <PlacementContext.Provider
       value={{
         placementState,
+        applyServerPlacement: (state) => setPlacementState(normalizePlacementState(state)),
 
         // Aptitude
         passAptitudeEasy,

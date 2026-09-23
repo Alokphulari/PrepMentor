@@ -1,3 +1,4 @@
+import { googleAccount } from "../services/authService";
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storage";
@@ -125,7 +126,9 @@ export function AuthProvider({ children }) {
     return finalUser;
   };
 
+  const googleSignIn = async (credential) => { const response=await googleAccount(credential);setUser(response.user);writeStorage(SESSION_KEY,response.user);return response.user; };
   const value = {
+    googleSignIn,
     user,
     login,
     register,

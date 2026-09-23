@@ -100,3 +100,5 @@ export async function authorizedRequest(path, options = {}) {
     throw error;
   }
 }
+
+export async function googleAccount(credential) { const response=await apiRequest("/api/auth/google",{method:"POST",body:JSON.stringify({credential})});saveToken(response.token);return response;}

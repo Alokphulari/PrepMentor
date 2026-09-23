@@ -1,3 +1,12 @@
+import { interviewHealth } from "../services/interviewAIService.js";
+import { interviewConfigured, interviewProviderConfig } from "./ai/interviewProvider.js";
+import { googleLogin } from "./auth.js";
+import { databaseStatus } from "./userStore.js";
+import { isConfigured } from "./ai/aiClient.js";
+import { startInterviewSession, getInterviewSession, answerInterviewSession, completeInterviewRemediation } from "./interviewSessions.js";
+import { publicCodingProblems, runCode, completeCodingRemediation } from "./codingAssessment.js";
+import { analyzeResume, getSkillBaseline } from "./resumeAnalysis.js";
+import { personalizedPlan } from "./personalization.js";
 import http from "node:http";
 import { pathToFileURL } from "node:url";
 import { appendHistory, authenticate, getHistory, login, publicUser, register, revokeSession, saveProfile } from "./auth.js";
@@ -6,16 +15,18 @@ import { getResume, saveResume } from "./resume.js";
 import { getInterviewResult, saveInterviewResult } from "./interviewResults.js";
 import { createRateLimiter } from "./rateLimit.js";
 import { generateQuestions, isLlmConfigured } from "./questionGenerator.js";
-import { synthesizeSpeech, transcribeSpeech } from "./speechTranscription.js";
+import { synthesizeSpeech, transcribeSpeech, speechConfigured } from "./speechTranscription.js";
 import { evaluateInterviewSemantically } from "./interviewEvaluator.js";
 import { reviewCode } from "./codeReviewer.js";
 
 const port = Number(process.env.PORT) || 4000;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
-function commonHeaders() {
+function commonHeaders(origin) {
+  const localOrigins = ["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174"];
+  const allowedOrigin = process.env.NODE_ENV !== "production" && localOrigins.includes(origin) ? origin : clientOrigin;
   return {
-    "Access-Control-Allow-Origin": clientOrigin,
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, OPTIONS",
     "Access-Control-Max-Age": "600",
@@ -31,7 +42,7 @@ function commonHeaders() {
 
 function send(response, status, payload, headers = {}) {
   response.writeHead(status, {
-    ...commonHeaders(),
+    ...commonHeaders(response.req?.headers.origin),
     "Content-Type": "application/json; charset=utf-8",
     ...headers,
   });
@@ -40,7 +51,7 @@ function send(response, status, payload, headers = {}) {
 
 function redirect(response, location) {
   response.writeHead(302, {
-    ...commonHeaders(),
+    ...commonHeaders(response.req?.headers.origin),
     Location: location,
   });
   response.end();
@@ -55,10 +66,6 @@ async function readJson(request, maximumSize = 1_000_000) {
     chunks.push(chunk);
   }
   return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
-}
-
-function clamp(value) {
-  return Math.max(0, Math.min(100, Math.round(value)));
 }
 
 function interviewText(value, fallback, limit) {
@@ -81,29 +88,12 @@ function evaluateInterview(payload) {
   if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
     throw new Error("Interview answers must be an object.");
   }
-  const wordCounts = questions.map((_, index) =>
-    String(answers[index] || "").slice(0, 10_000).trim().split(/\s+/).filter(Boolean).length
-  );
-  const answered = wordCounts.filter((count) => count >= 20).length;
-  const completion = clamp((answered / questions.length) * 100);
-  const depth = clamp(
-    (wordCounts.reduce((sum, count) => sum + Math.min(count, 80), 0) /
-      questions.length) *
-      1.25
-  );
-  const score = clamp(completion * 0.65 + depth * 0.35);
   const interviewTypes = new Set(["Technical", "Behavioral", "Mixed"]);
   const requestedType = interviewText(config.interviewType, "Mixed", 40);
   return {
-    score,
     role: interviewText(config.role, "Software Engineer", 160),
     type: interviewTypes.has(requestedType) ? requestedType : "Mixed",
-    metrics: {
-      communication: clamp(depth * 0.9 + completion * 0.1),
-      technical: clamp(score * 0.92),
-      problemSolving: clamp(score * 0.96),
-      confidence: completion,
-    },
+
   };
 }
 
@@ -120,8 +110,45 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
       health: "/api/health",
     });
   }
+  if (request.method === "GET" && request.url === "/api/interview/health") return send(response, 200, interviewHealth());
   if (request.method === "GET" && request.url === "/api/health") {
-    return send(response, 200, { status: "ok", service: "prepmentor-backend", questionGeneration: isLlmConfigured() ? "llm" : "offline", speech: isLlmConfigured() ? "ai" : "browser-only", timestamp: new Date().toISOString() });
+    const database = await databaseStatus();
+    return send(response, database === "unavailable" ? 503 : 200, { database, interview: { ...interviewHealth(), provider: interviewProviderConfig().provider, llm: interviewConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts") }, llm: isConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts"), codeExecution: Boolean(process.env.JUDGE0_BASE_URL), googleAuth: Boolean(process.env.GOOGLE_CLIENT_ID), googleClientId: process.env.GOOGLE_CLIENT_ID || null, status: database === "unavailable" ? "degraded" : "ok", service: "prepmentor-backend", questionGeneration: isLlmConfigured() ? "llm" : "offline", speech: speechConfigured("stt") || speechConfigured("tts") ? "ai" : "browser-only", timestamp: new Date().toISOString() });
+  }
+  const sessionMatch = request.url.match(/^\/api\/interview-sessions\/([a-zA-Z0-9-]+)(\/answer)?$/);
+  const featurePaths = ["/api/interview-remediation","/api/interview-sessions", "/api/code/problems", "/api/code/run", "/api/code/submit", "/api/code/remediation", "/api/resume/analyze", "/api/baseline", "/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"];
+  if (featurePaths.includes(request.url) || sessionMatch) {
+    const user = await authenticate(request);
+    if (!user) return send(response, 401, { message: "Authentication required." });
+    if (request.method === "POST" || ["/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"].includes(request.url)) {
+      const rate = checkGenerationRateLimit(request.url + ":" + user.id);
+      if (!rate.allowed) return send(response, 429, { message: "Request limit reached. Try again later." }, { "Retry-After": String(rate.retryAfter) });
+    }
+    try {
+      if (request.method === "POST" && request.url === "/api/interview-remediation") return send(response, 200, {placementState:await completeInterviewRemediation(user.id,await readJson(request))});
+      if (request.method === "GET" && request.url === "/api/code/problems") return send(response, 200, { problems: publicCodingProblems() });
+      if (request.method === "GET" && request.url === "/api/baseline") return send(response, 200, await getSkillBaseline(user.id));
+      if (request.method === "POST" && request.url === "/api/resume/analyze") return send(response, 200, { analysis: await analyzeResume(user.id, await readJson(request, 7200000)) });
+      if (["GET", "POST"].includes(request.method) && ["/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"].includes(request.url)) return send(response, 200, { plan: await personalizedPlan(user.id, request.url.startsWith("/api/career-roadmap") ? "roadmap" : "learning", request.method === "POST") });
+      if (request.method === "POST" && ["/api/code/run", "/api/code/submit"].includes(request.url)) return send(response, 200, await runCode(user.id, await readJson(request, 100000), request.url.endsWith("submit")));
+      if (request.method === "POST" && request.url === "/api/code/remediation") return send(response, 200, { placementState: await completeCodingRemediation(user.id, await readJson(request)) });
+      if (request.method === "POST" && request.url === "/api/interview-sessions") return send(response, 201, { session: await startInterviewSession(user.id, await readJson(request)) });
+      if (sessionMatch && request.method === "GET" && !sessionMatch[2]) return send(response, 200, { session: await getInterviewSession(user.id, sessionMatch[1]) });
+      if (sessionMatch && request.method === "POST" && sessionMatch[2]) return send(response, 200, { session: await answerInterviewSession(user.id, sessionMatch[1], await readJson(request)) });
+      return send(response, 405, { message: "Method not allowed." });
+    } catch (error) { return send(response, error.status || 400, { code: error.code, message: error.status === 500 ? "Storage is unavailable." : error.message || "Unable to complete this request." }); }
+  }
+  if (request.method === "POST" && request.url === "/api/auth/google") {
+    const rate = checkAuthRateLimit("google:" + request.socket.remoteAddress);
+    if (!rate.allowed) return send(response, 429, { message: "Too many sign-in attempts." });
+    try { return send(response, 200, await googleLogin(await readJson(request))); }
+    catch (error) { return send(response, error.status || 400, { message: error.message }); }
+  }
+  if (request.method === "POST" && ["/api/speech/transcribe", "/api/speech/synthesize", "/api/interviews/evaluate"].includes(request.url)) {
+    const user = await authenticate(request);
+    if (!user) return send(response, 401, { message: "Authentication required." });
+    const rate = checkGenerationRateLimit(request.url + ":" + user.id);
+    if (!rate.allowed) return send(response, 429, { message: "AI request limit reached. Try again later." }, { "Retry-After": String(rate.retryAfter) });
   }
   if (request.method === "POST" && request.url === "/api/questions/generate") {
     const user = await authenticate(request);
@@ -269,13 +296,16 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
     try {
       const payload = await readJson(request);
       const rubric = evaluateInterview(payload);
+      // This legacy endpoint accepts client questions, not trusted stored turns.
+      // Never let supplied scores, provider labels, or keywords become evidence.
+      payload.questions = payload.questions.map((item) => ({ question: interviewText(item?.question, "Interview question", 2000) }));
       const evaluation = await evaluateInterviewSemantically(payload, rubric);
       const result = await saveInterviewResult(user.id, evaluation, `${Math.max(1, Math.min(180, Number(payload.config?.duration) || 30))} min`);
       return send(response, 200, {
         result,
       });
     } catch (error) {
-      return send(response, 400, { message: error.message || "Invalid interview payload." });
+      return send(response, error.status || 400, { code: error.code, message: error.message || "Invalid interview payload." });
     }
   }
   if (request.method === "GET" && request.url.startsWith("/api/interviews/")) {
@@ -292,10 +322,10 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
 
 export function createAppServer() {
   const checkAuthRateLimit = createRateLimiter();
-  const checkGenerationRateLimit = createRateLimiter({ limit: 20, windowMs: 60 * 60 * 1000 });
+  const checkGenerationRateLimit = createRateLimiter({ limit: 120, windowMs: 60 * 60 * 1000 });
   return http.createServer((request, response) => {
     handleRequest(request, response, checkAuthRateLimit, checkGenerationRateLimit).catch((error) => {
-      console.error("Unhandled API request error:", error);
+      console.error("API request failed:", error.status || 500);
       if (!response.headersSent) {
         send(response, 500, { message: "The server could not complete this request." });
       } else {

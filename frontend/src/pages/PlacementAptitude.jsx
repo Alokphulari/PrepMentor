@@ -164,6 +164,7 @@ export default function PlacementAptitude() {
 
   const [selectedAnswer, setSelectedAnswer] = useState(() => restoredSession?.selectedAnswer || null);
 
+  const [answers, setAnswers] = useState(()=>restoredSession?.answers || {});
   const [score, setScore] = useState(() => restoredSession?.score || 0);
 
   const [showResult, setShowResult] = useState(false);
@@ -202,6 +203,7 @@ export default function PlacementAptitude() {
         setQuestionIndex(0);
         setSelectedAnswer(null);
         setScore(0);
+        setAnswers({});
         setNeedsGeneration(false);
       })
       .catch(() => {
@@ -211,6 +213,7 @@ export default function PlacementAptitude() {
         setQuestionIndex(0);
         setSelectedAnswer(null);
         setScore(0);
+        setAnswers({});
         setNeedsGeneration(false);
       })
       .finally(() => active && setLoadingQuestions(false));
@@ -228,8 +231,9 @@ export default function PlacementAptitude() {
       selectedAnswer,
       score,
       generationSource,
+      answers,
     });
-  }, [generationSource, level, loadingQuestions, needsGeneration, questionIndex, questions, score, selectedAnswer, showResult, storageKey]);
+  }, [answers, generationSource, level, loadingQuestions, needsGeneration, questionIndex, questions, score, selectedAnswer, showResult, storageKey]);
 
   const currentQuestion = questions[questionIndex];
 
@@ -264,6 +268,8 @@ export default function PlacementAptitude() {
       selectedAnswer === currentQuestion.answer;
 
     const newScore = isCorrect ? score + 1 : score;
+    const finalAnswers={...answers,[questionIndex]:selectedAnswer};
+    setAnswers(finalAnswers);
 
     if (!isLastQuestion) {
       if (isCorrect) {
@@ -286,7 +292,11 @@ export default function PlacementAptitude() {
 
     const passed = hasPassedAssessment(finalScore, questions.length);
 
+    const groups=new Map();
+    questions.forEach((question,index)=>{if(finalAnswers[index]===undefined)return;const topic=question.topic||"Aptitude";const item=groups.get(topic)||{topic,correct:0,total:0};item.total++;if(finalAnswers[index]===question.answer)item.correct++;groups.set(topic,item);});
+    const topicPerformance=[...groups.values()].map((item)=>({...item,percentage:getAssessmentPercentage(item.correct,item.total)}));
     setLastResult({
+      topicPerformance,
       level,
       score: finalScore,
       passed,
@@ -294,9 +304,11 @@ export default function PlacementAptitude() {
     addHistoryEntry({
       title: `Placement Aptitude · ${levelTitle}`,
       type: "Placement Aptitude",
+      mode: "placement",
+      difficulty: level,
       score: getAssessmentPercentage(finalScore, questions.length),
       duration: "Self-paced",
-      topicPerformance: [{ topic: `${levelTitle} aptitude`, percentage: getAssessmentPercentage(finalScore, questions.length) }],
+      topicPerformance,
     });
 
     /*
@@ -345,12 +357,7 @@ export default function PlacementAptitude() {
     if (!lastResult.passed) {
       navigate("/learning", {
         state: {
-          topicPerformance: [{
-            topic: `${levelTitle} Aptitude Fundamentals`,
-            correct: lastResult.score,
-            total: questions.length,
-            percentage: getAssessmentPercentage(lastResult.score, questions.length),
-          }],
+          topicPerformance: lastResult.topicPerformance,
           placementMode: true,
           placementLevel: level,
           module: "aptitude",
@@ -379,6 +386,7 @@ export default function PlacementAptitude() {
     setQuestionIndex(0);
     setSelectedAnswer(null);
     setScore(0);
+        setAnswers({});
     setLastResult(null);
     setShowResult(false);
 
@@ -481,7 +489,7 @@ export default function PlacementAptitude() {
           <CareerRoadmap
             score={percentage}
             module={`Placement aptitude · ${levelTitle}`}
-            topicPerformance={[{ topic: `${levelTitle} aptitude`, percentage }]}
+            topicPerformance={lastResult?.topicPerformance || []}
           />
         </div>
       </div>

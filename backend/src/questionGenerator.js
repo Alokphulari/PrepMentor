@@ -1,3 +1,4 @@
+import { isConfigured, structuredCompletion } from "./ai/aiClient.js";
 const kinds = new Set(["aptitude", "coding", "interview"]);
 const difficulties = new Set(["easy", "medium", "hard"]);
 const languages = new Set(["JavaScript", "Python", "Java", "C++", "C", "C#", "Go", "TypeScript"]);
@@ -38,13 +39,16 @@ function extractJson(content) {
 function validateQuestions(items, config) {
   return items.slice(0, config.count).map((item, index) => {
     if (!item || typeof item !== "object" || typeof item.question !== "string") throw new Error("The model returned an invalid question.");
+    if (!item.question.trim()) throw new Error("Empty generated question.");
     const common = { id: `${config.kind}-${config.offset + index + 1}`, question: item.question.trim().slice(0, 1000), difficulty: config.difficulty };
     if (config.kind === "aptitude") {
-      const options = Array.isArray(item.options) ? item.options.map(String).slice(0, 4) : [];
-      if (options.length !== 4 || !options.includes(String(item.answer))) throw new Error("The model returned an invalid aptitude answer.");
-      return { ...common, options, answer: String(item.answer), topic: text(item.topic, config.category) };
+      const options = Array.isArray(item.options) && item.options.length === 4 && item.options.every((option) => typeof option === "string" && option.trim() && option.length <= 1000) ? item.options : [];
+      if (options.length !== 4 || new Set(options).size !== 4 || !options.includes(String(item.answer))) throw new Error("The model returned an invalid aptitude answer.");
+      if (typeof item.topic !== "string" || !item.topic.trim() || typeof item.explanation !== "string" || !item.explanation.trim()) throw new Error("Incomplete aptitude question.");
+      return { ...common, options, answer: String(item.answer), topic: text(item.topic, config.category), explanation: text(item.explanation, "", 2000) };
     }
     if (config.kind === "interview") return { ...common, focus: text(item.focus, config.role) };
+    if (!["title", "description", "example", "topic"].every((key) => typeof item[key] === "string" && item[key].trim()) || !Array.isArray(item.constraints) || !item.constraints.length || !Array.isArray(item.hints)) throw new Error("Incomplete coding problem.");
     return {
       ...common,
       title: text(item.title, `Coding problem ${config.offset + index + 1}`, 160),
@@ -58,23 +62,9 @@ function validateQuestions(items, config) {
   });
 }
 
-function promptFor(config) {
-  const format = config.kind === "aptitude"
-    ? "question, exactly four string options, answer matching one option, topic"
-    : config.kind === "interview"
-      ? "question, focus"
-      : "title, question, topic, description, constraints (array), example, hints (array)";
-  const exclusions = config.kind === "interview" && config.excludedQuestions.length
-    ? ` Do not repeat or closely paraphrase these recently asked questions: ${JSON.stringify(config.excludedQuestions)}.`
-    : "";
-  const adaptiveContext = config.kind === "interview" && config.previousAnswer
-    ? ` This is a live interview follow-up. Previous question: ${JSON.stringify(config.previousQuestion)}. Candidate answer: ${JSON.stringify(config.previousAnswer)}. Ask a natural next question that probes a specific claim, missing detail, trade-off, or relevant deeper skill from that answer. Do not praise, evaluate, or reveal an ideal answer.`
-    : "";
-  return `Generate ${config.count} distinct ${config.difficulty} ${config.kind} questions for PrepMentor. Category: ${config.category}. Role: ${config.role}. Programming language: ${config.language}. Start catalog position: ${config.offset + 1}. Favor common placement and interview questions, avoid duplicates, and return ONLY a JSON array.${adaptiveContext}${exclusions} Each object must contain: ${format}.`;
-}
 
 export function isLlmConfigured() {
-  return Boolean(process.env.LLM_API_KEY);
+  return isConfigured();
 }
 
 export async function generateQuestions(value) {
@@ -84,24 +74,7 @@ export async function generateQuestions(value) {
     error.status = 503;
     throw error;
   }
-  const baseUrl = (process.env.LLM_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.LLM_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: process.env.LLM_MODEL || "gpt-4.1-mini",
-      temperature: 0.8,
-      max_tokens: 12000,
-      messages: [
-        { role: "system", content: "You create accurate assessment content and output strict JSON only." },
-        { role: "user", content: promptFor(config) },
-      ],
-    }),
-    signal: AbortSignal.timeout(80000),
-  });
-  if (!response.ok) throw new Error(`The configured LLM returned status ${response.status}.`);
-  const payload = await response.json();
-  const questions = validateQuestions(extractJson(payload.choices?.[0]?.message?.content), config);
+  const questions = await structuredCompletion('Create accurate assessment content. Return {questions: [...]} with exactly the requested count. Aptitude entries require question, exactly four distinct options, answer matching one option, topic and explanation. Interview entries require question and focus. Coding entries require title, question, topic, description, constraints, example and hints.', config, (value) => validateQuestions(extractJson(JSON.stringify(value)), config));
   if (questions.length !== config.count) throw new Error("The model returned fewer questions than requested.");
   return { questions, source: "llm", catalogSize: config.kind === "coding" ? 1000 : null };
 }

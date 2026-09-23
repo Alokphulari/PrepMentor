@@ -47,7 +47,7 @@ export function getLearningReferences(topic) {
   if (name.includes("javascript") || name.includes("programming")) {
     return [
       { title: "Guide · MDN JavaScript", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide" },
-      { title: "Video · freeCodeCamp JavaScript", url: "https://www.youtube.com/@freecodecamp/search?query=javascript" },
+      { title: "Video · freeCodeCamp JavaScript", url: "https://www.youtube.com/watch?v=jS4aFq5-91M" },
       { title: "Assignment · JavaScript exercises", url: "https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures-v8/" },
       { title: "Reference · JavaScript language", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference" },
     ];

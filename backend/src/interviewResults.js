@@ -14,7 +14,7 @@ function resultTopicPerformance(metrics) {
   }).slice(0, 20);
 }
 
-export async function saveInterviewResult(userId, evaluation, duration = "30 min") {
+export async function saveInterviewResult(userId, evaluation, duration = "30 min", relatedUpdates = () => ({})) {
   const result = {
     id: randomUUID(),
     ...evaluation,
@@ -24,12 +24,19 @@ export async function saveInterviewResult(userId, evaluation, duration = "30 min
     id: result.id,
     title: `${result.role} Interview`.slice(0, 160),
     type: "Interview",
+    role: result.role,
+    interviewType: result.type,
     score: result.score,
+    mode: result.mode || "practice",
+    difficulty: result.difficulty || "medium",
+    evaluationMode: result.evaluationMode,
+    evidenceType: "server-assessment",
     duration: String(duration).slice(0, 40),
     createdAt: result.createdAt,
-    topicPerformance: resultTopicPerformance(result.metrics),
+    topicPerformance: [...(result.weakTopics || []).map((item) => ({ topic: item.topic, percentage: item.score })), ...resultTopicPerformance(result.metrics)].slice(0, 20),
   };
   const user = await mutateUser(userId, (current) => ({
+    ...relatedUpdates(current, result),
     interviewResults: [result, ...(Array.isArray(current.interviewResults) ? current.interviewResults : [])]
       .slice(0, 50),
     history: [historyEntry, ...(Array.isArray(current.history) ? current.history : [])]

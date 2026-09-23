@@ -16,15 +16,18 @@ function InterviewWhiteboard({ storageKey }) {
     if (!canvas || !context) return;
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, canvas.width, canvas.height);
+    let restoredImage;
     try {
       const saved = sessionStorage.getItem(storageKey);
       if (!saved) return;
       const image = new Image();
+      restoredImage = image;
       image.onload = () => context.drawImage(image, 0, 0, canvas.width, canvas.height);
       image.src = saved;
     } catch {
       // Drawing remains available even if tab storage is denied.
     }
+    return () => { if (restoredImage) restoredImage.onload = null; drawingRef.current = false; };
   }, [open, storageKey]);
 
   const point = (event) => {

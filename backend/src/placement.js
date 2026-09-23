@@ -79,6 +79,15 @@ export async function getPlacementState(userId) {
 }
 
 export async function savePlacementState(userId, value) {
+  const existing = await getPlacementState(userId);
+  for (const level of ["easy", "medium", "hard"]) {
+    if (value?.coding?.[level] !== existing.coding[level]) {
+      const unlockingEasy = level === "easy" && existing.coding.easy === "locked" && value?.coding?.easy === "available" && value?.aptitude?.hard === "passed";
+      if (!unlockingEasy) throw new Error("Coding progress is recorded by server-side test execution and remediation.");
+    }
+  }
+  if (value?.interview?.status === "passed" && existing.interview.status !== "passed") throw new Error("Interview progress requires a completed server interview.");
+  if (existing.interview.status === "failed" && value?.interview?.status !== "failed") throw new Error("Complete interview remediation before retaking.");
   const user = await mutateUser(userId, (current) => ({
     placementState: validatePlacementTransition(
       current.placementState || DEFAULT_PLACEMENT_STATE,

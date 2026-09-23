@@ -3,6 +3,9 @@ import prepmentorWordmark from "../assets/prepmentor-wordmark-transparent.png";
 
 import {
   ArrowRight,
+  BrainCircuit,
+  BookOpen,
+  Target,
   Mic,
   FileText,
   BarChart3,
@@ -15,6 +18,12 @@ import { Link } from "react-router-dom";
 function Landing() {
   const features = [
     {
+      icon: BrainCircuit,
+      title: "Aptitude Preparation",
+      description:
+        "Build quantitative, logical reasoning, and verbal skills for placement assessments.",
+    },
+    {
       icon: Mic,
       title: "AI Mock Interviews",
       description:
@@ -24,7 +33,7 @@ function Landing() {
       icon: FileText,
       title: "Resume Analysis",
       description:
-        "Upload your resume and discover your skills, strengths, and recommended interview topics.",
+        "Review your resume, identify your skills, and tailor your preparation to your target role.",
     },
     {
       icon: Code2,
@@ -36,34 +45,40 @@ function Landing() {
       icon: BarChart3,
       title: "Performance Tracking",
       description:
-        "Track your interview scores and understand where you are improving.",
+        "Track your aptitude, coding, and interview performance as you prepare for placements.",
+    },
+    {
+      icon: BookOpen,
+      title: "Personalized Learning Hub",
+      description:
+        "Strengthen weak topics with learning resources and practice tasks before your next attempt.",
     },
   ];
 
   const steps = [
     {
       number: "01",
-      title: "Upload Your Resume",
+      title: "Set Your Goal",
       description:
-        "Give PrepMentor your resume so your preparation can be personalized.",
+        "Build your profile, choose your target role, and add your resume to personalize preparation.",
     },
     {
       number: "02",
-      title: "Choose Your Interview",
+      title: "Practice Core Skills",
       description:
-        "Select your role, difficulty, interview type, and duration.",
+        "Develop your aptitude and coding skills through focused practice at your level.",
     },
     {
       number: "03",
-      title: "Practice With AI",
+      title: "Take Placement Rounds",
       description:
-        "Take a realistic interview and answer questions using text or voice.",
+        "Progress through aptitude, coding, and AI interview rounds in the Placement module.",
     },
     {
       number: "04",
-      title: "Get Feedback",
+      title: "Learn and Improve",
       description:
-        "Review your performance, strengths, weaknesses, and improvement areas.",
+        "Review your results, work on weak areas in the Learning Hub, and track your progress.",
     },
   ];
 
@@ -136,21 +151,21 @@ function Landing() {
 
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-6">
               <span className="w-2 h-2 bg-blue-600 rounded-full" />
-              AI-Powered Interview Preparation
+              Complete Placement Preparation
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
               Practice Smarter.
               <br />
               <span className="text-blue-600">
-                Interview Better.
+                Get Placement Ready.
               </span>
             </h1>
 
             <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Prepare for technical and behavioral interviews with
-              personalized AI mock interviews, voice practice, resume
-              analysis, and detailed performance feedback.
+              Prepare for every stage of placement with aptitude practice,
+              coding challenges, AI mock interviews, resume analysis, and
+              personalized learning?all in one place.
             </p>
 
             <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -169,70 +184,6 @@ function Landing() {
               >
                 I Already Have an Account
               </Link>
-
-            </div>
-
-          </div>
-
-          {/* Hero Preview */}
-          <div className="mt-16 max-w-5xl mx-auto">
-
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-3 shadow-2xl shadow-gray-200">
-
-              <div className="rounded-xl bg-white border border-gray-200 overflow-hidden">
-
-                {/* Fake browser bar */}
-                <div className="h-10 border-b border-gray-200 flex items-center px-4 gap-2">
-                  <span className="w-3 h-3 rounded-full bg-gray-300" />
-                  <span className="w-3 h-3 rounded-full bg-gray-300" />
-                  <span className="w-3 h-3 rounded-full bg-gray-300" />
-                </div>
-
-                <div className="p-8">
-
-                  <div className="grid md:grid-cols-3 gap-5">
-
-                    <div className="p-5 rounded-xl bg-blue-50">
-                      <p className="text-sm text-gray-500">
-                        Interviews
-                      </p>
-
-                      <p className="mt-2 text-3xl font-bold">
-                        12
-                      </p>
-                    </div>
-
-                    <div className="p-5 rounded-xl bg-green-50">
-                      <p className="text-sm text-gray-500">
-                        Average Score
-                      </p>
-
-                      <p className="mt-2 text-3xl font-bold">
-                        82%
-                      </p>
-                    </div>
-
-                    <div className="p-5 rounded-xl bg-orange-50">
-                      <p className="text-sm text-gray-500">
-                        Current Streak
-                      </p>
-
-                      <p className="mt-2 text-3xl font-bold">
-                        7 🔥
-                      </p>
-                    </div>
-
-                  </div>
-
-                  <div className="mt-6 h-36 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center">
-                    <p className="text-gray-400">
-                      Your performance analytics will appear here
-                    </p>
-                  </div>
-
-                </div>
-
-              </div>
 
             </div>
 
@@ -257,17 +208,17 @@ function Landing() {
             </p>
 
             <h2 className="mt-3 text-3xl md:text-4xl font-bold">
-              One platform for complete interview preparation
+              One platform for complete placement preparation
             </h2>
 
             <p className="mt-4 text-gray-600">
-              Practice every important part of an interview and understand
-              exactly where you need to improve.
+              Build your skills across every placement round and use
+              your results to guide what you learn next.
             </p>
 
           </div>
 
-          <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
             {features.map((feature) => {
               const Icon = feature.icon;
@@ -367,19 +318,19 @@ function Landing() {
               </h2>
 
               <p className="mt-5 text-gray-600 leading-relaxed">
-                Instead of practicing random interview questions,
-                PrepMentor helps you focus on the skills and topics that
-                matter for your target role.
+                PrepMentor brings aptitude, coding, interviews, and learning
+                together so you can build the skills that matter for your
+                target role and prepare for each placement round.
               </p>
 
               <div className="mt-8 space-y-4">
 
                 {[
-                  "Personalized interview questions",
-                  "Voice-based interview practice",
-                  "Resume-aware preparation",
-                  "Detailed AI feedback",
-                  "Progress and performance tracking",
+                  "Aptitude and coding skill development",
+                  "Sequential placement assessments",
+                  "AI mock interviews with voice practice",
+                  "Resume analysis and personalized learning",
+                  "Progress and performance across modules",
                 ].map((item) => (
                   <div
                     key={item}
@@ -405,11 +356,11 @@ function Landing() {
               <div className="text-center">
 
                 <div className="mx-auto w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
-                  <Mic size={30} />
+                  <Target size={30} />
                 </div>
 
                 <h3 className="mt-6 text-2xl font-bold">
-                  Ready for your next interview?
+                  Ready for your placement journey?
                 </h3>
 
                 <p className="mt-3 text-gray-600">
@@ -457,7 +408,7 @@ function Landing() {
             </div>
 
             <p className="text-sm text-gray-500">
-              © 2026 PrepMentor. AI-powered interview preparation.
+              © 2026 PrepMentor. Complete placement preparation.
             </p>
 
           </div>
