@@ -40,7 +40,7 @@ export function normalizeAudioPayload(value) {
 export async function transcribeSpeech(value) {
   requireSpeechCapability("stt");
   const { buffer, mimeType } = normalizeAudioPayload(value);
-  if (interviewProviderConfig().provider === "gemini") return transcribeGeminiAudio(buffer, mimeType, { timeoutMs: 8000, retries: 0 });
+  if (interviewProviderConfig().provider === "gemini") return transcribeGeminiAudio(buffer, mimeType, { timeoutMs: 25_000, retries: 0 });
   const extension = mimeType.split("/")[1].replace("mpeg", "mp3");
   const form = new FormData();
   form.append("file", new Blob([buffer], { type: mimeType }), `interview-answer.${extension}`);
