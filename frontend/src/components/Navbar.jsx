@@ -1,3 +1,6 @@
+import prepmentorIcon from "../assets/prepmentor-icon-transparent.png";
+import prepmentorWordmark from "../assets/prepmentor-wordmark-transparent.png";
+
 import {
   Bell,
   Award,
@@ -13,7 +16,7 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { usePlacement } from "../context/PlacementContext";
@@ -129,16 +132,23 @@ function Navbar({ onMenuClick, sidebarOpen }) {
         <button type="button" onClick={onMenuClick} className="rounded-xl p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 lg:hidden" aria-label="Open navigation" aria-controls="app-navigation" aria-expanded={sidebarOpen}>
           <Menu size={22} />
         </button>
-        <button type="button" onClick={() => navigate("/dashboard")} className="flex items-center gap-3 rounded-xl text-left">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-600/20">
-            P
-          </div>
-          <div className="hidden sm:block">
-            <span className="block text-[17px] font-extrabold tracking-tight text-gray-950 dark:text-white">PrepMentor</span>
-            <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Career workspace</span>
-          </div>
-        </button>
-      </div>
+     </div>
+
+<Link to="/dashboard" className="flex items-center gap-2 mr-auto">
+  <img
+    src={prepmentorIcon}
+    alt="PrepMentor"
+    className="h-10 w-10 object-contain"
+  />
+
+  <img
+    src={prepmentorWordmark}
+    alt="PrepMentor"
+    className="h-auto w-[150px] object-contain"
+  />
+</Link>
+
+<div className="flex items-center gap-1.5 sm:gap-2"></div>
 
       <div className="flex items-center gap-1.5 sm:gap-2">
         <button type="button" onClick={toggleTheme} className="rounded-xl p-2.5 text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-300" aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
