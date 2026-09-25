@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import { findUserById, mutateUser } from "./userStore.js";
-import { DEFAULT_PLACEMENT_STATE } from "./placement.js";
+import { DEFAULT_PLACEMENT_STATE, validatePlacementState } from "./placement.js";
 import { withSessionLock } from "./interviewSessions.js";
+import { EXECUTION_LANGUAGES } from "../../frontend/src/utils/executionLanguages.js";
 
-const languages = { JavaScript: 63, Python: 71, Java: 62, "C++": 54 };
+const languages = EXECUTION_LANGUAGES;
 const problems = [
   { id: "array-sum", difficulty: "easy", title: "Array sum", topic: "Arrays", description: "Read n followed by n integers from standard input. Print their sum. 0 <= n <= 100000; each value is between -1000000 and 1000000. Use a 64-bit sum.", samples: [{ input: "3\n1 2 3\n", output: "6\n" }], hidden: [{ input: "0\n", output: "0\n" }, { input: "4\n-5 2 -3 6\n", output: "0\n" }, { input: "1\n-9\n", output: "-9\n" }, { input: "5\n1000000 1000000 1000000 1000000 1000000\n", output: "5000000\n" }, { input: "3\n9 7 5\n", output: "21\n" }] },
   { id: "longest-distinct", difficulty: "medium", title: "Longest distinct substring", topic: "Sliding Window", description: "Read one line of lowercase English letters (possibly empty, length <= 100000). Print the length of the longest substring containing no repeated character.", samples: [{ input: "abcabcbb\n", output: "3\n" }], hidden: [{ input: "\n", output: "0\n" }, { input: "bbbbb\n", output: "1\n" }, { input: "pwwkew\n", output: "3\n" }, { input: "dvdf\n", output: "3\n" }, { input: "abcdefghijklmnopqrstuvwxyz\n", output: "26\n" }] },
@@ -58,6 +59,7 @@ export function normalizeExecution(value) {
   if (!Object.hasOwn(languages, value.language)) throw new Error("Unsupported execution language.");
   const problem = problems.find((item) => item.id === value.problemId);
   if (!problem) throw new Error("Unknown coding problem.");
+  if (value.mode === "placement" && !["array-sum", "longest-distinct", "minimum-coins"].includes(problem.id)) throw Object.assign(new Error("Use the assigned Placement assessment, not a practice problem."), { status: 403 });
   return { code: value.code, languageId: languages[value.language], problem, mode: value.mode === "placement" ? "placement" : "practice" };
 }
 export async function executeTests(input, hidden, fetchImpl = globalThis.fetch) {
@@ -72,6 +74,7 @@ export async function executeTests(input, hidden, fetchImpl = globalThis.fetch) 
   const deadline = Date.now() + 50000;
   for (const test of tests) {
     try {
+      if (Date.now() >= deadline) throw new Error();
       const response = await fetchImpl(`${base}/submissions?base64_encoded=true&wait=false`, { method: "POST", headers, signal: AbortSignal.timeout(8000), body: JSON.stringify({ language_id: input.languageId, source_code: Buffer.from(input.code).toString("base64"), stdin: Buffer.from(test.input).toString("base64"), expected_output: Buffer.from(test.output).toString("base64"), cpu_time_limit: 2, wall_time_limit: 5, memory_limit: 128000, enable_network: false }) });
       if (!response.ok) throw new Error();
       const { token } = await response.json();
@@ -104,14 +107,17 @@ export async function runCode(userId, value, submit, runner = executeTests) {
   return withSessionLock(`coding:${userId}`, async () => {
     const user = await findUserById(userId);
     const level = input.problem.difficulty;
+    if (input.mode === "placement") validatePlacementState(user.placementState || DEFAULT_PLACEMENT_STATE);
     if (input.mode === "placement" && user.placementState?.coding?.[level] !== "available") throw Object.assign(new Error("This Placement coding level is locked or requires remediation."), { status: 403 });
     const result = await runner(input, submit);
+    if (!Number.isInteger(result.totalTests) || result.totalTests < 1 || !Number.isInteger(result.passedTests) || result.passedTests < 0 || result.passedTests > result.totalTests) throw Object.assign(new Error("Judge0 returned invalid test results. No score was recorded."), { status: 503 });
     if (!submit) return result;
     const score = Math.round(result.passedTests / result.totalTests * 100);
     const entry = { id: randomUUID(), type: "Coding", evidenceType: "server-assessment", title: `${input.mode === "placement" ? "Placement" : "Practice"} Coding ${level}`, mode: input.mode, difficulty: level, score, duration: "Self-paced", createdAt: new Date().toISOString(), topicPerformance: [{ topic: input.problem.topic, percentage: score }] };
     const updated = await mutateUser(userId, (current) => {
       const placementState = structuredClone(current.placementState || DEFAULT_PLACEMENT_STATE);
       if (input.mode === "placement") {
+        validatePlacementState(placementState);
         if (placementState.coding[level] !== "available") throw new Error("Coding level changed during submission.");
         placementState.coding[level] = score >= 80 ? "passed" : "failed";
         if (score >= 80) {
@@ -121,7 +127,7 @@ export async function runCode(userId, value, submit, runner = executeTests) {
       }
       return { placementState, history: [entry, ...(current.history || [])].slice(0, 100), codingRemediation: input.mode === "placement" && score < 80 ? { level, topic: input.problem.topic, completed: false } : current.codingRemediation };
     });
-    return { ...result, score, entry, placementState: updated.placementState };
+    return { ...result, status: score >= 80 ? "passed" : "failed", allTestsPassed: result.passedTests === result.totalTests, score, entry, placementState: updated.placementState };
   });
 }
 export async function completeCodingRemediation(userId, value) {

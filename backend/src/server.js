@@ -18,6 +18,8 @@ import { generateQuestions, isLlmConfigured } from "./questionGenerator.js";
 import { synthesizeSpeech, transcribeSpeech, speechConfigured } from "./speechTranscription.js";
 import { evaluateInterviewSemantically } from "./interviewEvaluator.js";
 import { reviewCode } from "./codeReviewer.js";
+import { analyzePerformance } from "./performanceAnalysis.js";
+import { startAptitude, submitAptitude, finalPlacementReport } from "./placementAssessments.js";
 
 const port = Number(process.env.PORT) || 4000;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
@@ -117,7 +119,7 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
   }
   const sessionMatch = request.url.match(/^\/api\/interview-sessions\/([a-zA-Z0-9-]+)(\/answer)?$/);
   const featurePaths = ["/api/interview-remediation","/api/interview-sessions", "/api/code/problems", "/api/code/run", "/api/code/submit", "/api/code/remediation", "/api/resume/analyze", "/api/baseline", "/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"];
-  if (featurePaths.includes(request.url) || sessionMatch) {
+  if (featurePaths.includes(request.url) || ["/api/performance/analyze", "/api/placement/aptitude/start", "/api/placement/aptitude/submit", "/api/placement/report"].includes(request.url) || sessionMatch) {
     const user = await authenticate(request);
     if (!user) return send(response, 401, { message: "Authentication required." });
     if (request.method === "POST" || ["/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"].includes(request.url)) {
@@ -125,6 +127,10 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
       if (!rate.allowed) return send(response, 429, { message: "Request limit reached. Try again later." }, { "Retry-After": String(rate.retryAfter) });
     }
     try {
+      if (request.method === "POST" && request.url === "/api/performance/analyze") return send(response, 200, { analysis: await analyzePerformance(user.id) });
+      if (request.method === "POST" && request.url === "/api/placement/aptitude/start") return send(response, 200, await startAptitude(user.id, await readJson(request)));
+      if (request.method === "POST" && request.url === "/api/placement/aptitude/submit") return send(response, 200, await submitAptitude(user.id, await readJson(request)));
+      if (request.method === "GET" && request.url === "/api/placement/report") return send(response, 200, await finalPlacementReport(user.id));
       if (request.method === "POST" && request.url === "/api/interview-remediation") return send(response, 200, {placementState:await completeInterviewRemediation(user.id,await readJson(request))});
       if (request.method === "GET" && request.url === "/api/code/problems") return send(response, 200, { problems: publicCodingProblems() });
       if (request.method === "GET" && request.url === "/api/baseline") return send(response, 200, await getSkillBaseline(user.id));

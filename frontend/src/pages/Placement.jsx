@@ -8,7 +8,7 @@ import {
   CheckCircle2,
   ArrowRight,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getPlacementCompletion } from "../utils/placementProgress";
 
 function Placement() {
@@ -614,6 +614,7 @@ function Placement() {
 
       </section>
 
+      <section className="surface-card rounded-2xl p-6"><h2 className="font-bold">Final Report</h2>{placementState.interview.status === "passed" ? <Link className="mt-3 inline-block font-bold text-indigo-600" to="/placement/report">View final Placement report</Link> : <p className="mt-2 text-sm text-gray-500">Pass Aptitude, Coding, and Interview to unlock your final report.</p>}</section>
       {/* IMPORTANT RULE */}
       <section className="bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900 rounded-2xl p-6">
 

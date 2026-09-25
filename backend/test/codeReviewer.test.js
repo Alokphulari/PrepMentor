@@ -8,7 +8,7 @@ test("code review requests validate content and supported languages", () => {
     problem: "Solve it",
     language: "Python",
   });
-  assert.equal(normalizeCodeReviewRequest({ code: "x", problem: "y", language: "Ruby" }).language, "JavaScript");
+  assert.throws(() => normalizeCodeReviewRequest({ code: "x", problem: "y", language: "Ruby" }), /Unsupported review language/);
   assert.throws(() => normalizeCodeReviewRequest({ code: "", problem: "Missing" }), /requires a problem and solution/);
 });
 

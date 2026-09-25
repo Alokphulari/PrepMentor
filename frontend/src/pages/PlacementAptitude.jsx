@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { hasRemoteApi } from "../services/api";
+import { authorizedRequest } from "../services/authService";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { usePlacement } from "../context/PlacementContext";
@@ -136,7 +138,7 @@ export default function PlacementAptitude() {
   const { user } = useAuth();
 
   const {
-    placementState,
+    placementState, applyServerPlacement,
     passAptitudeEasy,
     passAptitudeMedium,
     passAptitudeHard,
@@ -146,7 +148,7 @@ export default function PlacementAptitude() {
   const availableLevel = getFirstAvailableLevel(placementState);
   const storageKey = getAccountStorageKey(PLACEMENT_APTITUDE_SESSION_KEY, user);
   const [restoredSession] = useState(() => normalizePlacementAptitudeSession(
-    readStorage(storageKey, null),
+    (hasRemoteApi && !readStorage(storageKey, null)?.serverSessionId) ? null : readStorage(storageKey, null),
     availableLevel,
   ));
 
@@ -158,6 +160,10 @@ export default function PlacementAptitude() {
    * This prevents React from immediately jumping to Medium
    * when Easy is completed.
    */
+  const [serverSessionId, setServerSessionId] = useState(() => restoredSession?.serverSessionId || null);
+  const [submissionError, setSubmissionError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const submitLock = useRef(false);
   const [level, setLevel] = useState(() => restoredSession?.level || availableLevel);
 
   const [questionIndex, setQuestionIndex] = useState(() => restoredSession?.questionIndex || 0);
@@ -195,9 +201,11 @@ export default function PlacementAptitude() {
   useEffect(() => {
     if (!needsGeneration || showResult || placementState.aptitude[level] !== "available") return undefined;
     let active = true;
-    generateAptitudeSession({ category: "quantitative", difficulty: level, count: 30 })
+    (hasRemoteApi ? authorizedRequest("/api/placement/aptitude/start", { method: "POST", body: JSON.stringify({ level }) }) : generateAptitudeSession({ category: "quantitative", difficulty: level, count: 30 }))
       .then((result) => {
         if (!active) return;
+        setServerSessionId(result.id || null);
+        setSubmissionError("");
         setQuestions(result.questions);
         setGenerationSource(result.source || "curated");
         setQuestionIndex(0);
@@ -206,8 +214,9 @@ export default function PlacementAptitude() {
         setAnswers({});
         setNeedsGeneration(false);
       })
-      .catch(() => {
+      .catch((error) => {
         if (!active) return;
+        if (hasRemoteApi) { setSubmissionError(error.message); return; }
         setQuestions(getPlacementFallback(level));
         setGenerationSource("curated-fallback");
         setQuestionIndex(0);
@@ -227,13 +236,14 @@ export default function PlacementAptitude() {
     writeStorage(storageKey, {
       level,
       questions,
+      serverSessionId,
       questionIndex,
       selectedAnswer,
       score,
       generationSource,
       answers,
     });
-  }, [answers, generationSource, level, loadingQuestions, needsGeneration, questionIndex, questions, score, selectedAnswer, showResult, storageKey]);
+  }, [answers, generationSource, level, loadingQuestions, needsGeneration, questionIndex, questions, score, selectedAnswer, showResult, storageKey, serverSessionId]);
 
   const currentQuestion = questions[questionIndex];
 
@@ -248,7 +258,7 @@ export default function PlacementAptitude() {
    * ----------------------------------------
    */
   const handleSelectAnswer = (answer) => {
-    if (showResult) return;
+    if (showResult || submitting) return;
 
     markDailyQuestionActivity();
     setSelectedAnswer(answer);
@@ -259,7 +269,8 @@ export default function PlacementAptitude() {
    * NEXT QUESTION / SUBMIT
    * ----------------------------------------
    */
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (submitLock.current) return;
     if (!selectedAnswer) {
       return;
     }
@@ -285,6 +296,20 @@ export default function PlacementAptitude() {
     /*
      * Last question.
      */
+    if (hasRemoteApi) {
+      submitLock.current = true; setSubmitting(true); setSubmissionError("");
+      try {
+        const result = await authorizedRequest("/api/placement/aptitude/submit", { method: "POST", body: JSON.stringify({ sessionId: serverSessionId, answers: finalAnswers }) });
+        setScore(result.correct);
+        setLastResult({ level, score: result.correct, passed: result.passed, topicPerformance: result.topicPerformance });
+        setShowResult(true);
+        clearSavedSession(storageKey);
+        addHistoryEntry(result.entry, { sync: false });
+        applyServerPlacement(result.placementState);
+      } catch (error) { setSubmissionError(error.message); }
+      finally { submitLock.current = false; setSubmitting(false); }
+      return;
+    }
     const finalScore = newScore;
 
     setScore(finalScore);
@@ -410,6 +435,8 @@ export default function PlacementAptitude() {
    * RESULT SCREEN
    * ----------------------------------------
    */
+  if (submissionError && needsGeneration) return <section className="surface-card rounded-3xl p-6"><p role="alert">{submissionError}</p><button onClick={() => window.location.reload()} className="mt-4 font-bold text-indigo-600">Retry loading assessment</button></section>;
+
   if (showResult && lastResult) {
     const percentage = getAssessmentPercentage(lastResult.score, questions.length);
 
@@ -540,7 +567,7 @@ export default function PlacementAptitude() {
 
             <p style={styles.subtitle}>
               Complete all {questions.length} questions to continue your
-              placement journey. Source: {generationSource === "llm" ? "LLM generated" : "curated fallback"}.
+              placement journey. Source: {generationSource === "server-curated" ? "server-scored curated assessment" : generationSource === "llm" ? "LLM generated" : "curated fallback"}.
             </p>
           </div>
 
@@ -642,9 +669,10 @@ export default function PlacementAptitude() {
           {/* NEXT BUTTON */}
           <div style={styles.actionContainer}>
 
+            {submissionError && <p role="alert" className="text-rose-500">{submissionError}</p>}{submitting && <p role="status">Saving your assessment...</p>}
             <button
               onClick={handleNext}
-              disabled={!selectedAnswer}
+              disabled={!selectedAnswer || submitting}
               style={{
                 ...styles.nextButton,
                 ...(!selectedAnswer

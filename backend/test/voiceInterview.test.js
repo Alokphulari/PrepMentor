@@ -66,7 +66,7 @@ test("sessions survive 20 dynamic turns, reject stale submissions, expire after 
     process.env.AI_PROVIDER = "openai"; process.env.OPENAI_API_KEY = "test-only"; process.env.OPENAI_LLM_MODEL = "test-model";
     let outage = false;
     geminiMock(context, { fail: () => outage });
-    await createUser({ id: "student", email: "voice@test", placementState: { interview: { status: "available" } } });
+    await createUser({ id: "student", email: "voice@test", placementState: { aptitude: { easy: "passed", medium: "passed", hard: "passed" }, coding: { easy: "passed", medium: "passed", hard: "passed" }, interview: { status: "available", whiteboard: "locked" } } });
     let session = await startInterviewSession("student", { role: "Software Engineer", mode: "practice" });
     assert.equal(session.currentQuestion.question, "Explain topic1");
     for (let index = 0; index < 20; index++) {

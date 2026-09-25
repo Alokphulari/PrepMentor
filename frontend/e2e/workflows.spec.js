@@ -143,8 +143,10 @@ test("Learning Hub keeps reference and reflection gates and refresh progress",as
   await page.screenshot({path:"test-results/learning-desktop-dark.png",fullPage:true});
   const finish=page.getByRole("button",{name:"Mark topic complete",exact:true});
   await expect(page.getByRole("button",{name:"Return to practice",exact:true})).toBeDisabled();
+  const reference = page.getByRole("link").filter({has:page.locator("svg.lucide-external-link")}).first();
+  await page.context().route(await reference.getAttribute("href"), route => route.fulfill({ contentType: "text/html", body: "<p>Learning reference</p>" }));
   const popup=page.waitForEvent("popup");
-  await page.getByRole("link").filter({has:page.locator("svg.lucide-external-link")}).first().click();
+  await reference.click();
   await (await popup).close();
   await expect(finish).toBeDisabled();
   await page.locator("textarea").fill("I use a hash table to retrieve values by key and handle collisions carefully while comparing memory usage and lookup costs with a sorted array.");

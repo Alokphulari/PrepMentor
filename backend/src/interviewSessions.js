@@ -7,6 +7,7 @@ import { interviewCompletion as structuredCompletion, aiError } from "./ai/inter
 import { text } from "./ai/structuredOutput.js";
 import { evaluateInterviewSemantically } from "./interviewEvaluator.js";
 import { saveInterviewResult } from "./interviewResults.js";
+import { validatePlacementState, DEFAULT_PLACEMENT_STATE } from "./placement.js";
 
 import { evaluateAnswer, similarQuestion, interviewContext } from "./interviewAnswer.js";
 
@@ -80,6 +81,7 @@ export async function startInterviewSession(userId, value) {
   const config = normalizeInterviewConfig(value);
   const user = await findUserById(userId);
   if (config.mode === "placement" && user?.placementState?.interview?.status !== "available") throw Object.assign(new Error("Complete Placement Coding before the interview."), { status: 403 });
+  if (config.mode === "placement") validatePlacementState(user.placementState || DEFAULT_PLACEMENT_STATE);
   const currentQuestion = await nextInterviewQuestion(config, [], structuredCompletion, interviewContext(user), { timeoutMs: 15000, retries: 0 });
   const startedAt = new Date().toISOString();
   return storeSession(userId, { id: randomUUID(), userId, config, version: 0, createdAt: startedAt, updatedAt: startedAt, expiresAt: new Date(Date.parse(startedAt) + config.duration * 60000).toISOString(), startedAt, duration: config.duration, turns: [], currentQuestion, ...sessionMetadata([], currentQuestion), status: "active" });
@@ -108,6 +110,7 @@ export async function answerInterviewSession(userId, id, value) {
         const completed = { ...session, version: (session.version || 0) + 1, updatedAt: now, turns, ...sessionMetadata(turns, null, result), status: "completed", result, currentQuestion: null };
         const updates = { interviewSessions: [completed, ...(current.interviewSessions || []).filter((item) => item.id !== id)].slice(0, 20) };
         if (session.config.mode === "placement") {
+          validatePlacementState(current.placementState || DEFAULT_PLACEMENT_STATE);
           if (current.placementState?.interview?.status !== "available") throw Object.assign(new Error("Placement progress changed. Reload your interview."), { status: 409 });
           updates.placementState = { ...current.placementState, interview: { ...current.placementState.interview, status: result.score >= 80 ? "passed" : "failed" } };
           updates.interviewRemediation = { resultId: result.id, completed: false };

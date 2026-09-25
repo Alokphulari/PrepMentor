@@ -16,6 +16,7 @@ const LearningHub = lazy(() => import("./pages/LearningWorkspace"));
 const PracticeHub = lazy(() => import("./pages/PracticeHub"));
 const QuestionOfTheDay = lazy(() => import("./pages/QuestionOfTheDay"));
 const Games = lazy(() => import("./pages/Games"));
+const PlacementReport = lazy(() => import("./pages/PlacementReport"));
 const Placement = lazy(() => import("./pages/Placement"));
 const PlacementAptitude = lazy(() => import("./pages/PlacementAptitude"));
 const PlacementCoding = lazy(() => import("./pages/PlacementCoding"));
@@ -139,6 +140,7 @@ function App() {
             element={<Placement />}
           />
 
+          <Route path="/placement/report" element={<PlacementReport />} />
           {/* Easy / Medium / Hard */}
           <Route
             path="/placement/aptitude/:level"

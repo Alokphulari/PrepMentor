@@ -1,3 +1,4 @@
+import { findUserById } from "../src/userStore.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -63,14 +64,16 @@ test("authenticated workflow persists resume, coding, adaptive interview, report
     assert.equal((await request("/api/resume", "PUT", { name: "Student", skills: "JavaScript", projects: [{ title: "Web project" }] })).status, 200);
     assert.equal((await request("/api/resume/analyze", "POST", { manual: true })).body.analysis.source, "AI resume evidence estimate");
     assert.equal((await request("/api/baseline")).body.categories[0].estimate, 50);
-    let state = (await request("/api/placement")).body.placementState;
     assert.equal((await request("/api/code/submit", "POST", { code: "x", language: "Python", problemId: "array-sum", mode: "placement" })).status, 403);
     for (const level of ["easy", "medium", "hard"]) {
-      state.aptitude[level] = "passed";
-      if (level === "hard") state.coding.easy = "available";
-      else state.aptitude[level === "easy" ? "medium" : "hard"] = "available";
-      const saved = await request("/api/placement", "PUT", state);
+      const started = await request("/api/placement/aptitude/start", "POST", { level });
+      assert.equal(started.status, 200);
+      assert.ok(started.body.questions.every((q) => !Object.hasOwn(q, "answer")));
+      const privateSession = (await findUserById(registered.body.user.id)).aptitudeSession;
+      const answers = Object.fromEntries(privateSession.questions.map((q, i) => [i, q.answer]));
+      const saved = await request("/api/placement/aptitude/submit", "POST", { sessionId: started.body.id, answers });
       assert.equal(saved.status, 200);
+      assert.equal(saved.body.passed, true);
     }
     for (const problemId of ["array-sum", "longest-distinct", "minimum-coins"]) {
       const result = await request("/api/code/submit", "POST", { code: "mock program; never executed locally", language: "Python", problemId, mode: "placement" });
@@ -96,6 +99,10 @@ test("authenticated workflow persists resume, coding, adaptive interview, report
     assert.ok(result.questionFeedback.every((item)=>item.answer && item.idealAnswer));
     assert.equal((await request(`/api/interviews/${result.id}`, "GET", undefined, second.body.token)).status, 404);
     assert.equal((await request("/api/placement")).body.placementState.interview.status, "passed");
+    const finalReport = await request("/api/placement/report");
+    assert.equal(finalReport.status, 200);
+    assert.equal(finalReport.body.interview.id, result.id);
+    assert.equal(finalReport.body.assessments.length, 7);
     assert.equal((await request("/api/learning/plan")).body.plan.learningPlan[0].topic, "Index costs");
     assert.equal((await request("/api/career-roadmap")).body.plan.source, "AI personalized plan");
     const cached = (await request("/api/career-roadmap")).body.plan;
@@ -106,7 +113,7 @@ test("authenticated workflow persists resume, coding, adaptive interview, report
     assert.equal(roadmapGenerations, 2);
     const relog = await request("/api/auth/login", "POST", { email: "student@workflow.test", password: "test-password-123" });
     token = relog.body.token;
-    assert.equal((await request("/api/history")).body.history.length, 5);
+    assert.equal((await request("/api/history")).body.history.length, 8);
     assert.equal((await request(`/api/interview-sessions/${id}`)).body.session.status, "completed");
   } finally {
     await new Promise((resolve) => server.close(resolve));

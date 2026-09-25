@@ -210,7 +210,7 @@ test("local Placement preserves locks, hides assessment hints, and passes using 
     process.env.INTERVIEW_DEMO_MODE = "true";
     delete process.env.MONGODB_URI; delete process.env.NODE_ENV;
     for (const status of ["locked", "failed", "passed", "available"]) {
-      await createUser({ id: status, email: `${status}@example.test`, placementState: { interview: { status } } });
+      await createUser({ id: status, email: `${status}@example.test`, placementState: { aptitude: { easy: "passed", medium: "passed", hard: "passed" }, coding: { easy: "passed", medium: "passed", hard: "passed" }, interview: { status, whiteboard: "locked" } } });
       if (status !== "available") {
         await assert.rejects(startInterviewSession(status, { mode: "placement" }), { status: 403 });
         continue;

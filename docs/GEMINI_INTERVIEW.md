@@ -38,6 +38,6 @@ Official references checked during implementation:
 - [Audio transcription](https://ai.google.dev/gemini-api/docs/generate-content/transcribe)
 - [Speech generation](https://ai.google.dev/gemini-api/docs/generate-content/speech-generation)
 
-See [completion report](INTERVIEW_COMPLETION_REPORT.md) for exact results and remaining live checks.
+See the [project README](../README.md) for verification commands and live integration requirements.
 
 Explicit live browser acceptance: from `frontend/`, run `npx.cmd playwright test --config playwright.live.config.js`. This uses real Gemini and isolated test user storage; it is excluded from normal automated suites. A provider 503 leaves the candidate draft intact and is reported as a failed live acceptance check, never a successful interview. The agent performs this check after private key configuration. Physical microphone permission and audible playback still require the user's browser.

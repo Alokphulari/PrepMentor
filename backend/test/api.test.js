@@ -1,3 +1,4 @@
+import { findUserById } from "../src/userStore.js";
 import { geminiMock } from "./helpers/geminiMock.js";
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
@@ -235,8 +236,12 @@ test("authentication and profile flow protects user data", async () => {
       interview: { status: "locked", whiteboard: "locked" },
     }),
   });
-  assert.equal(validPlacement.response.status, 200);
-  assert.equal(validPlacement.body.placementState.aptitude.medium, "available");
+  assert.equal(validPlacement.response.status, 400);
+  const aptitude = await request("/api/placement/aptitude/start", { method: "POST", headers: { Authorization: authorization }, body: JSON.stringify({ level: "easy" }) });
+  const privateSession = (await findUserById(registered.body.user.id)).aptitudeSession;
+  const submitted = await request("/api/placement/aptitude/submit", { method: "POST", headers: { Authorization: authorization }, body: JSON.stringify({ sessionId: aptitude.body.id, answers: Object.fromEntries(privateSession.questions.map((q,i) => [i,q.answer])) }) });
+  assert.equal(submitted.response.status, 200);
+  assert.equal(submitted.body.placementState.aptitude.medium, "available");
 
   const jumpedPlacement = await request("/api/placement", {
     method: "PUT",

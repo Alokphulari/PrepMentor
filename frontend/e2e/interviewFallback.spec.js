@@ -52,7 +52,7 @@ test.beforeEach(async ({ page, request }, testInfo) => {
 test("real demo API starts, survives refresh, accepts typed answers and persists a complete local report", async ({ page }) => {
   await page.goto("/interview/setup");
   await page.getByRole("button", { name: "Start interview", exact: true }).click();
-  await expect(page.getByText("Backup interview engine active", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Evaluation source: Local Backup/)).toBeVisible();
   const response = page.getByRole("textbox", { name: "Your response" });
   const firstQuestion = await page.locator("h2").first().textContent();
   await response.fill("My example uses state and props with an effect cleanup because shared ownership determines which component updates. I tested the behavior and measured the result.");
@@ -60,7 +60,7 @@ test("real demo API starts, survives refresh, accepts typed answers and persists
   await expect(page.locator("h2").first()).toHaveText(firstQuestion);
   await expect(response).toContainText("My example uses state");
   await page.getByRole("button", { name: "Submit Answer", exact: true }).click();
-  await expect(page.getByText("Local deterministic rubric", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Evaluation source: Local Backup.*Local deterministic rubric/)).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: "Answer evaluation", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Next Question", exact: true }).click();

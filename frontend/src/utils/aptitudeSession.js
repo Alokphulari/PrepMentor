@@ -45,8 +45,10 @@ export function normalizePlacementAptitudeSession(value, expectedLevel) {
   const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
   if (!APTITUDE_DIFFICULTIES.includes(expectedLevel) || source.level !== expectedLevel) return null;
 
-  const questions = normalizeGeneratedAptitudeQuestions(source.questions);
+  const remote = typeof source.serverSessionId === "string";
+  const questions = normalizeGeneratedAptitudeQuestions(remote && Array.isArray(source.questions) ? source.questions.map((q) => ({ ...q, answer: q.options?.[0] })) : source.questions);
   if (!questions.length) return null;
+  if (remote) questions.forEach((q) => { delete q.answer; });
 
   const questionIndex = Math.max(
     0,
@@ -61,6 +63,7 @@ export function normalizePlacementAptitudeSession(value, expectedLevel) {
 
   return {
     level: expectedLevel,
+    ...(remote ? { serverSessionId: source.serverSessionId } : {}),
     questions,
     questionIndex,
     selectedAnswer,

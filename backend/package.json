@@ -8,7 +8,8 @@
     "start": "node --env-file-if-exists=.env src/server.js",
     "check": "node --check src/server.js",
     "test": "node --test",
-    "interview:smoke": "node --env-file-if-exists=.env scripts/interviewSmoke.js"
+    "interview:smoke": "node --env-file-if-exists=.env scripts/interviewSmoke.js",
+    "judge0:smoke": "node --env-file-if-exists=.env scripts/judge0Smoke.js"
   },
   "engines": {
     "node": ">=20"

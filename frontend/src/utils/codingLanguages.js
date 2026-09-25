@@ -1,4 +1,5 @@
-export const CODING_LANGUAGES = ["JavaScript", "TypeScript", "Python", "Java", "C++", "C", "C#", "Go"];
+import { EXECUTION_LANGUAGES } from "./executionLanguages.js";
+export const CODING_LANGUAGES = Object.keys(EXECUTION_LANGUAGES);
 
 export function getStarterCode(language, title = "solution") {
   const words = title.replace(/[^a-zA-Z0-9 ]/g, "").trim().split(/\s+/);
@@ -14,8 +15,4 @@ export function getStarterCode(language, title = "solution") {
     Go: `func ${name}(input any) any {\n    // Write your solution here\n    return nil\n}\n`,
   };
   return templates[language] || templates.JavaScript;
-}
-
-export function getValidationTokens() {
-  return ["return"];
 }

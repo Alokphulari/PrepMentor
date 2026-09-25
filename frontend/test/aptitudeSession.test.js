@@ -58,3 +58,12 @@ test("Placement aptitude restoration only accepts a valid session for the active
   assert.equal(normalizePlacementAptitudeSession({ level: "easy", questions }, "medium"), null);
   assert.equal(normalizePlacementAptitudeSession({ level: "medium", questions: questions.slice(0, 5) }, "medium"), null);
 });
+
+test("server aptitude drafts restore progress without storing answer keys", () => {
+  const questions = Array.from({ length: 30 }, (_, index) => ({ id: "remote-" + index, question: "Question " + index, options: ["A", "B", "C", "D"] }));
+  const restored = normalizePlacementAptitudeSession({ serverSessionId: "server-id", level: "easy", questions, questionIndex: 2, answers: { 0: "B", 1: "C" } }, "easy");
+  assert.equal(restored.serverSessionId, "server-id");
+  assert.equal(restored.questionIndex, 2);
+  assert.deepEqual(restored.answers, { 0: "B", 1: "C" });
+  assert.ok(restored.questions.every((q) => !Object.hasOwn(q, "answer")));
+});

@@ -137,7 +137,3 @@ export async function generateQuestionBatch(config) {
   }
   throw new Error("Connect the backend and configure its LLM to generate this question batch.");
 }
-
-export async function reviewCodingSolution(payload) {
-  return authorizedRequest("/api/code/review", { method: "POST", expireSession: false, timeoutMs: 65000, body: JSON.stringify(payload) });
-}

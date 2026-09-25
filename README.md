@@ -14,7 +14,7 @@ This repository retains the existing React 19/Vite/Tailwind UI, dark/light mode,
 - backend/src/userStore.js and mongoRepository.js: atomic development JSON storage or MongoDB with optimistic concurrency. Related records are bounded embedded aggregates owned by the user.
 - Existing deterministic question/roadmap/learning services remain honest offline fallbacks.
 
-See the [voice interview completion and verification report](docs/VOICE_INTERVIEW_COMPLETION.md), [implementation status](docs/IMPLEMENTATION_STATUS.md), [baseline audit](docs/BASELINE.md) and [demo checklist](docs/DEMO_CHECKLIST.md).
+See the [Gemini setup guide](docs/GEMINI_INTERVIEW.md), [interview fallback guide](docs/INTERVIEW_FALLBACK.md), and [demo checklist](docs/DEMO_CHECKLIST.md).
 
 ## Installation and local development
 
@@ -97,7 +97,7 @@ The browser uses Google Identity Services; the server verifies the ID token sign
 
 ## Interview behavior and recovery
 
-Interview now defaults to the official Gemini SDK. Configure `INTERVIEW_AI_PROVIDER=gemini`, `GEMINI_API_KEY`, `GEMINI_INTERVIEW_MODEL`, `GEMINI_TRANSCRIBE_MODEL` and `GEMINI_TTS_MODEL` in backend/.env. See [Gemini setup and errors](docs/GEMINI_INTERVIEW.md) and the [current completion report](docs/INTERVIEW_COMPLETION_REPORT.md). Earlier generic OpenAI instructions below remain relevant to other modules.
+Interview now defaults to the official Gemini SDK. Configure `INTERVIEW_AI_PROVIDER=gemini`, `GEMINI_API_KEY`, `GEMINI_INTERVIEW_MODEL`, `GEMINI_TRANSCRIBE_MODEL` and `GEMINI_TTS_MODEL` in backend/.env. See [Gemini setup and errors](docs/GEMINI_INTERVIEW.md). Earlier generic OpenAI instructions below remain relevant to other modules.
 
 Remote sessions use backend turns, currentQuestion, status and result. There are no placeholder questions. The 10/20/30-minute timer resumes from the server startedAt; the current response is accepted before finishing. The server also enforces a 20-turn safety maximum. The candidate can explicitly finish after an answer. Local offline practice retains its bounded question count.
 
@@ -138,7 +138,7 @@ npm.cmd run check
 npm.cmd exec --prefix frontend -- playwright test --config frontend/playwright.config.js
 ```
 
-Unit/integration tests isolate storage and mock LLM/STT/TTS/Judge0/Mongo; they do not make paid API calls. Browser tests use mocked API responses and installed Chrome. Set PLAYWRIGHT_CHANNEL=msedge for Edge. Test output directories are ignored. See docs/VERIFICATION.md for the recorded result.
+Unit/integration tests isolate storage and mock LLM/STT/TTS/Judge0/Mongo; they do not make paid API calls. Browser tests use mocked API responses and installed Chrome. Set PLAYWRIGHT_CHANNEL=msedge for Edge. Test output directories are ignored.
 
 ## Production deployment
 
@@ -175,3 +175,45 @@ Deploy a single API instance while sessions/rate limits remain process-local. Ch
 If an API key is rejected, check that it belongs to the correct provider/project, has model access and active billing, and contains no surrounding quotes/whitespace; restart the API. Secrets are never returned in errors. For CORS, match CLIENT_ORIGIN exactly to the browser's origin and rebuild Vite after changing VITE_API_BASE_URL. For microphone failures, check Chrome/Edge site permissions and Windows Settings > Privacy & security > Microphone, select a working input device, and use localhost or HTTPS. Empty recordings can be retried without losing typed text.
 
 Tests use controlled provider responses; they cannot certify your account quota, real microphone transcription quality, Google consent setup, Atlas network access, or hosted Judge0 connectivity. Those require the credential-backed steps above. No paid requests or deployment are performed automatically.
+
+## Demo reliability and verified progression
+
+Performance now includes an on-demand analysis of recorded aptitude, coding,
+interview, and weak-topic evidence. Gemini supplies study guidance when available;
+Local Backup derives guidance from the same evidence on provider failure.
+Local interview estimates are kept separate from measured averages. No new
+assessment scores are invented by the analysis.
+
+Interview screens, answer feedback, and reports identify Gemini or Local Backup.
+The deterministic interview backup remains available for demos and can complete
+Placement under the existing 80% threshold; its final report explicitly identifies
+demo scoring rather than verified technical correctness.
+
+Both coding editors share the same eight Judge0 CE languages. Practice and
+Placement can request AI code review, with a local review checklist on failure.
+Reviews never count as executed tests or unlock Placement. Judge0 outages keep
+drafts available, report the error, and record no execution score.
+
+To verify your configured Judge0 endpoint without changing user progress:
+
+```powershell
+cd backend
+npm.cmd run judge0:smoke
+```
+
+Configure JUDGE0_BASE_URL and any required authentication locally or in the hosting
+provider's secret settings first. This check submits a known-correct Python program
+against sample and hidden tests. No external runner is configured automatically.
+Language IDs follow the [Judge0 CE API](https://ce.judge0.com/).
+
+Online Placement aptitude now starts an authenticated server-owned question session.
+The browser receives questions without answer keys and submits selections for
+server scoring. Sessions survive refresh, expire after two hours, and are protected
+against duplicate scoring. Direct progress snapshots cannot award aptitude, coding,
+or interview passes. Placement Coding accepts only its assigned assessments.
+The final report at /placement/report requires all stages to be passed and a saved
+Placement interview result. Offline practice remains browser-local.
+
+New endpoints: POST /api/performance/analyze, POST /api/placement/aptitude/start,
+POST /api/placement/aptitude/submit, GET /api/placement/report.
+The existing POST /api/code/review is now connected to the coding UI.

@@ -1,26 +1,31 @@
-# PrepMentor Frontend
+﻿# PrepMentor Frontend
 
-From this directory, start the complete local application with:
+React and Vite client for placement preparation, coding practice, interviews,
+learning resources, resume building, and progress tracking.
 
-```bash
-npm run dev
-```
+## Development
 
-This launches both the frontend on `http://localhost:5173` and the API on `http://localhost:4000`. Use `npm run dev:client` only when the backend is already running separately.
+Run these commands from this directory:
 
-## Vite foundation
+- `npm ci`: install locked dependencies.
+- `npm run dev`: start both the frontend and backend.
+- `npm run dev:client`: start only Vite when the backend is already running.
+- `npm run lint`: check JavaScript and JSX.
+- `npm test`: run frontend unit tests.
+- `npm run build`: generate the production bundle in `dist/`.
+- `npm run preview`: preview the production bundle locally.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Routes are defined in `src/App.jsx`. Active screens live in `src/pages/`,
+shared UI in `src/components/`, and API clients in `src/services/`.
 
-Currently, two official plugins are available:
+## Configuration and deployment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Copy `.env.example` to `.env` for local configuration. Set
+`VITE_API_BASE_URL` to the backend origin, or leave it blank for local practice.
+Never put private provider keys in frontend environment variables.
 
-## React Compiler
+On Vercel, use `frontend` as the project root. Set `VITE_API_BASE_URL` to
+the deployed HTTPS backend origin and rebuild after changing it.
+`vercel.json` provides the build settings and SPA route rewrites.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+See [the project README](../README.md) for backend setup and feature details.

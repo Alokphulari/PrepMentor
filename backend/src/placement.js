@@ -79,20 +79,26 @@ export async function getPlacementState(userId) {
 }
 
 export async function savePlacementState(userId, value) {
-  const existing = await getPlacementState(userId);
+  const user = await mutateUser(userId, (current) => {
+  const existing = validatePlacementState(current.placementState || DEFAULT_PLACEMENT_STATE);
+  for (const level of ["easy", "medium", "hard"]) {
+    const from = existing.aptitude[level], to = value?.aptitude?.[level];
+    if (to !== from && !(from === "failed" && to === "available")) throw new Error("Aptitude progress requires server-side assessment submission.");
+  }
   for (const level of ["easy", "medium", "hard"]) {
     if (value?.coding?.[level] !== existing.coding[level]) {
-      const unlockingEasy = level === "easy" && existing.coding.easy === "locked" && value?.coding?.easy === "available" && value?.aptitude?.hard === "passed";
-      if (!unlockingEasy) throw new Error("Coding progress is recorded by server-side test execution and remediation.");
+      throw new Error("Coding progress is recorded by server-side test execution and remediation.");
     }
   }
   if (value?.interview?.status === "passed" && existing.interview.status !== "passed") throw new Error("Interview progress requires a completed server interview.");
   if (existing.interview.status === "failed" && value?.interview?.status !== "failed") throw new Error("Complete interview remediation before retaking.");
-  const user = await mutateUser(userId, (current) => ({
+  if (value?.interview?.status !== existing.interview.status || value?.interview?.whiteboard !== existing.interview.whiteboard) throw new Error("Interview progress is recorded by the server.");
+  return {
     placementState: validatePlacementTransition(
       current.placementState || DEFAULT_PLACEMENT_STATE,
       value
     ),
-  }));
+  };
+  });
   return user?.placementState || null;
 }

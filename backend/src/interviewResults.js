@@ -30,6 +30,8 @@ export async function saveInterviewResult(userId, evaluation, duration = "30 min
     mode: result.mode || "practice",
     difficulty: result.difficulty || "medium",
     evaluationMode: result.evaluationMode,
+    provider: result.provider,
+    fallbackUsed: Boolean(result.fallbackUsed),
     evidenceType: "server-assessment",
     duration: String(duration).slice(0, 40),
     createdAt: result.createdAt,
