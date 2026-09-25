@@ -63,7 +63,7 @@ function InterviewSetupWorkspace() {
       }
       const excludedQuestions = getRecentInterviewQuestions();
       const questionCount = getAdaptiveInterviewQuestionCount(config.duration);
-      const sessionConfig = { ...config, questionCount, createdAt: new Date().toISOString(), excludedQuestions };
+      const sessionConfig = { ...config, mode: location.state?.mode || "practice", questionCount, createdAt: new Date().toISOString(), excludedQuestions };
       let generatedQuestions = null;
       try {
         const response = await generateQuestionBatch({ kind: "interview", count: questionCount, difficulty: config.difficulty.toLowerCase(), role: config.role, category: `${config.interviewType}: ${config.focusAreas.join(", ")}`, excludedQuestions });

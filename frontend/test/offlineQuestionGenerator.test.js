@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { generateOfflineQuestions } from "../src/utils/offlineQuestionGenerator.js";
+import { generateOfflineQuestions, generatePlacementAptitudeQuestions } from "../src/utils/offlineQuestionGenerator.js";
 
 test("offline generator creates complete valid batches", () => {
   for (const category of ["quantitative", "logical", "verbal", "programming", "focus"]) {
@@ -16,6 +16,15 @@ test("offline generator creates complete valid batches", () => {
 test("clicked options use the same type as answers for game scoring", () => {
   const questions = generateOfflineQuestions({ category: "quantitative", count: 10, seed: "game-score" });
   assert.ok(questions.every((question) => question.options.find((option) => option === question.answer)));
+});
+
+test("Placement aptitude mixes quantitative, logical, and verbal questions", () => {
+  const questions = generatePlacementAptitudeQuestions({ count: 30, seed: "placement-mix" });
+  assert.equal(questions.length, 30);
+  assert.deepEqual(new Set(questions.map((item) => item.topic)).size >= 3, true);
+  assert.ok(questions.some((item) => ["Percentages", "Averages", "Speed and Distance", "Ratios", "Profit and Loss", "Algebra"].includes(item.topic)));
+  assert.ok(questions.some((item) => ["Number Series", "Pattern Recognition", "Directions"].includes(item.topic)));
+  assert.ok(questions.some((item) => ["Synonyms", "Antonyms"].includes(item.topic)));
 });
 
 test("a new session creates different question content, not only a new order", () => {

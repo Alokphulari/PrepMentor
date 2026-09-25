@@ -167,3 +167,17 @@ export function generateOfflineQuestions({ category = "quantitative", difficulty
   });
   return randomizeQuestions(questions, random);
 }
+
+export function generatePlacementAptitudeQuestions({ difficulty = "medium", count = 30, seed } = {}) {
+  const safeCount = Math.max(1, Math.min(50, Math.round(Number(count) || 30)));
+  const categories = ["quantitative", "logical", "verbal"].slice(0, Math.min(safeCount, 3));
+  const baseCount = Math.floor(safeCount / categories.length);
+  const remainder = safeCount % categories.length;
+  const questions = categories.flatMap((category, index) => generateOfflineQuestions({
+    category,
+    difficulty,
+    count: baseCount + (index < remainder ? 1 : 0),
+    seed: seed ? `${seed}-${category}` : undefined,
+  }));
+  return randomizeQuestions(questions);
+}

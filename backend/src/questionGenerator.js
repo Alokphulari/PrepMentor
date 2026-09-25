@@ -70,7 +70,7 @@ export function isLlmConfigured() {
 export async function generateQuestions(value) {
   const config = normalizeGenerationRequest(value);
   if (!isLlmConfigured()) {
-    const error = new Error("LLM generation is not configured. Set LLM_API_KEY on the backend.");
+    const error = new Error("Question generation is not configured. Set the backend AI provider key and model.");
     error.status = 503;
     throw error;
   }

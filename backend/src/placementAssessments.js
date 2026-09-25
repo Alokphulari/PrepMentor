@@ -1,7 +1,7 @@
 ﻿import { randomUUID } from "node:crypto";
 import { findUserById, mutateUser } from "./userStore.js";
 import { DEFAULT_PLACEMENT_STATE, validatePlacementState } from "./placement.js";
-import { generateOfflineQuestions } from "../../frontend/src/utils/offlineQuestionGenerator.js";
+import { generatePlacementAptitudeQuestions } from "../../frontend/src/utils/offlineQuestionGenerator.js";
 const levels = ["easy", "medium", "hard"];
 function allowed(state, level) {
   validatePlacementState(state);
@@ -14,7 +14,7 @@ export async function startAptitude(userId, value) {
     allowed(state, value.level);
     const existing = current.aptitudeSession;
     if (existing?.level === value.level && !existing.completed && Date.parse(existing.expiresAt) > Date.now()) return {};
-    return { aptitudeSession: { id: randomUUID(), level: value.level, expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), questions: generateOfflineQuestions({ category: "quantitative", difficulty: value.level, count: 30 }) } };
+    return { aptitudeSession: { id: randomUUID(), level: value.level, expiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), questions: generatePlacementAptitudeQuestions({ difficulty: value.level, count: 30 }) } };
   });
   return publicSession(user.aptitudeSession);
 }

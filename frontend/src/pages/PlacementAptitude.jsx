@@ -9,8 +9,7 @@ import { markDailyQuestionActivity } from "../services/dailyActivity";
 import { getAssessmentPercentage, getMinimumCorrectAnswers, hasPassedAssessment } from "../utils/assessmentRules";
 import { normalizePlacementAptitudeSession, PLACEMENT_APTITUDE_SESSION_KEY } from "../utils/aptitudeSession";
 import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storage";
-import { generateOfflineQuestions } from "../utils/offlineQuestionGenerator";
-import { generateAptitudeSession } from "../services/questionService";
+import { generatePlacementAptitudeQuestions } from "../utils/offlineQuestionGenerator";
 import CareerRoadmap from "../components/CareerRoadmap";
 
 const QUESTIONS = {
@@ -110,7 +109,7 @@ const QUESTIONS = {
 };
 
 function getPlacementFallback(level, count = 30) {
-  return generateOfflineQuestions({ category: "quantitative", difficulty: level, count });
+  return generatePlacementAptitudeQuestions({ difficulty: level, count });
 }
 
 function getFirstAvailableLevel(placementState) {
@@ -201,7 +200,7 @@ export default function PlacementAptitude() {
   useEffect(() => {
     if (!needsGeneration || showResult || placementState.aptitude[level] !== "available") return undefined;
     let active = true;
-    (hasRemoteApi ? authorizedRequest("/api/placement/aptitude/start", { method: "POST", body: JSON.stringify({ level }) }) : generateAptitudeSession({ category: "quantitative", difficulty: level, count: 30 }))
+    (hasRemoteApi ? authorizedRequest("/api/placement/aptitude/start", { method: "POST", body: JSON.stringify({ level }) }) : Promise.resolve({ questions: getPlacementFallback(level), source: "curated-fallback" }))
       .then((result) => {
         if (!active) return;
         setServerSessionId(result.id || null);

@@ -584,8 +584,8 @@ function Interview() {
     const result = { ...evaluation, id, createdAt: evaluation.createdAt || config.createdAt };
     saveLocalInterviewResult(result, user);
     const topicPerformance = Object.entries(result.metrics || {}).flatMap(([topic, value]) => Number.isFinite(Number(value)) ? [{ topic: topic.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (letter) => letter.toUpperCase()), percentage: Math.max(0, Math.min(100, Math.round(Number(value)))) }] : []);
-    addHistoryEntry({ id, title: `${result.role} Interview`, type: "Interview", score, duration: `${config.duration || 30} min`, role: result.role, createdAt: result.createdAt, evaluationMode: result.evaluationMode, evidenceType: evaluation.id ? "server-assessment" : "self-reported", topicPerformance }, { sync: !evaluation.id });
-    if (config.mode === "placement" && placementState.interview.status === "available" && score >= PASS_PERCENTAGE && evaluation.evaluationMode?.startsWith("AI semantic")) passInterview();
+    addHistoryEntry({ id, title: `${result.role} Interview`, type: "Interview", mode: config.mode || "practice", score, duration: `${config.duration || 30} min`, role: result.role, createdAt: result.createdAt, evaluationMode: result.evaluationMode, evidenceType: evaluation.id ? "server-assessment" : "self-reported", topicPerformance }, { sync: !evaluation.id });
+    if (config.mode === "placement" && placementState.interview.status === "available" && score >= PASS_PERCENTAGE && (evaluation.evaluationMode?.startsWith("AI semantic") || evaluation.evaluationMode === "Local deterministic interview rubric")) passInterview();
     try {
       sessionStorage.removeItem(sessionKey);
       sessionStorage.removeItem(whiteboardStorageKey);
