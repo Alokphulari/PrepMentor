@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import CareerRoadmapNotice from "./CareerRoadmapNotice";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import VoiceMentor from "./VoiceMentor";
 
 function getRouteTitle(pathname) {
   if (pathname === "/dashboard") return "Dashboard";
@@ -67,6 +68,7 @@ function Layout() {
         </main>
         <CareerRoadmapNotice />
       </div>
+      <VoiceMentor />
     </div>
   );
 }

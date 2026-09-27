@@ -20,6 +20,7 @@ import { evaluateInterviewSemantically } from "./interviewEvaluator.js";
 import { reviewCode } from "./codeReviewer.js";
 import { analyzePerformance } from "./performanceAnalysis.js";
 import { startAptitude, submitAptitude, finalPlacementReport } from "./placementAssessments.js";
+import { voiceMentorReply } from "./voiceMentor.js";
 
 const port = Number(process.env.PORT) || 4000;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
@@ -118,7 +119,7 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
     return send(response, database === "unavailable" ? 503 : 200, { database, interview: { ...interviewHealth(), provider: interviewProviderConfig().provider, llm: interviewConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts") }, llm: isConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts"), codeExecution: Boolean(process.env.JUDGE0_BASE_URL), googleAuth: Boolean(process.env.GOOGLE_CLIENT_ID), googleClientId: process.env.GOOGLE_CLIENT_ID || null, status: database === "unavailable" ? "degraded" : "ok", service: "prepmentor-backend", questionGeneration: isLlmConfigured() ? "llm" : "offline", speech: speechConfigured("stt") || speechConfigured("tts") ? "ai" : "browser-only", timestamp: new Date().toISOString() });
   }
   const sessionMatch = request.url.match(/^\/api\/interview-sessions\/([a-zA-Z0-9-]+)(\/answer)?$/);
-  const featurePaths = ["/api/interview-remediation","/api/interview-sessions", "/api/code/problems", "/api/code/run", "/api/code/submit", "/api/code/remediation", "/api/resume/analyze", "/api/baseline", "/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate"];
+  const featurePaths = ["/api/interview-remediation","/api/interview-sessions", "/api/code/problems", "/api/code/run", "/api/code/submit", "/api/code/remediation", "/api/resume/analyze", "/api/baseline", "/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate", "/api/voice-mentor"];
   if (featurePaths.includes(request.url) || ["/api/performance/analyze", "/api/placement/aptitude/start", "/api/placement/aptitude/submit", "/api/placement/report"].includes(request.url) || sessionMatch) {
     const user = await authenticate(request);
     if (!user) return send(response, 401, { message: "Authentication required." });
@@ -128,6 +129,7 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
     }
     try {
       if (request.method === "POST" && request.url === "/api/performance/analyze") return send(response, 200, { analysis: await analyzePerformance(user.id) });
+      if (request.method === "POST" && request.url === "/api/voice-mentor") return send(response, 200, await voiceMentorReply(await readJson(request, 12000)));
       if (request.method === "POST" && request.url === "/api/placement/aptitude/start") return send(response, 200, await startAptitude(user.id, await readJson(request)));
       if (request.method === "POST" && request.url === "/api/placement/aptitude/submit") return send(response, 200, await submitAptitude(user.id, await readJson(request)));
       if (request.method === "GET" && request.url === "/api/placement/report") return send(response, 200, await finalPlacementReport(user.id));
