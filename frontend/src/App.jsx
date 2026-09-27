@@ -35,6 +35,7 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
+import ProctoredAssessment from "./components/ProctoredAssessment";
 
 function RouteLoader() {
   return <div className="flex min-h-72 items-center justify-center" role="status" aria-label="Loading page"><div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600 dark:border-indigo-950 dark:border-t-indigo-400" /></div>;
@@ -180,7 +181,7 @@ function App() {
 
           <Route
             path="/interview"
-            element={<Interview />}
+            element={<ProctoredAssessment title="Mock interview"><Interview /></ProctoredAssessment>}
           />
 
           <Route

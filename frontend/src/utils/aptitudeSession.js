@@ -60,6 +60,7 @@ export function normalizePlacementAptitudeSession(value, expectedLevel) {
     && currentOptions.includes(source.selectedAnswer)
     ? source.selectedAnswer
     : null;
+  const normalizeFlags = (value) => Object.fromEntries(Object.entries(value && typeof value === "object" && !Array.isArray(value) ? value : {}).filter(([key, flag]) => Number.isInteger(Number(key)) && Number(key) >= 0 && Number(key) < questions.length && flag === true).map(([key]) => [key, true]));
 
   return {
     level: expectedLevel,
@@ -68,6 +69,8 @@ export function normalizePlacementAptitudeSession(value, expectedLevel) {
     questionIndex,
     selectedAnswer,
     score,
+    visited: { ...normalizeFlags(source.visited), [questionIndex]: true },
+    markedForReview: normalizeFlags(source.markedForReview),
     answers: Object.fromEntries(Object.entries(source.answers || {}).filter(([key, answer]) => Number.isInteger(Number(key)) && Number(key) >= 0 && Number(key) < questionIndex && questions[Number(key)]?.options.includes(answer))),
     generationSource: typeof source.generationSource === "string"
       ? source.generationSource.slice(0, 80)

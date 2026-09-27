@@ -10,6 +10,7 @@ import { markDailyQuestionActivity } from "../services/dailyActivity";
 
 import { PROGRAM_STARTERS as starters } from "../utils/executionLanguages";
 import CodeReview from "./CodeReview";
+import ProctoredAssessment from "./ProctoredAssessment";
 export default function CodeAssessmentWorkspace({ mode = "placement", practiceProblemId, initialLanguage = "JavaScript", onLanguageChange }) {
   const { user } = useAuth();
   const { placementState, applyServerPlacement } = usePlacement();
@@ -47,7 +48,7 @@ export default function CodeAssessmentWorkspace({ mode = "placement", practicePr
     } catch (failure) { setError(failure.message); }
     finally { lock.current = false; setBusy(""); }
   };
-  return <section className="surface-card space-y-5 rounded-3xl p-6">
+  return <ProctoredAssessment key={result?.submitted ? "submitted" : problem?.id || "loading"} enabled={Boolean(problem && !result?.submitted)} title={mode === "placement" ? "Placement coding assessment" : "Coding practice"}><section className="surface-card space-y-5 rounded-3xl p-6">
     <header><h2 className="text-2xl font-bold">{mode === "placement" ? "Placement coding assessment" : "Sandbox coding practice"}</h2><p className="mt-2 text-gray-500">Write a complete program that reads standard input and prints standard output. Hidden test correctness determines the score. Pass threshold: 80%.</p></header>
     {mode === "practice" && !practiceProblemId && <label>Problem<select disabled={Boolean(busy)} className="ml-3 rounded border p-2 dark:bg-gray-900" value={problem?.id || ""} onChange={(event) => { setSelected(event.target.value); setResult(null); }}>{problems.map((item) => <option key={item.id} value={item.id}>{item.difficulty}: {item.title}</option>)}</select></label>}
     {problem && !(mode === "placement" && result?.submitted) && <>
@@ -64,5 +65,5 @@ export default function CodeAssessmentWorkspace({ mode = "placement", practicePr
     {result && <div aria-live="polite" className="space-y-3 rounded-xl border p-5"><h3 className="font-bold">{result.submitted ? "Hidden test results" : "Sample results"}: {result.passedTests}/{result.totalTests} passed</h3><p>Runtime: {result.runtime.toFixed(3)} seconds · Memory: {result.memory} KB</p>{result.failureReason && <p>{result.failureReason}</p>}{!result.submitted && result.sampleResults?.map((sample, index) => <div key={index}><p className="font-bold">Sample {index + 1} output</p><pre className="whitespace-pre-wrap">{sample.stdout || "(no output)"}</pre>{sample.compilation && <pre className="whitespace-pre-wrap">{sample.compilation}</pre>}{sample.stderr && <pre className="whitespace-pre-wrap">{sample.stderr}</pre>}</div>)}{result.submitted && <p>Score: {result.score}%</p>}
       {result.submitted && mode === "placement" && (result.score >= 80 ? <Link to={result.level === "hard" ? "/interview/setup" : "/placement"} state={result.level === "hard" ? { mode: "placement" } : undefined} className="font-bold text-indigo-500">Continue to {result.level === "hard" ? "AI interview" : "next level"}</Link> : <Link to="/learning" state={{ module: "coding", placementLevel: result.level, placementMode: true, topicPerformance: [{ topic: result.topic, percentage: result.score }] }} className="font-bold text-indigo-500">Complete learning tasks before retaking</Link>)}
     </div>}
-  </section>;
+  </section></ProctoredAssessment>;
 }

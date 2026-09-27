@@ -11,6 +11,8 @@ import { normalizePlacementAptitudeSession, PLACEMENT_APTITUDE_SESSION_KEY } fro
 import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storage";
 import { generatePlacementAptitudeQuestions } from "../utils/offlineQuestionGenerator";
 import CareerRoadmap from "../components/CareerRoadmap";
+import ProctoredAssessment from "../components/ProctoredAssessment";
+import AptitudeQuestionPalette from "../components/AptitudeQuestionPalette";
 
 const QUESTIONS = {
   easy: [
@@ -170,6 +172,8 @@ export default function PlacementAptitude() {
   const [selectedAnswer, setSelectedAnswer] = useState(() => restoredSession?.selectedAnswer || null);
 
   const [answers, setAnswers] = useState(()=>restoredSession?.answers || {});
+  const [visited, setVisited] = useState(() => restoredSession?.visited || { [restoredSession?.questionIndex || 0]: true });
+  const [markedForReview, setMarkedForReview] = useState(() => restoredSession?.markedForReview || {});
   const [score, setScore] = useState(() => restoredSession?.score || 0);
 
   const [showResult, setShowResult] = useState(false);
@@ -208,6 +212,8 @@ export default function PlacementAptitude() {
         setQuestions(result.questions);
         setGenerationSource(result.source || "curated");
         setQuestionIndex(0);
+        setVisited({ 0: true });
+        setMarkedForReview({});
         setSelectedAnswer(null);
         setScore(0);
         setAnswers({});
@@ -219,6 +225,8 @@ export default function PlacementAptitude() {
         setQuestions(getPlacementFallback(level));
         setGenerationSource("curated-fallback");
         setQuestionIndex(0);
+        setVisited({ 0: true });
+        setMarkedForReview({});
         setSelectedAnswer(null);
         setScore(0);
         setAnswers({});
@@ -241,8 +249,10 @@ export default function PlacementAptitude() {
       score,
       generationSource,
       answers,
+      visited,
+      markedForReview,
     });
-  }, [answers, generationSource, level, loadingQuestions, needsGeneration, questionIndex, questions, score, selectedAnswer, showResult, storageKey, serverSessionId]);
+  }, [answers, generationSource, level, loadingQuestions, markedForReview, needsGeneration, questionIndex, questions, score, selectedAnswer, showResult, storageKey, serverSessionId, visited]);
 
   const currentQuestion = questions[questionIndex];
 
@@ -263,6 +273,21 @@ export default function PlacementAptitude() {
     setSelectedAnswer(answer);
   };
 
+  const goToQuestion = (nextIndex) => {
+    const nextAnswers = selectedAnswer ? { ...answers, [questionIndex]: selectedAnswer } : answers;
+    setAnswers(nextAnswers);
+    setQuestionIndex(nextIndex);
+    setSelectedAnswer(nextAnswers[nextIndex] || null);
+    setVisited((current) => ({ ...current, [nextIndex]: true }));
+  };
+
+  const toggleReview = (questionIndexToToggle) => setMarkedForReview((current) => {
+    const next = { ...current };
+    if (next[questionIndexToToggle]) delete next[questionIndexToToggle];
+    else next[questionIndexToToggle] = true;
+    return next;
+  });
+
   /*
    * ----------------------------------------
    * NEXT QUESTION / SUBMIT
@@ -274,11 +299,9 @@ export default function PlacementAptitude() {
       return;
     }
 
-    const isCorrect =
-      selectedAnswer === currentQuestion.answer;
-
-    const newScore = isCorrect ? score + 1 : score;
     const finalAnswers={...answers,[questionIndex]:selectedAnswer};
+    const isCorrect = selectedAnswer === currentQuestion.answer;
+    const newScore = questions.reduce((total, question, index) => total + (finalAnswers[index] === question.answer ? 1 : 0), 0);
     setAnswers(finalAnswers);
 
     if (!isLastQuestion) {
@@ -287,6 +310,7 @@ export default function PlacementAptitude() {
       }
 
       setQuestionIndex((previous) => previous + 1);
+      setVisited((current) => ({ ...current, [questionIndex + 1]: true }));
       setSelectedAnswer(null);
 
       return;
@@ -411,6 +435,8 @@ export default function PlacementAptitude() {
     setSelectedAnswer(null);
     setScore(0);
         setAnswers({});
+    setVisited({ 0: true });
+    setMarkedForReview({});
     setLastResult(null);
     setShowResult(false);
 
@@ -536,7 +562,8 @@ export default function PlacementAptitude() {
     ((questionIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="placement-aptitude" style={styles.page}>
+    <ProctoredAssessment title={`Placement ${levelTitle} aptitude`}>
+      <div className="placement-aptitude" style={styles.page}>
 
       <div style={styles.container}>
 
@@ -547,6 +574,9 @@ export default function PlacementAptitude() {
         >
           ← Back to Placement
         </button>
+
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="min-w-0">
 
         {/* HEADER */}
         <div style={styles.headerCard}>
@@ -690,9 +720,13 @@ export default function PlacementAptitude() {
           </div>
 
         </div>
+          </div>
+          <AptitudeQuestionPalette questionCount={questions.length} currentIndex={questionIndex} answers={answers} currentAnswer={selectedAnswer} visited={visited} markedForReview={markedForReview} onNavigate={goToQuestion} onToggleReview={toggleReview} disabled={submitting} />
+        </div>
 
       </div>
-    </div>
+      </div>
+    </ProctoredAssessment>
   );
 }
 
