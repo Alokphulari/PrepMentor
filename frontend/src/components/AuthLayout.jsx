@@ -19,17 +19,17 @@ function AuthLayout({ children, title, subtitle }) {
 
         <div className="pointer-events-none absolute -right-32 top-1/4 h-96 w-96 rounded-full bg-indigo-500/25 blur-3xl" />
 
-             <Link to="/" className="flex items-center gap-2 w-fit">
-            <img
-              src={prepmmentorIcon}
-              alt="PrepMentor"
-              className="h-10 w-10 object-contain"
-            />
+                  <Link to="/" className="flex items-center gap-2 w-fit">
+          <img
+            src={prepmmentorIcon}
+            alt="PrepMentor"
+            className="h-10 w-10 object-contain"
+          />
 
-            <span className="text-2xl font-bold">
-              PrepMentor
-            </span>
-          </Link>
+          <span className="text-2xl font-extrabold tracking-tight text-white">
+            Prep<span className="text-indigo-400">Mentor</span>
+          </span>
+        </Link>
 
         <div className="max-w-lg">
 

@@ -127,29 +127,26 @@ function Navbar({ onMenuClick, sidebarOpen }) {
   };
 
   return (
-    <header data-print-hide className="sticky top-0 z-50 flex h-[72px] items-center justify-between border-b border-gray-200/80 bg-white/85 px-4 backdrop-blur-xl transition-colors dark:border-gray-800 dark:bg-gray-950/82 sm:px-6">
+   <header data-print-hide className="sticky top-0 z-50 flex h-[72px] items-center border-b border-gray-200/80 bg-white/85 px-4 backdrop-blur-xl transition-colors dark:border-gray-800 dark:bg-gray-950/82 sm:px-6">
       <div className="flex items-center gap-3">
         <button type="button" onClick={onMenuClick} className="rounded-xl p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 lg:hidden" aria-label="Open navigation" aria-controls="app-navigation" aria-expanded={sidebarOpen}>
           <Menu size={22} />
         </button>
      </div>
 
-<Link to="/dashboard" className="flex items-center gap-2 mr-auto">
-  <img
+<Link to="/dashboard" className="flex items-center gap-2">
+<img
     src={prepmentorIcon}
     alt="PrepMentor"
     className="h-10 w-10 object-contain"
   />
 
-  <img
-    src={prepmentorWordmark}
-    alt="PrepMentor"
-    className="h-auto w-[150px] object-contain"
-  />
+  <span className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+    Prep<span className="text-indigo-600 dark:text-indigo-400">Mentor</span>
+  </span>
 </Link>
 
-<div className="flex items-center gap-1.5 sm:gap-2"></div>
-
+<div className="flex-1"></div>
       <div className="flex items-center gap-1.5 sm:gap-2">
         <button type="button" onClick={toggleTheme} className="rounded-xl p-2.5 text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-300" aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
           {theme === "light" ? <Moon size={19} /> : <Sun size={19} />}
