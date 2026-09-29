@@ -1,5 +1,5 @@
 import prepmentorIcon from "../assets/prepmentor-icon-transparent.png";
-import prepmentorWordmark from "../assets/prepmentor-wordmark-transparent.png";
+
 
 import {
   Bell,
