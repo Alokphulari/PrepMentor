@@ -5,8 +5,11 @@ const violationLabels = {
   "window-blur": "The assessment window lost focus.",
   "tab-hidden": "The assessment tab was hidden.",
   "fullscreen-exit": "Fullscreen mode was exited.",
+  "viewport-change": "The assessment window size changed outside fullscreen.",
   "clipboard": "Clipboard actions are disabled during a proctored assessment.",
   "context-menu": "The context menu is disabled during a proctored assessment.",
+  "drag-drop": "Dragging content into or out of the assessment is disabled.",
+  "print": "Printing is disabled during a proctored assessment.",
   "shortcut": "A restricted browser shortcut was used.",
 };
 
@@ -63,7 +66,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
     const handleFullscreen = () => {
       const isFullscreen = document.fullscreenElement === containerRef.current;
       setFullscreen(isFullscreen);
-      if (!isFullscreen) recordViolation("fullscreen-exit");
+      if (!isFullscreen) lockForFocusLoss("fullscreen-exit");
     };
     const handleClipboard = (event) => {
       event.preventDefault();
@@ -73,9 +76,20 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
       event.preventDefault();
       recordViolation("context-menu");
     };
+    const handleDragDrop = (event) => {
+      event.preventDefault();
+      recordViolation("drag-drop");
+    };
+    const handleBeforePrint = () => lockForFocusLoss("print");
+    const handleResize = () => {
+      if (document.fullscreenElement !== containerRef.current) lockForFocusLoss("viewport-change");
+    };
     const handleShortcut = (event) => {
       const key = event.key.toLowerCase();
-      const restricted = event.key === "F12" || ((event.ctrlKey || event.metaKey) && ["c", "v", "x", "u"].includes(key)) || ((event.ctrlKey || event.metaKey) && event.shiftKey && ["i", "j", "c"].includes(key));
+      const modifier = event.ctrlKey || event.metaKey;
+      const restricted = event.key === "F12"
+        || (modifier && ["c", "v", "x", "u", "p", "s"].includes(key))
+        || (modifier && event.shiftKey && ["i", "j", "c", "k"].includes(key));
       if (restricted) {
         event.preventDefault();
         recordViolation("shortcut");
@@ -89,7 +103,11 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
     document.addEventListener("cut", handleClipboard);
     document.addEventListener("paste", handleClipboard);
     document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("dragstart", handleDragDrop);
+    document.addEventListener("drop", handleDragDrop);
     document.addEventListener("keydown", handleShortcut, true);
+    window.addEventListener("beforeprint", handleBeforePrint);
+    window.addEventListener("resize", handleResize);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("blur", handleBlur);
@@ -98,7 +116,11 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
       document.removeEventListener("cut", handleClipboard);
       document.removeEventListener("paste", handleClipboard);
       document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("dragstart", handleDragDrop);
+      document.removeEventListener("drop", handleDragDrop);
       document.removeEventListener("keydown", handleShortcut, true);
+      window.removeEventListener("beforeprint", handleBeforePrint);
+      window.removeEventListener("resize", handleResize);
     };
   }, [enabled, exitFullscreen, status, stopCamera]);
 
@@ -117,11 +139,16 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
         throw new Error("This browser does not support camera-based proctoring.");
       }
 
-      const fullscreenPromise = containerRef.current?.requestFullscreen
-        ? containerRef.current.requestFullscreen().catch(() => false)
-        : Promise.resolve(false);
+      if (!containerRef.current?.requestFullscreen) {
+        throw new Error("This browser does not support the fullscreen mode required for proctoring.");
+      }
+      const fullscreenPromise = containerRef.current.requestFullscreen().then(() => true).catch(() => false);
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      await fullscreenPromise;
+      const fullscreenGranted = await fullscreenPromise;
+      if (!fullscreenGranted || document.fullscreenElement !== containerRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        throw new Error("Fullscreen access is required. Allow fullscreen and start the assessment again.");
+      }
       streamRef.current = stream;
       setFullscreen(document.fullscreenElement === containerRef.current);
       setStatus("active");
@@ -143,7 +170,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
 
   const lastViolation = violations.at(-1);
   return (
-    <div ref={containerRef} className={status === "active" ? "relative min-h-full bg-white dark:bg-gray-950" : "relative"}>
+    <div ref={containerRef} className={status === "active" ? "proctored-assessment relative min-h-full bg-white dark:bg-gray-950" : "relative"}>
       {status === "ready" || status === "starting" ? (
         <section className="surface-card mx-auto max-w-2xl rounded-3xl p-8 text-center sm:p-10">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-300"><ShieldCheck size={30} /></div>
@@ -152,7 +179,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
           <p className="mx-auto mt-4 max-w-xl leading-7 text-gray-500 dark:text-gray-400">This assessment is proctored in practice and Placement mode. Camera video stays in this browser tab and is not recorded or uploaded.</p>
           <div className="mx-auto mt-6 max-w-md space-y-3 text-left text-sm text-gray-600 dark:text-gray-300">
             <p className="flex items-center gap-3"><Camera size={18} className="shrink-0 text-indigo-500" /> Keep your face visible to the camera.</p>
-            <p className="flex items-center gap-3"><Maximize size={18} className="shrink-0 text-indigo-500" /> Stay in fullscreen and keep this tab focused.</p>
+            <p className="flex items-center gap-3"><Maximize size={18} className="shrink-0 text-indigo-500" /> Stay in fullscreen. Split screen, tab switching, and focus loss lock the attempt.</p>
             <p className="flex items-center gap-3"><ClipboardX size={18} className="shrink-0 text-indigo-500" /> Copy, paste, context menus, and restricted shortcuts are disabled.</p>
           </div>
           {cameraError && <p role="alert" className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-300">{cameraError}</p>}
@@ -167,7 +194,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
           {lastViolation && <p role="status" className="mx-auto mb-4 max-w-5xl rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">{violationLabels[lastViolation.type]} This event has been flagged.</p>}
           {!locked && <video ref={videoRef} muted autoPlay playsInline aria-label="Local proctoring camera preview" className="fixed bottom-4 right-4 z-50 h-24 w-32 rounded-xl border-2 border-emerald-500 bg-gray-950 object-cover shadow-xl sm:h-32 sm:w-44" />}
           {children}
-          {locked && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/80 p-6 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="proctoring-lock-title"><div className="surface-card max-w-lg rounded-3xl p-8 text-center shadow-2xl"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-300"><ShieldAlert size={30} /></div><h2 id="proctoring-lock-title" className="mt-5 text-2xl font-black">Assessment locked</h2><p className="mt-3 leading-7 text-gray-500 dark:text-gray-400">Tab or window switching is not allowed during a proctored assessment. This attempt cannot be resumed.</p><button type="button" onClick={() => window.history.back()} className="mt-6 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white hover:bg-indigo-700">Exit assessment</button></div></div>}
+          {locked && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/80 p-6 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="proctoring-lock-title"><div className="surface-card max-w-lg rounded-3xl p-8 text-center shadow-2xl"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-300"><ShieldAlert size={30} /></div><h2 id="proctoring-lock-title" className="mt-5 text-2xl font-black">Assessment locked</h2><p className="mt-3 leading-7 text-gray-500 dark:text-gray-400">{lastViolation ? violationLabels[lastViolation.type] : "A proctoring rule was violated."} This attempt cannot be resumed.</p><button type="button" onClick={() => window.history.back()} className="mt-6 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white hover:bg-indigo-700">Exit assessment</button></div></div>}
         </>
       )}
     </div>

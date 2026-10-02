@@ -12,7 +12,8 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Resume = lazy(() => import("./pages/ResumeBuilder"));
 const AptitudePractice = lazy(() => import("./pages/AptitudePracticeHome"));
 const AptitudeQuiz = lazy(() => import("./pages/AptitudePracticeSession"));
-const LearningHub = lazy(() => import("./pages/LearningWorkspace"));
+const LearningHub = lazy(() => import("./pages/LearningHub"));
+const LearningRecommendations = lazy(() => import("./pages/LearningWorkspace"));
 const PracticeHub = lazy(() => import("./pages/PracticeHub"));
 const QuestionOfTheDay = lazy(() => import("./pages/QuestionOfTheDay"));
 const Games = lazy(() => import("./pages/Games"));
@@ -27,6 +28,11 @@ const CodingInterview = lazy(() => import("./pages/CodingWorkspace"));
 const History = lazy(() => import("./pages/History"));
 const Performance = lazy(() => import("./pages/Performance"));
 const Achievements = lazy(() => import("./pages/Achievements"));
+const DailyEngagementHub = lazy(() => import("./pages/DailyEngagementHub"));
+const CommunicationPractice = lazy(() => import("./pages/CommunicationPractice"));
+const MockBattles = lazy(() => import("./pages/MockBattles"));
+const CompanyPlacement = lazy(() => import("./pages/CompanyPlacement"));
+const CodingCatalog = lazy(() => import("./pages/CodingCatalog"));
 
 // 404
 import NotFound from "./pages/NotFound";
@@ -116,10 +122,15 @@ function App() {
             element={<AptitudeQuiz />}
           />
 
+          <Route path="/practice/typing" element={<CommunicationPractice />} />
+          <Route path="/practice/speaking" element={<CommunicationPractice />} />
+
           <Route
             path="/learning"
             element={<LearningHub />}
           />
+
+          <Route path="/learning/recommendations" element={<LearningRecommendations />} />
 
           <Route
             path="/question-of-the-day"
@@ -131,6 +142,9 @@ function App() {
             element={<Games />}
           />
 
+          <Route path="/daily-engagement" element={<DailyEngagementHub />} />
+          <Route path="/mock-battles" element={<MockBattles />} />
+
 
           {/* ================================
               PLACEMENT MODULE
@@ -140,6 +154,7 @@ function App() {
             path="/placement"
             element={<Placement />}
           />
+          <Route path="/placement/company/:companyId" element={<CompanyPlacement />} />
 
           <Route path="/placement/report" element={<PlacementReport />} />
           {/* Easy / Medium / Hard */}
@@ -168,6 +183,7 @@ function App() {
             path="/coding-interview"
             element={<CodingInterview />}
           />
+          <Route path="/coding-catalog" element={<CodingCatalog />} />
 
 
           {/* ================================

@@ -7,8 +7,7 @@ import {
   Target,
   BrainCircuit,
   CalendarCheck2,
-  Gamepad2,
-  Mic2,
+  Swords,
   X,
 } from "lucide-react";
 
@@ -28,15 +27,14 @@ function Sidebar({ open, onClose }) {
       icon: BrainCircuit,
     },
     {
-      name: "Interview Practice",
-      path: "/interview/setup",
-      icon: Mic2,
-      activePrefix: "/interview",
-    },
-    {
       name: "Placement",
       path: "/placement",
       icon: Target,
+    },
+    {
+      name: "Daily Engagement Hub",
+      path: "/daily-engagement",
+      icon: CalendarCheck2,
     },
     {
       name: "Performance",
@@ -44,24 +42,19 @@ function Sidebar({ open, onClose }) {
       icon: BarChart3,
     },
     {
-      name: "Learning Hub",
-      path: "/learning",
-      icon: BookOpen,
-    },
-    {
       name: "History",
       path: "/history",
       icon: History,
     },
     {
-      name: "Question of the Day",
-      path: "/question-of-the-day",
-      icon: CalendarCheck2,
+      name: "Learning Hub",
+      path: "/learning",
+      icon: BookOpen,
     },
     {
-      name: "Games",
-      path: "/games",
-      icon: Gamepad2,
+      name: "Mock Battles",
+      path: "/mock-battles",
+      icon: Swords,
     },
   ];
 

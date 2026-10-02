@@ -1,4 +1,4 @@
-import { ArrowRight, Brain, Code2, Infinity as InfinityIcon, Mic, Sparkles } from "lucide-react";
+import { ArrowRight, Brain, Code2, Infinity as InfinityIcon, Keyboard, Mic, Sparkles, Volume2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const modes = [
@@ -19,12 +19,28 @@ const modes = [
     detail: "JavaScript · Python · Java · C++ and more",
   },
   {
-    title: "Mock Interview",
+    title: "Interview Practice",
     description: "Hear each question aloud and answer naturally with your microphone or keyboard.",
     path: "/interview/setup",
     icon: Mic,
     tone: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300",
     detail: "Technical · Behavioral · Mixed",
+  },
+  {
+    title: "Typing Practice",
+    description: "Measure typing speed and accuracy with interview and workplace passages.",
+    path: "/practice/typing",
+    icon: Keyboard,
+    tone: "bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-950/40 dark:text-fuchsia-300",
+    detail: "WPM · Accuracy · Consistency",
+  },
+  {
+    title: "Speaking Practice",
+    description: "Practice concise professional responses with live speech-to-text and a typing fallback.",
+    path: "/practice/speaking",
+    icon: Volume2,
+    tone: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300",
+    detail: "Fluency · Structure · Confidence",
   },
 ];
 

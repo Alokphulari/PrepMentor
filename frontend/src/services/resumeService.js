@@ -3,7 +3,7 @@ import { authorizedRequest } from "./authService";
 
 export async function getRemoteResume() {
   if (!hasRemoteApi) return null;
-  const response = await authorizedRequest("/api/resume");
+  const response = await authorizedRequest("/api/resume", { expireSession: false });
   return response.resume || null;
 }
 

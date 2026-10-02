@@ -1,12 +1,14 @@
 import CodeReview from "../components/CodeReview";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Bookmark, CheckCircle2, ChevronRight, Code2, Layers, Lightbulb, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dsaProblems, dsaTopics } from "../data/dsaRoadmap";
 import { filterDsaProblems, normalizeDsaProgress } from "../utils/dsaProgress";
 import { CODING_LANGUAGES, getStarterCode } from "../utils/codingLanguages";
 import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storage";
 import CodeAssessmentWorkspace from "../components/CodeAssessmentWorkspace";
+import { markDailyQuestionActivity } from "../services/dailyActivity";
 
 const field = "rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900";
 const badges = { Easy: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300", Medium: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300", Hard: "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300" };
@@ -29,7 +31,10 @@ function DsaWorkspace({ storageKey }) {
     setProgress(nextProgress);
     setStorageError(!writeStorage(storageKey, nextProgress));
   };
-  const updateEntry = (id, changes) => save({ ...progress, entries: { ...progress.entries, [id]: { ...progress.entries[id], ...changes } } });
+  const updateEntry = (id, changes) => {
+    if (changes.drafts || changes.notes || changes.status === "completed") markDailyQuestionActivity();
+    save({ ...progress, entries: { ...progress.entries, [id]: { ...progress.entries[id], ...changes } } });
+  };
   const openProblem = (item) => {
     setSelectedId(item.id);
     save({ ...progress, topicId: item.topicId, entries: { ...progress.entries, [item.id]: { ...progress.entries[item.id], status: progress.entries[item.id]?.status === "completed" ? "completed" : "in-progress" } } });
@@ -37,6 +42,7 @@ function DsaWorkspace({ storageKey }) {
   const selectTopic = (id) => { save({ ...progress, topicId: id }); setSelectedId(null); setQuery(""); setDifficulty("All"); setStatus("All"); };
 
   return <div className="space-y-6">
+    <div className="flex justify-end"><Link to="/coding-catalog" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-bold text-violet-700 hover:bg-violet-100 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-300">Browse all 1,000 questions</Link></div>
     <header className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-indigo-700 p-6 text-white sm:p-8">
       <div aria-hidden="true" className="absolute -right-16 -top-24 h-80 w-80 rounded-full border-[40px] border-white/5"/>
       <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">

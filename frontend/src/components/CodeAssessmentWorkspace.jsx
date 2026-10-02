@@ -7,6 +7,7 @@ import { usePlacement } from "../context/PlacementContext";
 import { getAccountStorageKey, readStorage, writeStorage } from "../utils/storage";
 import { addHistoryEntry } from "../services/history";
 import { markDailyQuestionActivity } from "../services/dailyActivity";
+import { editCodeWithKeyboard } from "../utils/codeEditor";
 
 import { PROGRAM_STARTERS as starters } from "../utils/executionLanguages";
 import CodeReview from "./CodeReview";
@@ -21,6 +22,7 @@ export default function CodeAssessmentWorkspace({ mode = "placement", practicePr
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const [placementRuns, setPlacementRuns] = useState({ easy: 0, medium: 0, hard: 0 });
   const lock = useRef(false);
   const availableLevel = ["easy", "medium", "hard"].find((level) => placementState.coding[level] === "available");
   const problem = mode === "practice" && practiceProblemId
@@ -31,7 +33,7 @@ export default function CodeAssessmentWorkspace({ mode = "placement", practicePr
   const setCode = (value) => setDraft({ key, code: value });
   useEffect(() => {
     let active = true;
-    authorizedRequest("/api/code/problems").then((data) => { if (active) setProblems(data.problems); }).catch((failure) => { if (active) setError(failure.message); });
+    authorizedRequest("/api/code/problems", { expireSession: false }).then((data) => { if (active) { setProblems(data.problems); setPlacementRuns(data.placementRuns || { easy: 0, medium: 0, hard: 0 }); } }).catch((failure) => { if (active) setError(failure.message); });
     return () => { active = false; };
   }, []);
   const execute = async (submit) => {
@@ -40,6 +42,7 @@ export default function CodeAssessmentWorkspace({ mode = "placement", practicePr
     try {
       const response = await authorizedRequest(`/api/code/${submit ? "submit" : "run"}`, { method: "POST", timeoutMs: 65000, body: JSON.stringify({ problemId: problem.id, language, code, mode }) });
       setResult({ ...response, level: problem.difficulty, topic: problem.topic, submitted: submit });
+      if (mode === "placement" && Number.isInteger(response.placementRunsUsed)) setPlacementRuns((current) => ({ ...current, [problem.difficulty]: response.placementRunsUsed }));
       if (submit) {
         addHistoryEntry(response.entry, { sync: false });
         markDailyQuestionActivity();
@@ -48,15 +51,28 @@ export default function CodeAssessmentWorkspace({ mode = "placement", practicePr
     } catch (failure) { setError(failure.message); }
     finally { lock.current = false; setBusy(""); }
   };
+  const handleEditorKeyDown = (event) => {
+    const edit = editCodeWithKeyboard(code, event.currentTarget.selectionStart, event.currentTarget.selectionEnd, event.key);
+    if (!edit) return;
+    event.preventDefault();
+    setCode(edit.value);
+    writeStorage(key, edit.value);
+    setResult(null);
+    window.requestAnimationFrame(() => event.currentTarget.setSelectionRange(edit.selection, edit.selection));
+  };
+  const runsUsed = problem ? placementRuns[problem.difficulty] || 0 : 0;
+  const runsRemaining = Math.max(0, 5 - runsUsed);
   return <ProctoredAssessment key={result?.submitted ? "submitted" : problem?.id || "loading"} enabled={Boolean(problem && !result?.submitted)} title={mode === "placement" ? "Placement coding assessment" : "Coding practice"}><section className="surface-card space-y-5 rounded-3xl p-6">
     <header><h2 className="text-2xl font-bold">{mode === "placement" ? "Placement coding assessment" : "Sandbox coding practice"}</h2><p className="mt-2 text-gray-500">Write a complete program that reads standard input and prints standard output. Hidden test correctness determines the score. Pass threshold: 80%.</p></header>
+    <section className="rounded-2xl border border-indigo-200 bg-indigo-50 p-5 text-sm dark:border-indigo-900 dark:bg-indigo-950/30"><h3 className="font-extrabold text-indigo-800 dark:text-indigo-200">Instructions — read before starting</h3><ul className="mt-3 list-disc space-y-2 pl-5 leading-6 text-indigo-700 dark:text-indigo-300"><li>Read the input format, output requirement, constraints, and samples first.</li><li>Your complete program must read standard input and print only the requested output.</li><li>Run evaluates visible samples; Submit evaluates private hidden tests.</li><li>{mode === "placement" ? "You may run at most 5 times. Submission is final and locks the editor." : "Practice has unlimited Run and Submit attempts."}</li><li>Tab inserts two spaces and Enter preserves the current indentation.</li></ul></section>
+    {mode === "placement" && problem && <div className={`rounded-xl px-4 py-3 text-sm font-bold ${runsRemaining ? "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300"}`}>Placement runs remaining: {runsRemaining} / 5</div>}
     {mode === "practice" && !practiceProblemId && <label>Problem<select disabled={Boolean(busy)} className="ml-3 rounded border p-2 dark:bg-gray-900" value={problem?.id || ""} onChange={(event) => { setSelected(event.target.value); setResult(null); }}>{problems.map((item) => <option key={item.id} value={item.id}>{item.difficulty}: {item.title}</option>)}</select></label>}
     {problem && !(mode === "placement" && result?.submitted) && <>
       <h3 className="text-xl font-bold">{problem.title} <span className="text-sm capitalize text-indigo-500">{problem.difficulty}</span></h3><p>{problem.description}</p>
       {problem.samples.map((sample, index) => <div key={index} className="grid gap-4 rounded-xl bg-gray-100 p-4 dark:bg-gray-800 sm:grid-cols-2"><div>Sample input<pre>{sample.input}</pre></div><div>Expected output<pre>{sample.output}</pre></div></div>)}
       <label className="block">Language<select disabled={Boolean(busy)} value={language} onChange={(event) => { setLanguage(event.target.value); onLanguageChange?.(event.target.value); setResult(null); }} className="ml-3 rounded border p-2 dark:bg-gray-900">{(problem.languages || Object.keys(starters)).map((item) => <option key={item}>{item}</option>)}</select></label>
-      <label className="block"><span className="font-semibold">Solution</span><textarea spellCheck={false} aria-label="Source code" rows={16} value={code} disabled={Boolean(busy)} onChange={(event) => { setCode(event.target.value); setResult(null); writeStorage(key, event.target.value); }} className="mt-2 w-full rounded-xl border bg-slate-950 p-4 font-mono text-sm text-slate-100" /></label>
-      <div className="flex flex-wrap gap-3"><button type="button" disabled={Boolean(busy)} onClick={() => execute(false)} className="rounded-xl border px-5 py-3 font-bold disabled:opacity-50">Run sample tests</button><button type="button" disabled={Boolean(busy)} onClick={() => execute(true)} className="rounded-xl bg-indigo-600 px-5 py-3 font-bold text-white disabled:opacity-50">{busy === "Submitting hidden tests..." ? "Submitting…" : "Submit solution"}</button></div>
+      <label className="block"><span className="font-semibold">Solution</span><textarea spellCheck={false} aria-label="Source code" rows={16} value={code} disabled={Boolean(busy)} onKeyDown={handleEditorKeyDown} onChange={(event) => { setCode(event.target.value); setResult(null); writeStorage(key, event.target.value); }} className="mt-2 w-full rounded-xl border bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100 outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/15" /></label>
+      <div className="flex flex-wrap gap-3"><button type="button" disabled={Boolean(busy) || (mode === "placement" && runsRemaining === 0)} onClick={() => execute(false)} className="rounded-xl border px-5 py-3 font-bold disabled:cursor-not-allowed disabled:opacity-50">Run sample tests{mode === "placement" ? ` (${runsRemaining} left)` : ""}</button><button type="button" disabled={Boolean(busy)} onClick={() => execute(true)} className="rounded-xl bg-indigo-600 px-5 py-3 font-bold text-white disabled:opacity-50">{busy === "Submitting hidden tests..." ? "Submitting…" : "Submit solution"}</button></div>
     </>}
     {!problem && !result && (mode === "practice" ? <p>{error ? "The assessment could not be loaded. Your solution draft is still available in the previous tab." : "Loading the assessment…"}</p> : <p>Complete the previous Placement stage, or finish your Learning Hub remediation to unlock a retake. <Link className="text-indigo-500" to="/placement">View progress</Link></p>)}
     {problem && !(mode === "placement" && result?.submitted) && <CodeReview key={problem.id} code={code} language={language} problem={problem.description}/>}

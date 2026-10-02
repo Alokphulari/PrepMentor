@@ -14,7 +14,7 @@ function normalizeConfig(value) {
     role,
     createdAt,
     experience: typeof value.experience === "string" ? value.experience.slice(0, 100) : "",
-    interviewType: ["Technical", "Behavioral", "Mixed"].includes(value.interviewType) ? value.interviewType : "Mixed",
+    interviewType: ["Technical", "Behavioral", "Mixed", "Resume-based"].includes(value.interviewType) ? value.interviewType : "Mixed",
     difficulty: ["Easy", "Medium", "Hard"].includes(value.difficulty) ? value.difficulty : "Medium",
     duration: normalizeInterviewDuration(value.duration),
     questionCount: Math.max(1, Math.min(8, Math.round(Number(value.questionCount) || 5))),

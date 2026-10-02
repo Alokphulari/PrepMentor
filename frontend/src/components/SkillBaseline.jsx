@@ -10,7 +10,7 @@ export default function SkillBaseline({ refreshKey = 0 }) {
   useEffect(() => {
     if (!hasRemoteApi) return;
     let active = true;
-    authorizedRequest("/api/baseline").then((value) => { if (active) setBaseline(value); }).catch((failure) => { if (active) setError(failure.message); });
+    authorizedRequest("/api/baseline", { expireSession: false }).then((value) => { if (active) setBaseline(value); }).catch((failure) => { if (active) setError(failure.message); });
     return () => { active = false; };
   }, [refreshKey]);
   const items = baseline?.categories || Object.keys(categories).map((category) => ({ category, estimate: null, latestScore: null }));

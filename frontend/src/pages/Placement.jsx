@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { getPlacementCompletion } from "../utils/placementProgress";
+import { companyPlacementTracks } from "../data/companyPlacementTracks";
 
 function Placement() {
   const { placementState } = usePlacement();
@@ -173,6 +174,11 @@ function Placement() {
           the next stage. Your performance determines your
           placement readiness.
         </p>
+      </section>
+
+      <section>
+        <div className="mb-4"><p className="text-sm font-bold text-violet-600">Company-specific preparation</p><h2 className="mt-1 text-2xl font-extrabold">Choose a hiring track</h2><p className="mt-1 text-sm text-gray-500">Each track follows Aptitude → Coding → Typing → Speaking → Interview.</p></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{companyPlacementTracks.map((company)=><Link key={company.id} to={`/placement/company/${company.id}`} className={`group rounded-2xl bg-gradient-to-br ${company.accent} p-5 text-white shadow-lg transition hover:-translate-y-1`}><p className="text-xs font-bold uppercase tracking-wider text-white/70">Placement track</p><h3 className="mt-2 text-xl font-black">{company.name}</h3><span className="mt-5 flex items-center gap-2 text-sm font-bold">View process <ArrowRight size={16} className="transition group-hover:translate-x-1"/></span></Link>)}</div>
       </section>
 
       {/* PROGRESS */}

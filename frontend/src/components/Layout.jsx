@@ -11,9 +11,13 @@ function getRouteTitle(pathname) {
   if (pathname === "/resume") return "Resume Studio";
   if (pathname === "/practice") return "Practice Mode";
   if (pathname.startsWith("/practice/aptitude")) return "Aptitude Practice";
+  if (pathname === "/practice/typing") return "Typing Practice";
+  if (pathname === "/practice/speaking") return "Speaking Practice";
   if (pathname === "/learning") return "Learning Hub";
+  if (pathname === "/learning/recommendations") return "Learning Recommendations";
   if (pathname.startsWith("/placement")) return "Placement Journey";
   if (pathname === "/coding-interview") return "Coding Practice";
+  if (pathname === "/coding-catalog") return "Coding Question Catalog";
   if (pathname.startsWith("/interview/result")) return "Interview Result";
   if (pathname.startsWith("/interview")) return "Mock Interview";
   if (pathname === "/performance") return "Performance";
@@ -21,6 +25,8 @@ function getRouteTitle(pathname) {
   if (pathname === "/achievements") return "Badges & Achievements";
   if (pathname === "/question-of-the-day") return "Question of the Day";
   if (pathname === "/games") return "Games";
+  if (pathname === "/daily-engagement") return "Daily Engagement Hub";
+  if (pathname === "/mock-battles") return "Mock Battles";
   return "Workspace";
 }
 

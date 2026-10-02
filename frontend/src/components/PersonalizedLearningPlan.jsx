@@ -10,7 +10,7 @@ export default function PersonalizedLearningPlan() {
   useEffect(() => {
     if (!hasRemoteApi) return;
     let active = true;
-    authorizedRequest("/api/learning/plan", { timeoutMs: 65000 }).then((value) => { if (active) setPlan(value.plan); }).catch(() => {});
+    authorizedRequest("/api/learning/plan", { timeoutMs: 65000, expireSession: false }).then((value) => { if (active) setPlan(value.plan); }).catch(() => {});
     return () => { active = false; };
   }, []);
   if (!plan) return null;

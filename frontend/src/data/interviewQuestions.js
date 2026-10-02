@@ -18,6 +18,14 @@ const behavioral = [
   { focus: "Impact", question: "Which project are you most proud of, and how did you measure its impact?" },
 ];
 
+const resumeBased = [
+  { focus: "Projects", question: "Choose the most relevant project on your resume. What problem did it solve, what was your contribution, and what result did you achieve?" },
+  { focus: "Skills", question: "Which skill listed on your resume are you strongest in, and what concrete work demonstrates that strength?" },
+  { focus: "Experience", question: "Walk me through the experience on your resume that best prepares you for this role." },
+  { focus: "Decisions", question: "Describe a difficult technical decision from a resume project and explain the alternatives you considered." },
+  { focus: "Growth", question: "Which resume project taught you the most, and what would you improve if you rebuilt it today?" },
+];
+
 const promptAngles = [
   "Use a recent project as evidence.",
   "Explain the trade-offs you would discuss with your team.",
@@ -57,7 +65,7 @@ export function buildInterviewQuestions(config = {}, maximumQuestions = 8) {
   ];
   const introductionText = shuffle(introductionOptions).find((question) => !exclusions.has(question)) || `${introductionOptions[0]} Focus on a different recent experience.`;
   const introduction = { focus: "Introduction", question: introductionText };
-  const source = safeConfig.interviewType === "Technical" ? technical : safeConfig.interviewType === "Behavioral" ? behavioral : technical.flatMap((item, index) => [item, behavioral[index]]).filter(Boolean);
+  const source = safeConfig.interviewType === "Technical" ? technical : safeConfig.interviewType === "Behavioral" ? behavioral : safeConfig.interviewType === "Resume-based" ? resumeBased : technical.flatMap((item, index) => [item, behavioral[index]]).filter(Boolean);
   const focusAreas = Array.isArray(safeConfig.focusAreas) ? safeConfig.focusAreas : [];
   const candidates = source.flatMap((item) => promptAngles.flatMap((angle) => interviewContexts.map((context) => ({ ...item, question: `${item.question} ${angle} ${context}` }))));
   const available = candidates.filter((item) => !exclusions.has(item.question));

@@ -23,7 +23,7 @@ function AptitudeQuestionPalette({ questionCount, currentIndex, answers, current
   return (
     <aside className="surface-card h-fit rounded-2xl p-4 lg:sticky lg:top-24" aria-label="Question palette">
       <div className="flex items-center justify-between gap-3">
-        <div><p className="text-sm font-black">Question palette</p><p className="mt-1 text-xs text-gray-500 dark:text-gray-400">JEE-style navigation</p></div>
+        <div><p className="text-sm font-black">Question palette</p></div>
         <Flag size={18} className={currentMarked ? "text-violet-500" : "text-gray-400"} />
       </div>
       <div className="mt-4 grid grid-cols-5 gap-2">

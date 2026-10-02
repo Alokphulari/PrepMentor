@@ -21,7 +21,7 @@ export default function ResumeAnalysisPanel({ resume, loadingDraft = false }) {
     if (!hasRemoteApi) return;
     let active = true;
     const initialRevision = revision.current;
-    authorizedRequest("/api/baseline")
+    authorizedRequest("/api/baseline", { expireSession: false })
       .then((value) => { if (active && revision.current === initialRevision) setAnalysis(value.analysis || null); })
       .catch(() => { if (active) setLoadError("Could not load your previous analysis. You can still upload and retry."); });
     return () => { active = false; };

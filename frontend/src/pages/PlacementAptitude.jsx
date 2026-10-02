@@ -558,8 +558,11 @@ export default function PlacementAptitude() {
    * ----------------------------------------
    */
 
-  const progress =
-    ((questionIndex + 1) / questions.length) * 100;
+  const attemptedCount = questions.reduce((total, _question, index) => {
+    const answer = index === questionIndex ? selectedAnswer || answers[index] : answers[index];
+    return total + (answer ? 1 : 0);
+  }, 0);
+  const progress = questions.length ? (attemptedCount / questions.length) * 100 : 0;
 
   return (
     <ProctoredAssessment title={`Placement ${levelTitle} aptitude`}>
@@ -625,11 +628,20 @@ export default function PlacementAptitude() {
 
           <div style={styles.progressBackground}>
             <div
+              role="progressbar"
+              aria-label="Questions attempted"
+              aria-valuemin={0}
+              aria-valuemax={questions.length}
+              aria-valuenow={attemptedCount}
               style={{
                 ...styles.progressBar,
                 width: `${progress}%`,
               }}
             />
+          </div>
+
+          <div className="mt-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400">
+            {attemptedCount} of {questions.length} attempted
           </div>
 
         </div>

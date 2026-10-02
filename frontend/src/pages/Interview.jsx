@@ -120,7 +120,7 @@ function Interview() {
   }, [listening, speaking, transcribing]);
 
   useEffect(() => {
-    if (isInterviewAnswerComplete(answer) && !activityMarkedRef.current) {
+    if (countAnswerWords(answer) > 0 && !activityMarkedRef.current) {
       activityMarkedRef.current = true;
       markDailyQuestionActivity();
     }
@@ -147,7 +147,7 @@ function Interview() {
   const finishRemote = useCallback((remote) => {
     saveLocalInterviewResult(remote.result, user);
     if (remote.config.mode === "placement") {
-      authorizedRequest("/api/placement").then(({ placementState: progress }) => applyServerPlacement(progress)).catch(() => {});
+      authorizedRequest("/api/placement", { expireSession: false }).then(({ placementState: progress }) => applyServerPlacement(progress)).catch(() => {});
     }
     try {
       sessionStorage.removeItem(sessionKey);
@@ -161,7 +161,7 @@ function Interview() {
   useEffect(() => {
     if (!config.remoteSessionId) return;
     let active = true;
-    authorizedRequest(`/api/interview-sessions/${config.remoteSessionId}`).then(({session:remote})=>{
+    authorizedRequest(`/api/interview-sessions/${config.remoteSessionId}`, { expireSession: false }).then(({session:remote})=>{
       if(!active)return;
       let reviewed;
       try { reviewed = sessionStorage.getItem(`${sessionKey}:reviewed`); } catch { /* Show unreviewed feedback. */ }

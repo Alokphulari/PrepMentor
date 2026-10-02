@@ -35,7 +35,7 @@ export default function PlacementReport() {
   useEffect(() => {
     let active = true;
     if (hasRemoteApi) {
-      authorizedRequest("/api/placement/report")
+      authorizedRequest("/api/placement/report", { expireSession: false })
         .then((value) => { if (active) setReport(value); })
         .catch((failure) => { if (active) setError(failure.message); });
     }

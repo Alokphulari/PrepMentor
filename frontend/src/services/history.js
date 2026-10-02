@@ -35,7 +35,7 @@ export function addHistoryEntry(entry, { sync = true } = {}) {
 
 export async function getSyncedHistory() {
   if (!hasRemoteApi) return getHistory();
-  const response = await authorizedRequest("/api/history");
+  const response = await authorizedRequest("/api/history", { expireSession: false });
   if (!Array.isArray(response.history)) return getHistory();
   const history = mergeHistoryEntries(response.history, getHistory());
   writeStorage(getAccountStorageKey(HISTORY_KEY), history);
