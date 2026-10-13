@@ -110,3 +110,19 @@ test("code review fallback does not invent execution scores", async () => {
   assert.equal(result.provider, "local"); assert.equal(result.score, null);
   assert.match(result.mode, /not executed/);
 });
+test("practice coding supports expanded problems through run, submit, and review", async () => {
+  await student("coding-practice");
+  const catalog = publicCodingProblems();
+  assert.ok(catalog.length >= 40);
+  assert.ok(catalog.some((problem) => problem.id === "fizz-buzz"));
+  const value = { code: "print('ok')", language: "Python", problemId: "fizz-buzz", mode: "practice" };
+  const runner = async (_input, hidden) => ({ passedTests: hidden ? 1 : 1, totalTests: 1, status: "passed", runtime: 0.01, memory: 128 });
+  const sample = await runCode("coding-practice", value, false, runner);
+  assert.equal(sample.passedTests, 1);
+  const submission = await runCode("coding-practice", value, true, runner);
+  assert.equal(submission.score, 100);
+  assert.equal((await findUserById("coding-practice")).history[0].type, "Coding");
+  const review = await reviewCode({ code: value.code, problem: "Fizz buzz", language: value.language }, async () => { throw new Error("offline"); });
+  assert.equal(review.provider, "local");
+  assert.equal(review.score, null);
+});

@@ -7,7 +7,7 @@ function ResourceCard({ reference, topic, onOpen }) {
   const url = new URL(reference.url);
   const video = url.hostname === "www.youtube.com";
   const videoId = url.searchParams.get("v");
-  const title = reference.title.replace(/\s*Â?·\s*/g, " · ");
+  const title = reference.title.replace(/\s*·\s*/g, " · ");
   const Icon = video ? Play : BookOpen;
 
   return <a href={reference.url} target="_blank" rel="noopener noreferrer" onClick={onOpen}

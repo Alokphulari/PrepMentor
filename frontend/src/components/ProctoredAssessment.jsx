@@ -13,6 +13,8 @@ const violationLabels = {
   "shortcut": "A restricted browser shortcut was used.",
 };
 
+const e2eProctoringBypass = import.meta.env.VITE_E2E_TEST === "true";
+
 function ProctoredAssessment({ children, title = "Assessment", enabled = true, onStarted }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
@@ -22,6 +24,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
   const [violations, setViolations] = useState([]);
   const [fullscreen, setFullscreen] = useState(false);
   const [locked, setLocked] = useState(false);
+  const proctoringEnabled = enabled && !e2eProctoringBypass;
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -37,7 +40,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!enabled) {
+    if (!proctoringEnabled) {
       stopCamera();
       exitFullscreen();
     }
@@ -45,10 +48,10 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
       stopCamera();
       if (document.fullscreenElement === container) exitFullscreen();
     };
-  }, [enabled, exitFullscreen, stopCamera]);
+  }, [exitFullscreen, proctoringEnabled, stopCamera]);
 
   useEffect(() => {
-    if (status !== "active" || !enabled) return undefined;
+    if (status !== "active" || !proctoringEnabled) return undefined;
 
     const recordViolation = (type) => {
       setViolations((current) => [...current, { type, at: new Date().toISOString() }]);
@@ -122,7 +125,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
       window.removeEventListener("beforeprint", handleBeforePrint);
       window.removeEventListener("resize", handleResize);
     };
-  }, [enabled, exitFullscreen, status, stopCamera]);
+  }, [exitFullscreen, proctoringEnabled, status, stopCamera]);
 
   useEffect(() => {
     if (videoRef.current && streamRef.current) {
@@ -166,7 +169,7 @@ function ProctoredAssessment({ children, title = "Assessment", enabled = true, o
     containerRef.current.requestFullscreen().then(() => setFullscreen(true)).catch(() => {});
   };
 
-  if (!enabled) return children;
+  if (!proctoringEnabled) return children;
 
   const lastViolation = violations.at(-1);
   return (

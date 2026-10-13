@@ -42,7 +42,7 @@ function DsaWorkspace({ storageKey }) {
   const selectTopic = (id) => { save({ ...progress, topicId: id }); setSelectedId(null); setQuery(""); setDifficulty("All"); setStatus("All"); };
 
   return <div className="space-y-6">
-    <div className="flex justify-end"><Link to="/coding-catalog" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-bold text-violet-700 hover:bg-violet-100 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-300">Browse all 1,000 questions</Link></div>
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm font-semibold text-gray-500 dark:text-gray-400">{completed} of {dsaProblems.length} roadmap problems completed{next ? ` · Next: ${next.title}` : " · Roadmap complete"}</p><Link to="/coding-catalog" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-bold text-violet-700 hover:bg-violet-100 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-300">Browse all 1,000 questions</Link></div>
     <header className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-indigo-700 p-6 text-white sm:p-8">
       <div aria-hidden="true" className="absolute -right-16 -top-24 h-80 w-80 rounded-full border-[40px] border-white/5"/>
       <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">

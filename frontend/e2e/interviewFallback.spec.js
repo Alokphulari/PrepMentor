@@ -45,13 +45,15 @@ test.beforeEach(async ({ page, request }, testInfo) => {
   await page.route("**/api/**", async (route) => {
     const url = new URL(route.request().url());
     const response = await route.fetch({ url: `${apiUrl}${url.pathname}${url.search}` });
-    await route.fulfill({ response });
+    await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
   });
 });
 
 test("real demo API starts, survives refresh, accepts typed answers and persists a complete local report", async ({ page }) => {
   await page.goto("/interview/setup");
-  await page.getByRole("button", { name: "Start interview", exact: true }).click();
+  const startInterview = page.getByRole("button", { name: "Start interview", exact: true });
+  await expect(startInterview).toBeVisible();
+  await startInterview.click();
   await expect(page.getByText(/Evaluation source: Local Backup/)).toBeVisible();
   const response = page.getByRole("textbox", { name: "Your response" });
   const firstQuestion = await page.locator("h2").first().textContent();
@@ -100,7 +102,7 @@ test("failed server speech falls back to browser narration; failed STT leaves ty
     const path = new URL(route.request().url()).pathname;
     const response = await route.fetch({ url: `${apiUrl}${path}` });
     const body = await response.json();
-    await route.fulfill({ response, json: { ...body, session: { ...body.session, fallbackUsed: false } } });
+    await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" }, json: { ...body, session: { ...body.session, fallbackUsed: false } } });
   });
   await page.goto("/interview/setup");
   await page.getByRole("button", { name: "Start interview", exact: true }).click();
@@ -145,7 +147,7 @@ test("failed transcription switches to browser voice, preserves the draft and av
     const path = new URL(route.request().url()).pathname;
     const response = await route.fetch({ url: `${apiUrl}${path}` });
     const body = await response.json();
-    await route.fulfill({ response, json: { ...body, session: { ...body.session, fallbackUsed: false } } });
+    await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" }, json: { ...body, session: { ...body.session, fallbackUsed: false } } });
   });
   await page.goto("/interview/setup");
   await page.getByRole("button", { name: "Start interview", exact: true }).click();
