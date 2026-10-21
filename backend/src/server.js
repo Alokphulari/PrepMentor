@@ -21,6 +21,7 @@ import { reviewCode } from "./codeReviewer.js";
 import { analyzePerformance } from "./performanceAnalysis.js";
 import { startAptitude, submitAptitude, finalPlacementReport } from "./placementAssessments.js";
 import { voiceMentorReply } from "./voiceMentor.js";
+import { createBattle, getBattle, joinBattle, submitBattle } from "./battles.js";
 
 const port = Number(process.env.PORT) || 4000;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
@@ -119,6 +120,18 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
     return send(response, database === "unavailable" ? 503 : 200, { database, interview: { ...interviewHealth(), provider: interviewProviderConfig().provider, llm: interviewConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts") }, llm: isConfigured(), stt: speechConfigured("stt"), tts: speechConfigured("tts"), codeExecution: Boolean(process.env.JUDGE0_BASE_URL), googleAuth: Boolean(process.env.GOOGLE_CLIENT_ID), googleClientId: process.env.GOOGLE_CLIENT_ID || null, status: database === "unavailable" ? "degraded" : "ok", service: "prepmentor-backend", questionGeneration: isLlmConfigured() ? "llm" : "offline", speech: speechConfigured("stt") || speechConfigured("tts") ? "ai" : "browser-only", timestamp: new Date().toISOString() });
   }
   const sessionMatch = request.url.match(/^\/api\/interview-sessions\/([a-zA-Z0-9-]+)(\/answer)?$/);
+  const battleMatch = request.url.match(/^\/api\/battles\/([A-Z0-9]{6})(\/join|\/submit)?$/i);
+  if (request.url === "/api/battles" || battleMatch) {
+    const user = await authenticate(request);
+    if (!user) return send(response, 401, { message: "Authentication required." });
+    try {
+      if (request.method === "POST" && request.url === "/api/battles") return send(response, 201, { room: createBattle(user, (await readJson(request)).mode) });
+      if (battleMatch && request.method === "GET" && !battleMatch[2]) return send(response, 200, { room: getBattle(user, battleMatch[1]) });
+      if (battleMatch && request.method === "POST" && battleMatch[2] === "/join") return send(response, 200, { room: joinBattle(user, battleMatch[1]) });
+      if (battleMatch && request.method === "POST" && battleMatch[2] === "/submit") return send(response, 200, { room: submitBattle(user, battleMatch[1], (await readJson(request)).answers) });
+      return send(response, 405, { message: "Method not allowed." });
+    } catch (error) { return send(response, error.status || 400, { message: error.message || "Unable to complete this battle request." }); }
+  }
   const featurePaths = ["/api/interview-remediation","/api/interview-sessions", "/api/code/problems", "/api/code/run", "/api/code/submit", "/api/code/remediation", "/api/resume/analyze", "/api/baseline", "/api/learning/plan", "/api/career-roadmap", "/api/career-roadmap/generate", "/api/voice-mentor"];
   if (featurePaths.includes(request.url) || ["/api/performance/analyze", "/api/placement/aptitude/start", "/api/placement/aptitude/submit", "/api/placement/report"].includes(request.url) || sessionMatch) {
     const user = await authenticate(request);
