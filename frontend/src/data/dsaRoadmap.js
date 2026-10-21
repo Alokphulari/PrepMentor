@@ -62,6 +62,12 @@ const rows = [
   ["strings", "intersection", "Array Intersection", "Easy", "Set membership", "Return distinct values present in both arrays in ascending order.", "a = [4,9,5,4], b = [9,4,9]", "[4, 9]", "0 <= array length <= 100000.", "Use a set for one array, then sort the shared values once.", "O(n log n) time, O(n) space", "intersection"],
 ];
 
-export const dsaProblems = rows.map(([topicId, id, title, difficulty, pattern, description, input, output, constraints, hint, complexity, executionId]) => ({
-  topicId, id, title, difficulty, pattern, description, input, output, constraints, hint, complexity, executionId: executionId || id,
-}));
+const difficultyOrder = { Easy: 0, Medium: 1, Hard: 2 };
+const topicOrder = new Map(dsaTopics.map((topic, index) => [topic.id, index]));
+
+export const dsaProblems = rows
+  .map(([topicId, id, title, difficulty, pattern, description, input, output, constraints, hint, complexity, executionId]) => ({
+    topicId, id, title, difficulty, pattern, description, input, output, constraints, hint, complexity, executionId: executionId || id,
+  }))
+  .sort((a, b) => topicOrder.get(a.topicId) - topicOrder.get(b.topicId)
+    || difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]);

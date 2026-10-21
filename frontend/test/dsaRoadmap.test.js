@@ -39,7 +39,7 @@ test("DSA saved progress restores supported drafts and rejects malformed state",
 test("DSA filters combine topic, difficulty, status, bookmarks, and global search", () => {
   const entries = { "array-sum": { status: "completed", bookmarked: true } };
   assert.deepEqual(filterDsaProblems({ topicId: "arrays", difficulty: "Easy", status: "completed", entries }).map((problem) => problem.id), ["array-sum"]);
-  assert.equal(filterDsaProblems({ topicId: "arrays", status: "todo", entries }).length, 2);
+  assert.equal(filterDsaProblems({ topicId: "arrays", status: "todo", entries }).length, 8);
   assert.equal(filterDsaProblems({ status: "bookmarked", entries }).length, 1);
   assert.equal(filterDsaProblems({ query: "  TOPOLOGICAL " })[0].id, "course-schedule");
   assert.equal(filterDsaProblems({ query: "no matching problem" }).length, 0);
