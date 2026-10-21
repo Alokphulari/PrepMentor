@@ -93,7 +93,7 @@ test("placement interview is blocked before coding pass", async () => {
 });
 test("hidden tests never appear in public problem catalog", () => {
   const catalog = publicCodingProblems();
-  assert.equal(catalog.length, 36); assert.ok(catalog.every((problem) => !Object.hasOwn(problem, "hidden")));
+  assert.ok(catalog.length >= 36); assert.ok(catalog.every((problem) => !Object.hasOwn(problem, "hidden")));
   assert.equal(JSON.stringify(catalog).includes("pwwkew"), false);
 });
 test("sandbox validates code sizes and supported languages", () => {

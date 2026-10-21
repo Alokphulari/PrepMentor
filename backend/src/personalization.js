@@ -27,7 +27,7 @@ async function buildPlan(userId, kind, refresh) {
   const key = kind === "roadmap" ? "careerRoadmaps" : "learningPlans";
   const results = (user.history || []).filter((entry) => /aptitude|coding|interview/i.test(entry.type) && !["self-reported", "semantic-or-static-review"].includes(entry.evidenceType) && !(entry.evaluationMode || "").includes("rubric")).sort((a,b) => Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0, 20);
   const evidenceId = createHash("sha256").update(JSON.stringify({ results, resume: user.resumeAnalysis, role: user.targetRole, skills: user.skills, experience: user.experience })).digest("hex");
-  if (!refresh && user[key]?.[0] && (kind === "roadmap" || user[key][0].evidenceId === evidenceId)) return user[key][0];
+  if (!refresh && user[key]?.[0] && user[key][0].evidenceId === evidenceId) return user[key][0];
   const weakTopics = measuredWeakTopics(results);
   const role = user.targetRole || "Software Engineer";
   const data = { role, profile: { experience: user.experience, skills: user.skills }, resumeAnalysis: user.resumeAnalysis || null, skillBaseline: await getSkillBaseline(userId), aptitudePerformance: results.filter((entry) => /aptitude/i.test(entry.type)), codingPerformance: results.filter((entry) => /coding/i.test(entry.type)), interviewPerformance: (user.interviewResults || []).slice(0, 5), strengths: results.filter((entry) => entry.score >= 80).map((entry) => entry.title), results, weakTopics };
