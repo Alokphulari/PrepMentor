@@ -31,8 +31,10 @@ export async function mongoRepository() {
         await client.connect();
         const db = client.db(process.env.MONGODB_DB_NAME || "prepmentor");
         const collection = db.collection("users");
+        const battleCollection = db.collection("battles");
         await collection.createIndex({ email: 1 }, { unique: true });
         await collection.createIndex({ id: 1 }, { unique: true });
+        await battleCollection.createIndex({ code: 1 }, { unique: true });
         const repository = createMongoRepository(collection);
         const safeRepository = Object.fromEntries(Object.entries(repository).map(([name, operation]) => [name, async (...args) => {
           try { return await operation(...args); }
@@ -41,7 +43,13 @@ export async function mongoRepository() {
             throw Object.assign(new Error("MongoDB could not complete this request. Please retry when storage is available."), { status: 503 });
           }
         }]));
-        return { ...safeRepository, ping: () => db.command({ ping: 1 }) };
+        return {
+          ...safeRepository,
+          createBattle: async (battle) => { await battleCollection.insertOne({ ...battle }); return battle; },
+          findBattle: async (code) => battleCollection.findOne({ code }, { projection: { _id: 0 } }),
+          updateBattle: async (code, battle) => { await battleCollection.replaceOne({ code }, { ...battle }); return battle; },
+          ping: () => db.command({ ping: 1 }),
+        };
       } catch { await client.close(); connection = undefined; throw Object.assign(new Error("MongoDB is unavailable. Check the server database configuration."), { status: 503 }); }
     })();
   }

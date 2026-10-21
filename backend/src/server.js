@@ -125,10 +125,10 @@ async function handleRequest(request, response, checkAuthRateLimit, checkGenerat
     const user = await authenticate(request);
     if (!user) return send(response, 401, { message: "Authentication required." });
     try {
-      if (request.method === "POST" && request.url === "/api/battles") return send(response, 201, { room: createBattle(user, (await readJson(request)).mode) });
-      if (battleMatch && request.method === "GET" && !battleMatch[2]) return send(response, 200, { room: getBattle(user, battleMatch[1]) });
-      if (battleMatch && request.method === "POST" && battleMatch[2] === "/join") return send(response, 200, { room: joinBattle(user, battleMatch[1]) });
-      if (battleMatch && request.method === "POST" && battleMatch[2] === "/submit") return send(response, 200, { room: submitBattle(user, battleMatch[1], (await readJson(request)).answers) });
+      if (request.method === "POST" && request.url === "/api/battles") return send(response, 201, { room: await createBattle(user, (await readJson(request)).mode) });
+      if (battleMatch && request.method === "GET" && !battleMatch[2]) return send(response, 200, { room: await getBattle(user, battleMatch[1]) });
+      if (battleMatch && request.method === "POST" && battleMatch[2] === "/join") return send(response, 200, { room: await joinBattle(user, battleMatch[1]) });
+      if (battleMatch && request.method === "POST" && battleMatch[2] === "/submit") return send(response, 200, { room: await submitBattle(user, battleMatch[1], (await readJson(request)).answers) });
       return send(response, 405, { message: "Method not allowed." });
     } catch (error) { return send(response, error.status || 400, { message: error.message || "Unable to complete this battle request." }); }
   }

@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { mongoRepository } from "./mongoRepository.js";
 
 const rooms = new Map();
 const modes = new Set(["aptitude", "coding", "interview", "typing", "speaking"]);
@@ -10,9 +11,41 @@ const questionBank = [
   { question: "Book is to Reading as Fork is to…", options: ["Drawing", "Writing", "Eating", "Running"], answer: "Eating" },
 ];
 
-function getRoom(code) {
+function persistentBattles() {
+  return Boolean(process.env.MONGODB_URI);
+}
+
+async function getRoom(code) {
+  const normalizedCode = String(code || "").toUpperCase();
+  if (persistentBattles()) {
+    const room = await (await mongoRepository()).findBattle(normalizedCode);
+    if (room) return room;
+  }
+  const room = rooms.get(normalizedCode);
+  if (!room) throw Object.assign(new Error("Battle room not found or has expired."), { status: 404 });
+  return room;
+}
+
+async function saveRoom(room) {
+  rooms.set(room.code, room);
+  if (persistentBattles()) await (await mongoRepository()).updateBattle(room.code, room);
+  return room;
+}
+
+async function createStoredRoom(room) {
+  rooms.set(room.code, room);
+  if (persistentBattles()) await (await mongoRepository()).createBattle(room);
+  return room;
+}
+
+/*
+ * Rooms use MongoDB whenever the backend is configured for production. The
+ * in-memory map remains the lightweight local-development fallback.
+ */
+/* istanbul ignore next */
+function legacyGetRoom(code) {
   const room = rooms.get(String(code || "").toUpperCase());
-  if (!room) throw Object.assign(new Error("Battle room not found."), { status: 404 });
+  if (!room) throw Object.assign(new Error("Battle room not found or has expired."), { status: 404 });
   return room;
 }
 
@@ -30,32 +63,33 @@ function playerIn(room, userId) {
   return player;
 }
 
-export function createBattle(user, requestedMode) {
+export async function createBattle(user, requestedMode) {
   const mode = modes.has(requestedMode) ? requestedMode : "aptitude";
   let code;
   do code = randomBytes(3).toString("hex").toUpperCase(); while (rooms.has(code));
   const room = { code, mode, status: "waiting", questions: questionBank.map((question, index) => ({ ...question, id: `${code}-${index + 1}` })), players: [{ userId: user.id, name: user.name || user.email || "Player 1", submitted: false, score: null, answers: null }], createdAt: Date.now() };
-  rooms.set(code, room);
+  await createStoredRoom(room);
   return publicRoom(room, user.id);
 }
 
-export function joinBattle(user, code) {
-  const room = getRoom(code);
+export async function joinBattle(user, code) {
+  const room = await getRoom(code);
   if (room.players.some((player) => player.userId === user.id)) return publicRoom(room, user.id);
   if (room.status !== "waiting" || room.players.length >= 2) throw Object.assign(new Error("This battle room is full."), { status: 409 });
   room.players.push({ userId: user.id, name: user.name || user.email || "Player 2", submitted: false, score: null, answers: null });
   room.status = "active";
+  await saveRoom(room);
   return publicRoom(room, user.id);
 }
 
-export function getBattle(user, code) {
-  const room = getRoom(code);
+export async function getBattle(user, code) {
+  const room = await getRoom(code);
   playerIn(room, user.id);
   return publicRoom(room, user.id);
 }
 
-export function submitBattle(user, code, answers) {
-  const room = getRoom(code);
+export async function submitBattle(user, code, answers) {
+  const room = await getRoom(code);
   const player = playerIn(room, user.id);
   if (room.status !== "active") throw Object.assign(new Error("The battle is not ready yet."), { status: 409 });
   if (player.submitted) return publicRoom(room, user.id);
@@ -64,6 +98,7 @@ export function submitBattle(user, code, answers) {
   player.score = Math.round((room.questions.reduce((score, question) => score + (player.answers[question.id] === question.answer ? 1 : 0), 0) / room.questions.length) * 100);
   player.submitted = true;
   if (room.players.every((item) => item.submitted)) room.status = "complete";
+  await saveRoom(room);
   return publicRoom(room, user.id);
 }
 
