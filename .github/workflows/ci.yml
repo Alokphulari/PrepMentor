@@ -35,15 +35,5 @@ jobs:
       - name: Install backend dependencies
         run: npm ci --prefix backend
 
-      - name: Run frontend lint
-        run: npm run lint
-
-      - name: Run frontend tests
-        run: npm --prefix frontend test
-
-      - name: Run backend tests
-        run: npm --prefix backend test
-
-      - name: Build frontend
-        run: npm run build
-
+      - name: Run repository quality gate
+        run: npm run check

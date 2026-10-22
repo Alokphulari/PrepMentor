@@ -3,7 +3,7 @@ import { Bot, MessageCircle, Mic, Send, Volume2, VolumeX, X } from "lucide-react
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { askVoiceMentor } from "../services/voiceMentorService";
-import { detectVoiceIntent, localVoiceReply, voiceHelpReply, VOICE_INTENT_ROUTES } from "../utils/voiceMentor";
+import { detectVoiceIntent, localVoiceAnswer, localVoiceReply, voiceHelpReply, VOICE_INTENT_ROUTES } from "../utils/voiceMentor";
 
 const PROCTORED_PATHS = ["/interview", "/placement/aptitude", "/placement/coding", "/practice/aptitude/quiz", "/coding-interview"];
 
@@ -97,8 +97,7 @@ function VoiceMentor() {
       addAssistantMessage(response.reply || "I’m here to help. Try asking for aptitude, coding, interviews, your resume, or performance.");
       if (intent) window.setTimeout(() => navigate(VOICE_INTENT_ROUTES[intent]), 450);
     } catch {
-      const fallback = "I didn’t catch a supported PrepMentor action. Try saying: start aptitude practice, continue Placement, practice coding, or show my performance.";
-      addAssistantMessage(fallback);
+      addAssistantMessage(localVoiceAnswer(message));
       setError("AI mentor unavailable; local voice commands are still available.");
     } finally {
       setBusy(false);

@@ -137,7 +137,7 @@ test("performance keeps actual dates, labels and newest-first attempt ordering",
 });
 test("Learning Hub keeps reference and reflection gates and refresh progress",async({page})=>{
   await page.addInitScript(()=>{if(!localStorage.getItem("prepmentor_learning_session:browser-student"))localStorage.setItem("prepmentor_learning_session:browser-student",JSON.stringify({topicPerformance:[{topic:"Data Structures",percentage:52}]}));});
-  await page.goto("/learning");
+  await page.goto("/learning/recommendations");
   await page.screenshot({path:"test-results/learning-desktop.png",fullPage:true});
   await page.getByRole("button",{name:"Switch to dark mode"}).click();
   await page.screenshot({path:"test-results/learning-desktop-dark.png",fullPage:true});
@@ -163,7 +163,7 @@ test("baseline and Learning Hub fit mobile and dark surfaces",async({page})=>{
   await page.screenshot({path:"test-results/dashboard-mobile.png",fullPage:true});
   await page.getByRole("button",{name:"Switch to dark mode"}).click();
   await page.screenshot({path:"test-results/dashboard-mobile-dark.png",fullPage:true});
-  await page.goto("/learning");
+  await page.goto("/learning/recommendations", { state: { topicPerformance: [{ topic: "Data Structures", percentage: 52 }] } });
   await expect(page.getByRole("heading",{name:"Personalized Learning Hub",exact:true})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
 });

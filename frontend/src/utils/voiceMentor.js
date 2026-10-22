@@ -48,3 +48,12 @@ export function localVoiceReply(intent, name = "there") {
 export function voiceHelpReply() {
   return "You can say: start aptitude practice, continue Placement, practice coding, start a mock interview, open my resume, show my performance, review history, open learning, or go to the dashboard.";
 }
+
+export function localVoiceAnswer(message) {
+  const text = String(message || "").trim().toLowerCase();
+  if (/what should i (do|work on)|what.*next|recommend|where should i start/.test(text)) return "Start with Performance to see your measured scores, then open Learning for your weakest topics. If you have not practised yet, begin with Aptitude Practice.";
+  if (/how am i doing|my progress|my strengths|my weak/.test(text)) return "Open Performance to review your completed attempts and scores, then use Learning for targeted practice.";
+  if (/coding help|how do i improve coding|coding recommendation/.test(text)) return "Open Coding Practice, choose the next roadmap problem, run the sample tests when execution is configured, and review your complexity notes.";
+  if (/interview advice|interview help|prepare for interview/.test(text)) return "Open Mock Interview and practise concise answers. After a session, review the feedback and weak topics in Learning.";
+  return "I can guide you through PrepMentor even while AI services are offline. Try asking about your next step, coding, interviews, performance, or learning.";
+}
